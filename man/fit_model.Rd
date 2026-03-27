@@ -6,7 +6,7 @@
 \usage{
 fit_model(
   data,
-  engine = c("mlr", "hier_mlr", "piantham"),
+  engine = c("mlr", "hier_mlr", "piantham", "fga"),
   pivot = NULL,
   horizon = 28L,
   ci_level = 0.95,
@@ -25,6 +25,8 @@ locations. Requires \code{.location} column in data.
 \item \code{"piantham"}: Piantham approximation converting MLR growth
 rates to relative reproduction numbers. Requires
 \code{generation_time} argument.
+\item \code{"fga"}: Fixed growth advantage model (Bayesian via CmdStan).
+Requires CmdStan; check with \code{\link[=lfq_stan_available]{lfq_stan_available()}}.
 }}
 
 \item{pivot}{Reference lineage name. Growth rates are reported

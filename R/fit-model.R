@@ -12,6 +12,8 @@
 #'   * `"piantham"`: Piantham approximation converting MLR growth
 #'     rates to relative reproduction numbers. Requires
 #'     `generation_time` argument.
+#'   * `"fga"`: Fixed growth advantage model (Bayesian via CmdStan).
+#'     Requires CmdStan; check with [lfq_stan_available()].
 #' @param pivot Reference lineage name. Growth rates are reported
 #'   relative to this lineage (fixed at 0). Default: the lineage with
 #'   the highest count at the earliest time point.
@@ -61,7 +63,7 @@
 #'
 #' @export
 fit_model <- function(data,
-                      engine   = c("mlr", "hier_mlr", "piantham"),
+                      engine   = c("mlr", "hier_mlr", "piantham", "fga"),
                       pivot    = NULL,
                       horizon  = 28L,
                       ci_level = 0.95,
@@ -80,6 +82,7 @@ fit_model <- function(data,
     mlr      = .engine_mlr(data, pivot = pivot, ci_level = ci_level, ...),
     hier_mlr = .engine_hier_mlr(data, pivot = pivot, ci_level = ci_level, ...),
     piantham = .engine_piantham(data, pivot = pivot, ci_level = ci_level, ...),
+    fga      = .engine_fga(data, pivot = pivot, ci_level = ci_level, ...),
     cli::cli_abort("Unknown engine {.val {engine}}.")
   )
 
