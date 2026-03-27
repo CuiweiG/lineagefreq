@@ -2,6 +2,8 @@
 
 S3method(print,lfq_data)
 export(autoplot)
+export(fit_model)
+export(growth_advantage)
 export(is_lfq_data)
 export(lfq_data)
 export(lfq_stan_available)
