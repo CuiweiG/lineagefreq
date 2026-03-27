@@ -1,0 +1,11 @@
+pandoc: 3.1.11
+pkgdown: 2.2.0
+pkgdown_sha: ~
+articles:
+  introduction: introduction.html
+  model-comparison: model-comparison.html
+  surveillance-workflow: surveillance-workflow.html
+last_built: 2026-03-27T20:02Z
+urls:
+  reference: https://CuiweiG.github.io/lineagefreq/reference
+  article: https://CuiweiG.github.io/lineagefreq/articles
