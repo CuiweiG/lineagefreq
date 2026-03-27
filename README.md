@@ -47,6 +47,19 @@ autoplot(fc)
 summarize_emerging(x)
 ```
 
+## Gallery
+
+Results from the built-in CDC JN.1 surveillance dataset:
+
+### Variant frequency dynamics
+![](man/figures/frequency_plot.png)
+
+### Growth advantage estimation
+![](man/figures/advantage_plot.png)
+
+### Frequency forecast with prediction intervals
+![](man/figures/forecast_plot.png)
+
 ## Features
 
 - **Unified modeling**: `fit_model()` with engines `"mlr"`,
