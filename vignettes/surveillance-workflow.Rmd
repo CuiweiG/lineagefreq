@@ -1,0 +1,113 @@
+---
+title: "Surveillance workflow"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Surveillance workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 4
+)
+```
+
+## Overview
+
+This vignette demonstrates a complete end-to-end surveillance
+analysis: from raw count data to actionable outputs. The workflow
+mirrors what a public health genomics team would run weekly.
+
+## Step 1: Load and prepare data
+
+```{r load}
+library(lineagefreq)
+
+data(sarscov2_us_2022)
+x <- lfq_data(sarscov2_us_2022,
+              lineage = variant,
+              date    = date,
+              count   = count,
+              total   = total)
+```
+
+## Step 2: Collapse rare lineages
+
+Real surveillance data often contains dozens of low-frequency
+lineages. `collapse_lineages()` merges those below a threshold
+into an "Other" category.
+
+```{r collapse}
+x_clean <- collapse_lineages(x, min_freq = 0.02)
+attr(x_clean, "lineages")
+```
+
+## Step 3: Fit model
+
+```{r fit}
+fit <- fit_model(x_clean, engine = "mlr")
+summary(fit)
+```
+
+## Step 4: Growth advantages
+
+```{r ga}
+ga <- growth_advantage(fit,
+                       type = "relative_Rt",
+                       generation_time = 5)
+ga
+```
+
+```{r ga-plot}
+autoplot(fit, type = "advantage", generation_time = 5)
+```
+
+## Step 5: Identify emerging lineages
+
+```{r emerge}
+emerging <- summarize_emerging(x_clean)
+emerging[emerging$significant, ]
+```
+
+## Step 6: Forecast
+
+```{r forecast}
+fc <- forecast(fit, horizon = 28)
+autoplot(fc)
+```
+
+## Step 7: Assess sequencing needs
+
+How many sequences are needed to reliably detect a lineage
+at 2% frequency?
+
+```{r power}
+sequencing_power(
+  target_precision = 0.05,
+  current_freq = c(0.01, 0.02, 0.05, 0.10)
+)
+```
+
+## Step 8: Extract tidy results
+
+All results are compatible with the broom ecosystem.
+
+```{r tidy}
+tidy.lfq_fit(fit)
+glance.lfq_fit(fit)
+```
+
+## Summary
+
+A typical weekly workflow:
+
+1. `lfq_data()` — ingest new counts
+2. `collapse_lineages()` — clean up rare lineages
+3. `fit_model()` — estimate dynamics
+4. `summarize_emerging()` — flag growing lineages
+5. `forecast()` — project forward 4 weeks
+6. `autoplot()` — generate report figures
