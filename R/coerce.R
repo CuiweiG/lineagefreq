@@ -27,12 +27,14 @@ as_lfq_data <- function(x, ...) {
 }
 
 #' @rdname as_lfq_data
+#' @return An [lfq_data] object.
 #' @export
 as_lfq_data.lfq_data <- function(x, ...) {
   x
 }
 
 #' @rdname as_lfq_data
+#' @return An [lfq_data] object.
 #' @export
 as_lfq_data.data.frame <- function(x, ...) {
   lfq_data(x, ...)
