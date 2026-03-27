@@ -14,10 +14,10 @@ test_that("fit_model rejects non-lfq_data input", {
   expect_error(fit_model(d, engine = "mlr"), "lfq_data")
 })
 
-test_that("fit_model hier_mlr placeholder gives informative error", {
+test_that("fit_model hier_mlr requires location", {
   sim <- simulate_dynamics(n_lineages = 2,
                            advantages = c("A" = 1.1), seed = 1)
-  expect_error(fit_model(sim, engine = "hier_mlr"), "not yet")
+  expect_error(fit_model(sim, engine = "hier_mlr"), "location")
 })
 
 test_that("fit_model piantham requires generation_time", {

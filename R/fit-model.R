@@ -92,14 +92,6 @@ fit_model <- function(data,
 }
 
 
-# --- Placeholder engines (implemented in later Sessions) ---
 
-#' @noRd
-.engine_hier_mlr <- function(data, pivot = NULL, ci_level = 0.95, ...) {
-  cli::cli_abort(
-    c("Engine {.val hier_mlr} is not yet implemented.",
-      "i" = "Use {.code engine = 'mlr'} for now.")
-  )
-}
 
 
