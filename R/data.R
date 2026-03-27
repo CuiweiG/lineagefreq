@@ -52,27 +52,39 @@
 
 #' CDC SARS-CoV-2 variant proportions: JN.1 emergence (US, 2023-2024)
 #'
-#' A dataset of weekly SARS-CoV-2 variant sequence counts for the
-#' United States covering the JN.1 emergence wave (October 2023 to
-#' June 2024). Derived from CDC national genomic surveillance
-#' proportions, with approximate counts reconstructed using a
-#' reference total of 10,000 sequences per week.
+#' Real surveillance data from the CDC's national genomic surveillance
+#' program covering the emergence and dominance of the SARS-CoV-2 JN.1
+#' lineage in the United States, October 2023 through June 2024.
 #'
-#' @format A data frame with 351 rows and 3 columns:
+#' Derived from CDC's published weighted variant proportion estimates.
+#' Approximate biweekly sequence counts were reconstructed from
+#' proportions using a reference total of 8,000 sequences per period.
+#' The original proportions are retained in the `proportion` column.
+#'
+#' @format A data frame with 171 rows and 4 columns:
 #' \describe{
-#'   \item{date}{Week ending date (Date).}
-#'   \item{lineage}{Lineage name (character): JN.1, XBB.1.5, EG.5,
-#'     HV.1, HK.3, BA.2.86, KP.2, KP.3, Other.}
-#'   \item{count}{Approximate sequence count (integer).}
+#'   \item{date}{Biweek ending date (Date).}
+#'   \item{lineage}{Lineage name (character): JN.1, XBB.1.5, EG.5.1,
+#'     HV.1, HK.3, BA.2.86, KP.2, KP.3, JN.1.11.1, Other.}
+#'   \item{count}{Approximate sequence count per biweek (integer).}
+#'   \item{proportion}{CDC weighted proportion estimate (numeric).}
 #' }
 #'
-#' @source Simulated based on published proportions from CDC COVID
-#'   Data Tracker and MMWR Vol.73 No.42.
-#'   \doi{10.15585/mmwr.mm7342a1}
+#' @source
+#' CDC COVID Data Tracker, SARS-CoV-2 Variant Proportions.
+#' Dataset ID: jr58-6ysp.
+#' \url{https://data.cdc.gov/Laboratory-Surveillance/SARS-CoV-2-Variant-Proportions/jr58-6ysp}
+#'
+#' Public domain (U.S. Government Work, 17 USC 105).
+#'
+#' @references
+#' Ma KC, et al. (2024). Genomic Surveillance for SARS-CoV-2 Variants.
+#' \emph{MMWR}, 73(42):941--948. \doi{10.15585/mmwr.mm7342a1}
 #'
 #' @examples
 #' data(cdc_sarscov2_jn1)
-#' x <- lfq_data(cdc_sarscov2_jn1,
-#'               lineage = lineage, date = date, count = count)
-#' x
+#' vd <- lfq_data(cdc_sarscov2_jn1,
+#'                date = date, lineage = lineage, count = count)
+#' fit <- fit_model(vd, engine = "mlr")
+#' growth_advantage(fit, type = "relative_Rt", generation_time = 5)
 "cdc_sarscov2_jn1"
