@@ -1,0 +1,121 @@
+---
+title: "Getting started with lineagefreq"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with lineagefreq}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 4
+)
+```
+
+## Overview
+
+lineagefreq models pathogen lineage frequency dynamics from genomic
+surveillance count data. Given a table of lineage-resolved sequence
+counts over time, the package estimates relative growth advantages,
+generates short-term frequency forecasts, and provides tools for
+evaluating model accuracy.
+
+This vignette demonstrates the core workflow using simulated
+SARS-CoV-2 surveillance data.
+
+## Preparing data
+
+The entry point is `lfq_data()`, which validates and standardizes
+a count table. The minimum input is a data frame with columns for
+date, lineage name, and sequence count.
+
+```{r setup}
+library(lineagefreq)
+
+data(sarscov2_us_2022)
+head(sarscov2_us_2022)
+```
+
+```{r lfq-data}
+x <- lfq_data(sarscov2_us_2022,
+              lineage = variant,
+              date    = date,
+              count   = count,
+              total   = total)
+x
+```
+
+The function computes frequencies, flags low-count time points,
+and returns a validated `lfq_data` object.
+
+## Fitting a model
+
+`fit_model()` provides a unified interface. The default engine
+is multinomial logistic regression (MLR).
+
+```{r fit}
+fit <- fit_model(x, engine = "mlr")
+fit
+```
+
+The print output shows each lineage's estimated growth rate
+relative to the pivot (reference) lineage, which is auto-selected
+as the most prevalent lineage early in the time series.
+
+## Extracting growth advantages
+
+`growth_advantage()` converts growth rates into interpretable
+metrics. Four output types are available.
+
+```{r growth-advantage}
+ga <- growth_advantage(fit,
+                       type = "relative_Rt",
+                       generation_time = 5)
+ga
+```
+
+A relative Rt above 1 indicates a lineage growing faster than
+the reference. The confidence intervals are derived from the
+Fisher information matrix.
+
+## Visualizing the fit
+
+`autoplot()` supports four plot types for fitted models.
+
+```{r plot-frequency}
+autoplot(fit, type = "frequency")
+```
+
+```{r plot-advantage}
+autoplot(fit, type = "advantage", generation_time = 5)
+```
+
+## Forecasting
+
+`forecast()` projects frequencies forward with uncertainty
+quantified by parametric simulation.
+
+```{r forecast}
+fc <- forecast(fit, horizon = 28)
+autoplot(fc)
+```
+
+## Detecting emerging lineages
+
+`summarize_emerging()` tests each lineage for statistically
+significant frequency increases.
+
+```{r emergence}
+summarize_emerging(x)
+```
+
+## Next steps
+
+- Compare multiple engines with `backtest()` — see
+  `vignette("model-comparison")`.
+- Run a full surveillance workflow — see
+  `vignette("surveillance-workflow")`.

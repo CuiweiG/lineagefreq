@@ -51,13 +51,12 @@ autoplot.lfq_forecast <- function(object, ...) {
   p <- ggplot2::ggplot(object, ggplot2::aes(
     x      = .data$.date,
     y      = .data$.median,
-    fill   = .data$.lineage,
-    colour = .data$.lineage
+    colour = .data$.lineage,
+    fill   = .data$.lineage
   )) +
-    ggplot2::geom_area(
-      data    = function(d) d[d$.type == "fitted", ],
-      alpha   = 0.7,
-      colour  = NA
+    ggplot2::geom_line(
+      data      = function(d) d[d$.type == "fitted", ],
+      linewidth = 0.8
     ) +
     ggplot2::geom_ribbon(
       data    = function(d) d[d$.type == "forecast", ],
@@ -83,8 +82,8 @@ autoplot.lfq_forecast <- function(object, ...) {
     ggplot2::labs(
       x      = NULL,
       y      = "Frequency",
-      fill   = "Lineage",
-      colour = "Lineage"
+      colour = "Lineage",
+      fill   = "Lineage"
     ) +
     ggplot2::theme_minimal(base_size = 12) +
     ggplot2::theme(legend.position = "bottom")
@@ -100,11 +99,9 @@ autoplot.lfq_forecast <- function(object, ...) {
   df <- fit$residuals
 
   ggplot2::ggplot(df, ggplot2::aes(x = .data$.date)) +
-    ggplot2::geom_area(
-      ggplot2::aes(y = .data$.fitted_freq, fill = .data$.lineage),
-      alpha    = 0.7,
-      colour   = NA,
-      position = "stack"
+    ggplot2::geom_line(
+      ggplot2::aes(y = .data$.fitted_freq, colour = .data$.lineage),
+      linewidth = 0.8
     ) +
     ggplot2::geom_point(
       ggplot2::aes(y = .data$.observed, colour = .data$.lineage),
@@ -119,7 +116,6 @@ autoplot.lfq_forecast <- function(object, ...) {
     ggplot2::labs(
       x      = NULL,
       y      = "Frequency",
-      fill   = "Lineage",
       colour = "Lineage"
     ) +
     ggplot2::theme_minimal(base_size = 12) +
