@@ -13,8 +13,15 @@
 
 ## Package size
 
-Installed size: ~1 MB.
+Installed size: ~1 MB (tarball: 103 KB).
 
 ## Reverse dependencies
 
 New package, no reverse dependencies.
+
+## Notes
+
+* `cmdstanr` is listed in Suggests with `Additional_repositories`
+  pointing to `https://mc-stan.org/r-packages/`. It is only used
+  in `lfq_stan_available()` to check backend availability for
+  future Bayesian engines (v0.2). No tests or examples depend on it.
