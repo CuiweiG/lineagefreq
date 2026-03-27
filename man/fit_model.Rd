@@ -6,7 +6,7 @@
 \usage{
 fit_model(
   data,
-  engine = c("mlr", "hier_mlr", "piantham", "fga"),
+  engine = c("mlr", "hier_mlr", "piantham", "fga", "garw"),
   pivot = NULL,
   horizon = 28L,
   ci_level = 0.95,
@@ -27,6 +27,8 @@ rates to relative reproduction numbers. Requires
 \code{generation_time} argument.
 \item \code{"fga"}: Fixed growth advantage model (Bayesian via CmdStan).
 Requires CmdStan; check with \code{\link[=lfq_stan_available]{lfq_stan_available()}}.
+\item \code{"garw"}: Growth advantage random walk model (Bayesian via
+CmdStan). Allows fitness to change over time.
 }}
 
 \item{pivot}{Reference lineage name. Growth rates are reported
