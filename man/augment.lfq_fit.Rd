@@ -2,7 +2,7 @@
 % Please edit documentation in R/methods-tidy.R
 \name{augment.lfq_fit}
 \alias{augment.lfq_fit}
-\title{Augment an lfq_fit object with residuals}
+\title{Augment data with fitted values from an lfq_fit object}
 \usage{
 augment.lfq_fit(x, ...)
 }
@@ -12,19 +12,16 @@ augment.lfq_fit(x, ...)
 \item{...}{Ignored.}
 }
 \value{
-A tibble with columns \code{.date}, \code{.lineage}, \code{.fitted_freq},
+A tibble with columns: \code{.date}, \code{.lineage}, \code{.fitted_freq},
 \code{.observed}, \code{.pearson_resid}.
 }
 \description{
-Returns the residuals tibble from a fitted model, with fitted
-values and Pearson residuals attached.
+Augment data with fitted values from an lfq_fit object
 }
 \examples{
-sim <- simulate_dynamics(
-  n_lineages = 3, advantages = c("A" = 1.2, "B" = 0.8),
-  n_timepoints = 12, seed = 1
-)
-fit <- fit_model(sim, engine = "mlr")
+sim <- simulate_dynamics(n_lineages = 3,
+  advantages = c("A" = 1.2, "B" = 0.8), seed = 1)
+fit <- fit_model(sim)
 augment.lfq_fit(fit)
 
 }

@@ -2,34 +2,31 @@
 % Please edit documentation in R/methods-tidy.R
 \name{tidy.lfq_fit}
 \alias{tidy.lfq_fit}
-\title{Tidy an lfq_fit object into a parameter table}
+\title{Tidy an lfq_fit object}
 \usage{
-tidy.lfq_fit(x, conf.int = TRUE, conf.level = NULL, ...)
+tidy.lfq_fit(x, conf.int = TRUE, conf.level = 0.95, ...)
 }
 \arguments{
 \item{x}{An \link{lfq_fit} object.}
 
-\item{conf.int}{Logical; include confidence intervals? Default \code{TRUE}.}
+\item{conf.int}{Include confidence intervals? Default \code{TRUE}.}
 
-\item{conf.level}{Confidence level. Default uses \code{x$ci_level}.}
+\item{conf.level}{Confidence level. Default 0.95.}
 
 \item{...}{Ignored.}
 }
 \value{
 A tibble with columns: \code{lineage}, \code{term}, \code{estimate},
-\code{std.error}, \code{statistic}, \code{p.value}, and (if \code{conf.int = TRUE})
-\code{conf.low}, \code{conf.high}.
+\code{std.error}, \code{conf.low}, \code{conf.high}.
 }
 \description{
-Returns a tidy tibble of parameter estimates with standard errors
-and confidence intervals.
+Converts model results to a tidy tibble, compatible with the
+broom package ecosystem.
 }
 \examples{
-sim <- simulate_dynamics(
-  n_lineages = 3, advantages = c("A" = 1.2, "B" = 0.8),
-  n_timepoints = 12, seed = 1
-)
-fit <- fit_model(sim, engine = "mlr")
+sim <- simulate_dynamics(n_lineages = 3,
+  advantages = c("A" = 1.2, "B" = 0.8), seed = 1)
+fit <- fit_model(sim)
 tidy.lfq_fit(fit)
 
 }
