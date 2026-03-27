@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Comparing modeling engines</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Comparing modeling engines</h1>
+
+
+
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p>lineagefreq provides multiple modeling engines through the unified
+<code>fit_model()</code> interface. This vignette shows how to compare
+them using the built-in backtesting framework.</p>
+<p>Three engines are available in v0.1.0:</p>
+<ul>
+<li><strong>mlr</strong>: Multinomial logistic regression (frequentist,
+fast).</li>
+<li><strong>piantham</strong>: Converts MLR growth rates to relative
+reproduction numbers using a generation-time approximation.</li>
+<li><strong>hier_mlr</strong>: Hierarchical MLR with partial pooling
+across locations via empirical Bayes shrinkage.</li>
+</ul>
+</div>
+<div id="setup" class="section level2">
+<h2>Setup</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(lineagefreq)</span></code></pre></div>
+</div>
+<div id="engine-1-mlr" class="section level2">
+<h2>Engine 1: MLR</h2>
+<p>The default engine fits a multinomial logistic regression with one
+growth rate parameter per non-reference lineage.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">data</span>(sarscov2_us_2022)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">lfq_data</span>(sarscov2_us_2022,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>              <span class="at">lineage =</span> variant, <span class="at">date =</span> date,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>              <span class="at">count =</span> count, <span class="at">total =</span> total)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>fit_mlr <span class="ot">&lt;-</span> <span class="fu">fit_model</span>(x, <span class="at">engine =</span> <span class="st">&quot;mlr&quot;</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="fu">growth_advantage</span>(fit_mlr, <span class="at">type =</span> <span class="st">&quot;growth_rate&quot;</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 6</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt;   lineage estimate lower upper type        pivot</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; 1 BA.1       0     0     0     growth_rate BA.1 </span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; 2 BA.2       0.231 0.229 0.232 growth_rate BA.1 </span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt; 3 BA.4/5     0.400 0.398 0.402 growth_rate BA.1 </span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; 4 BQ.1       0.352 0.346 0.357 growth_rate BA.1 </span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; 5 Other      0.151 0.149 0.152 growth_rate BA.1</span></span></code></pre></div>
+</div>
+<div id="engine-2-piantham" class="section level2">
+<h2>Engine 2: Piantham</h2>
+<p>The Piantham engine wraps MLR and translates growth rates to relative
+effective reproduction numbers using a specified mean generation
+time.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>fit_pian <span class="ot">&lt;-</span> <span class="fu">fit_model</span>(x, <span class="at">engine =</span> <span class="st">&quot;piantham&quot;</span>,</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>                      <span class="at">generation_time =</span> <span class="dv">5</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">growth_advantage</span>(fit_pian, <span class="at">type =</span> <span class="st">&quot;relative_Rt&quot;</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>                 <span class="at">generation_time =</span> <span class="dv">5</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 6</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt;   lineage estimate lower upper type        pivot</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; 1 BA.1        1     1     1    relative_Rt BA.1 </span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; 2 BA.2        1.18  1.18  1.18 relative_Rt BA.1 </span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; 3 BA.4/5      1.33  1.33  1.33 relative_Rt BA.1 </span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; 4 BQ.1        1.29  1.28  1.29 relative_Rt BA.1 </span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; 5 Other       1.11  1.11  1.11 relative_Rt BA.1</span></span></code></pre></div>
+</div>
+<div id="comparing-fit-statistics" class="section level2">
+<h2>Comparing fit statistics</h2>
+<p><code>glance()</code> returns a one-row summary for each model. Since
+Piantham is a wrapper around MLR, the log-likelihood and AIC are
+identical.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">glance.lfq_fit</span>(fit_mlr),</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">glance.lfq_fit</span>(fit_pian)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 10</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt;   engine   n_lineages n_timepoints   nobs    df   logLik     AIC     BIC pivot</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;         &lt;int&gt;        &lt;int&gt;  &lt;int&gt; &lt;int&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; 1 mlr               5           40 461424     8 -465911. 931838. 931852. BA.1 </span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; 2 piantham          5           40 461424     8 -465911. 931838. 931852. BA.1 </span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; # ℹ 1 more variable: convergence &lt;int&gt;</span></span></code></pre></div>
+</div>
+<div id="backtesting" class="section level2">
+<h2>Backtesting</h2>
+<p>The <code>backtest()</code> function implements rolling-origin
+evaluation. At each origin date, the model is fit on past data and
+forecasts are compared to held-out future observations.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>bt <span class="ot">&lt;-</span> <span class="fu">backtest</span>(x,</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="at">engines =</span> <span class="fu">c</span>(<span class="st">&quot;mlr&quot;</span>, <span class="st">&quot;piantham&quot;</span>),</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">horizons =</span> <span class="fu">c</span>(<span class="dv">7</span>, <span class="dv">14</span>, <span class="dv">21</span>),</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">min_train =</span> <span class="dv">56</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="at">generation_time =</span> <span class="dv">5</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>)</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; Backtesting ■■■■■■                            16% | ETA:  6s</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt; Backtesting ■■■■■■■                           19% | ETA:  6s</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt; Backtesting ■■■■■■■■■■■■■■■■                  52% | ETA:  4s</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt; Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■         80% | ETA:  2s</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt; Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100% | ETA:  0s</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>bt</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; ── Backtest results</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; 450 predictions across 31 origins</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt; Engines: &quot;mlr, piantham&quot;</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt; Horizons: 7, 14, 21 days</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt; # A tibble: 450 × 9</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="co">#&gt;    origin_date target_date horizon engine   lineage predicted    lower   upper</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt;  * &lt;date&gt;      &lt;date&gt;        &lt;int&gt; &lt;chr&gt;    &lt;chr&gt;       &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;</span></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="co">#&gt;  1 2022-03-05  2022-03-12        7 piantham BA.1     0.440    0.434    0.447  </span></span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a><span class="co">#&gt;  2 2022-03-05  2022-03-12        7 piantham BA.2     0.180    0.174    0.187  </span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a><span class="co">#&gt;  3 2022-03-05  2022-03-12        7 piantham BA.4/5   0.00495  0.00376  0.00673</span></span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a><span class="co">#&gt;  4 2022-03-05  2022-03-12        7 piantham BQ.1     0.000635 0.000256 0.00150</span></span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a><span class="co">#&gt;  5 2022-03-05  2022-03-12        7 piantham Other    0.373    0.367    0.381  </span></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a><span class="co">#&gt;  6 2022-03-05  2022-03-19       14 piantham BA.1     0.396    0.389    0.405  </span></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a><span class="co">#&gt;  7 2022-03-05  2022-03-19       14 piantham BA.2     0.205    0.199    0.213  </span></span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a><span class="co">#&gt;  8 2022-03-05  2022-03-19       14 piantham BA.4/5   0.00640  0.00467  0.00864</span></span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a><span class="co">#&gt;  9 2022-03-05  2022-03-19       14 piantham BQ.1     0.000867 0.000352 0.00254</span></span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a><span class="co">#&gt; 10 2022-03-05  2022-03-19       14 piantham Other    0.390    0.383    0.399  </span></span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a><span class="co">#&gt; # ℹ 440 more rows</span></span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a><span class="co">#&gt; # ℹ 1 more variable: observed &lt;dbl&gt;</span></span></code></pre></div>
+</div>
+<div id="scoring" class="section level2">
+<h2>Scoring</h2>
+<p><code>score_forecasts()</code> computes standardized accuracy
+metrics.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>sc <span class="ot">&lt;-</span> <span class="fu">score_forecasts</span>(bt,</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="fu">c</span>(<span class="st">&quot;mae&quot;</span>, <span class="st">&quot;coverage&quot;</span>))</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>sc</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 4</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt;   engine   horizon metric     value</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;      &lt;int&gt; &lt;chr&gt;      &lt;dbl&gt;</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; 1 piantham       7 mae      0.00258</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; 2 piantham       7 coverage 0.6    </span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt; 3 piantham      14 mae      0.00274</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt; 4 piantham      14 coverage 0.653  </span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; 5 piantham      21 mae      0.00291</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; 6 piantham      21 coverage 0.683</span></span></code></pre></div>
+</div>
+<div id="model-ranking" class="section level2">
+<h2>Model ranking</h2>
+<p><code>compare_models()</code> summarizes scores per engine, sorted by
+MAE.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">compare_models</span>(sc, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;engine&quot;</span>, <span class="st">&quot;horizon&quot;</span>))</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 4</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt;   engine   horizon     mae coverage</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;      &lt;int&gt;   &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; 1 piantham       7 0.00258    0.6  </span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt; 2 piantham      14 0.00274    0.653</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; 3 piantham      21 0.00291    0.683</span></span></code></pre></div>
+</div>
+<div id="visualization" class="section level2">
+<h2>Visualization</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">plot_backtest</span>(sc)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="when-to-use-which-engine" class="section level2">
+<h2>When to use which engine</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Scenario</th>
+<th>Recommended engine</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Single location, quick estimate</td>
+<td><code>mlr</code></td>
+</tr>
+<tr class="even">
+<td>Need relative Rt interpretation</td>
+<td><code>piantham</code></td>
+</tr>
+<tr class="odd">
+<td>Multiple locations, sparse data</td>
+<td><code>hier_mlr</code></td>
+</tr>
+<tr class="even">
+<td>Time-varying fitness (v0.2)</td>
+<td><code>garw</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="hierarchical-mlr" class="section level2">
+<h2>Hierarchical MLR</h2>
+<p>When data spans multiple locations with unequal sequencing depth,
+<code>hier_mlr</code> shrinks location-specific estimates toward the
+global mean. This stabilizes estimates for low-data locations.</p>
+<p>A demonstration requires multi-location data, which the built-in
+single-location dataset does not provide. See <code>?fit_model</code>
+for an example with simulated multi-location data.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

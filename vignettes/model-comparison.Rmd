@@ -1,0 +1,137 @@
+---
+title: "Comparing modeling engines"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Comparing modeling engines}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 4
+)
+```
+
+## Overview
+
+lineagefreq provides multiple modeling engines through the unified
+`fit_model()` interface. This vignette shows how to compare them
+using the built-in backtesting framework.
+
+Three engines are available in v0.1.0:
+
+- **mlr**: Multinomial logistic regression (frequentist, fast).
+- **piantham**: Converts MLR growth rates to relative reproduction
+  numbers using a generation-time approximation.
+- **hier_mlr**: Hierarchical MLR with partial pooling across
+  locations via empirical Bayes shrinkage.
+
+## Setup
+
+```{r setup}
+library(lineagefreq)
+```
+
+## Engine 1: MLR
+
+The default engine fits a multinomial logistic regression with
+one growth rate parameter per non-reference lineage.
+
+```{r mlr}
+data(sarscov2_us_2022)
+x <- lfq_data(sarscov2_us_2022,
+              lineage = variant, date = date,
+              count = count, total = total)
+
+fit_mlr <- fit_model(x, engine = "mlr")
+growth_advantage(fit_mlr, type = "growth_rate")
+```
+
+## Engine 2: Piantham
+
+The Piantham engine wraps MLR and translates growth rates to
+relative effective reproduction numbers using a specified mean
+generation time.
+
+```{r piantham}
+fit_pian <- fit_model(x, engine = "piantham",
+                      generation_time = 5)
+growth_advantage(fit_pian, type = "relative_Rt",
+                 generation_time = 5)
+```
+
+## Comparing fit statistics
+
+`glance()` returns a one-row summary for each model. Since
+Piantham is a wrapper around MLR, the log-likelihood and AIC
+are identical.
+
+```{r glance}
+dplyr::bind_rows(
+  glance.lfq_fit(fit_mlr),
+  glance.lfq_fit(fit_pian)
+)
+```
+
+## Backtesting
+
+The `backtest()` function implements rolling-origin evaluation.
+At each origin date, the model is fit on past data and forecasts
+are compared to held-out future observations.
+
+```{r backtest}
+bt <- backtest(x,
+  engines = c("mlr", "piantham"),
+  horizons = c(7, 14, 21),
+  min_train = 56,
+  generation_time = 5
+)
+bt
+```
+
+## Scoring
+
+`score_forecasts()` computes standardized accuracy metrics.
+
+```{r score}
+sc <- score_forecasts(bt,
+  metrics = c("mae", "coverage"))
+sc
+```
+
+## Model ranking
+
+`compare_models()` summarizes scores per engine, sorted by MAE.
+
+```{r compare}
+compare_models(sc, by = c("engine", "horizon"))
+```
+
+## Visualization
+
+```{r plot-backtest}
+plot_backtest(sc)
+```
+
+## When to use which engine
+
+| Scenario | Recommended engine |
+|----------|--------------------|
+| Single location, quick estimate | `mlr` |
+| Need relative Rt interpretation | `piantham` |
+| Multiple locations, sparse data | `hier_mlr` |
+| Time-varying fitness (v0.2) | `garw` |
+
+## Hierarchical MLR
+
+When data spans multiple locations with unequal sequencing depth,
+`hier_mlr` shrinks location-specific estimates toward the global
+mean. This stabilizes estimates for low-data locations.
+
+A demonstration requires multi-location data, which the built-in
+single-location dataset does not provide. See
+`?fit_model` for an example with simulated multi-location data.
