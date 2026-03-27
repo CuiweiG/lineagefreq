@@ -4,7 +4,7 @@ Title: Lineage Frequency Dynamics and Growth-Advantage Estimation from
 Version: 0.1.0
 Authors@R:
     person("Cuiwei", "Gao", , "48gaocuiwei@gmail.com",
-    role = c("aut", "cre"))
+    role = c("aut", "cre", "cph"))
 Description: Models pathogen lineage frequency dynamics from genomic
     surveillance count data. Provides a unified interface for
     multinomial logistic regression, hierarchical partial-pooling
@@ -35,6 +35,7 @@ Suggests:
     cmdstanr,
     covr,
     knitr,
+    posterior,
     rmarkdown,
     testthat (>= 3.0.0),
     withr

@@ -160,6 +160,7 @@ forecast.lfq_fit <- function(object, horizon  = 28L,
 }
 
 
+#' @return The input object, invisibly.
 #' @export
 print.lfq_forecast <- function(x, ...) {
   fc_start <- attr(x, "forecast_start")

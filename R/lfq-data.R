@@ -225,6 +225,7 @@ is_lfq_data <- function(x) {
 }
 
 
+#' @return The input object, invisibly.
 #' @export
 print.lfq_data <- function(x, ...) {
   n_lin <- length(attr(x, "lineages"))

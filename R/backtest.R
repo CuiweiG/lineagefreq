@@ -193,6 +193,7 @@ backtest <- function(data,
 }
 
 
+#' @return The input object, invisibly.
 #' @export
 print.lfq_backtest <- function(x, ...) {
   n_orig <- attr(x, "n_origins")

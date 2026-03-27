@@ -45,7 +45,9 @@
   )
 
   # Extract posteriors
-  rlang::check_installed("posterior")
+  rlang::check_installed("posterior",
+    reason = "to extract posterior draws from Stan models."
+  )
 
   lineages   <- stan_input$lineages
   pivot_name <- stan_input$pivot_name
@@ -75,9 +77,8 @@
   for (t_idx in seq_along(dates)) {
     for (v_idx in seq_along(lineages)) {
       var_name <- paste0("freq_hat[", t_idx, ",", v_idx, "]")
-      vals <- as.numeric(posterior::subset_draws(
-        freq_draws, variable = var_name
-      ))
+      subset_fn <- utils::getFromNamespace("subset_draws", "posterior")
+      vals <- as.numeric(subset_fn(freq_draws, variable = var_name))
       fitted_rows <- c(fitted_rows, list(tibble::tibble(
         .date        = dates[t_idx],
         .lineage     = lineages[v_idx],
