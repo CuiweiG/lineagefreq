@@ -92,21 +92,27 @@ autoplot.lfq_forecast <- function(object, ...) {
   df   <- fit$residuals
   lins <- fit$lineages
 
+  # Sort lineages so "Other" is at the bottom of the stack
+  lin_order <- c(setdiff(lins, "Other"), if ("Other" %in% lins) "Other")
+  df$.lineage <- factor(df$.lineage, levels = rev(lin_order))
+
   ggplot2::ggplot(df, ggplot2::aes(x = .data$.date)) +
-    ggplot2::geom_line(
-      ggplot2::aes(y = .data$.fitted_freq, colour = .data$.lineage),
-      linewidth = 0.8
+    ggplot2::geom_area(
+      ggplot2::aes(y = .data$.fitted_freq, fill = .data$.lineage),
+      position = "stack", alpha = 0.8, colour = NA
     ) +
     ggplot2::geom_point(
       ggplot2::aes(y = .data$.observed, colour = .data$.lineage),
-      size = 1.5, alpha = 0.5
+      size = 1.2, alpha = 0.4
     ) +
     ggplot2::scale_x_date(date_labels = "%Y-%m-%d") +
     ggplot2::scale_y_continuous(
       labels = .pct_label, limits = c(0, 1), expand = c(0, 0)
     ) +
-    .lfq_scale_colour(lins) +
-    ggplot2::labs(x = NULL, y = "Frequency", colour = "Lineage") +
+    .lfq_scale_fill(lin_order) +
+    .lfq_scale_colour(lin_order) +
+    ggplot2::labs(x = NULL, y = "Frequency",
+                  fill = "Lineage", colour = "Lineage") +
     .lfq_theme()
 }
 
