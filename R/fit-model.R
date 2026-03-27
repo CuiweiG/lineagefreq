@@ -14,6 +14,8 @@
 #'     `generation_time` argument.
 #'   * `"fga"`: Fixed growth advantage model (Bayesian via CmdStan).
 #'     Requires CmdStan; check with [lfq_stan_available()].
+#'   * `"garw"`: Growth advantage random walk model (Bayesian via
+#'     CmdStan). Allows fitness to change over time.
 #' @param pivot Reference lineage name. Growth rates are reported
 #'   relative to this lineage (fixed at 0). Default: the lineage with
 #'   the highest count at the earliest time point.
@@ -63,7 +65,7 @@
 #'
 #' @export
 fit_model <- function(data,
-                      engine   = c("mlr", "hier_mlr", "piantham", "fga"),
+                      engine   = c("mlr", "hier_mlr", "piantham", "fga", "garw"),
                       pivot    = NULL,
                       horizon  = 28L,
                       ci_level = 0.95,
@@ -83,6 +85,7 @@ fit_model <- function(data,
     hier_mlr = .engine_hier_mlr(data, pivot = pivot, ci_level = ci_level, ...),
     piantham = .engine_piantham(data, pivot = pivot, ci_level = ci_level, ...),
     fga      = .engine_fga(data, pivot = pivot, ci_level = ci_level, ...),
+    garw     = .engine_garw(data, pivot = pivot, ci_level = ci_level, ...),
     cli::cli_abort("Unknown engine {.val {engine}}.")
   )
 
