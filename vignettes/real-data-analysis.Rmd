@@ -19,8 +19,10 @@ knitr::opts_chunk$set(
 ## Overview
 
 This vignette demonstrates the complete lineagefreq workflow on
-surveillance data modeled after CDC's SARS-CoV-2 variant proportion
-estimates, covering the JN.1 emergence wave (October 2023 to June 2024).
+**real surveillance data** from the U.S. CDC. The built-in dataset
+`cdc_sarscov2_jn1` contains actual weighted variant proportion
+estimates from CDC's national genomic surveillance program, covering
+the JN.1 emergence wave (October 2023 to June 2024).
 
 ## Load data
 
