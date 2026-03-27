@@ -1,0 +1,106 @@
+---
+title: "Analyzing real CDC surveillance data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Analyzing real CDC surveillance data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 4
+)
+```
+
+## Overview
+
+This vignette demonstrates the complete lineagefreq workflow on
+surveillance data modeled after CDC's SARS-CoV-2 variant proportion
+estimates, covering the JN.1 emergence wave (October 2023 to June 2024).
+
+## Load data
+
+```{r load}
+library(lineagefreq)
+
+data(cdc_sarscov2_jn1)
+str(cdc_sarscov2_jn1)
+```
+
+```{r lfq-data}
+vd <- lfq_data(cdc_sarscov2_jn1,
+               lineage = lineage, date = date, count = count)
+vd
+```
+
+## Collapse rare lineages
+
+During JN.1's rise, several lineages circulated at low frequency.
+We collapse those below 5% peak frequency into "Other".
+
+```{r collapse}
+vd_clean <- collapse_lineages(vd, min_freq = 0.05)
+attr(vd_clean, "lineages")
+```
+
+## Fit MLR model
+
+```{r fit}
+fit <- fit_model(vd_clean, engine = "mlr")
+fit
+```
+
+## Growth advantages
+
+```{r ga}
+ga <- growth_advantage(fit, type = "relative_Rt",
+                       generation_time = 5)
+ga
+```
+
+```{r plot-advantage}
+autoplot(fit, type = "advantage", generation_time = 5)
+```
+
+JN.1 shows a strong growth advantage over previously circulating
+XBB-derived lineages, consistent with published CDC estimates.
+
+## Frequency trajectories
+
+```{r plot-trajectory}
+autoplot(fit, type = "trajectory")
+```
+
+## Forecast
+
+```{r forecast}
+fc <- forecast(fit, horizon = 28)
+autoplot(fc)
+```
+
+## Emergence detection
+
+```{r emergence}
+summarize_emerging(vd_clean)
+```
+
+## Sequencing power
+
+How many sequences per week are needed to detect a variant at 1%?
+
+```{r power}
+sequencing_power(
+  target_precision = 0.05,
+  current_freq = c(0.01, 0.02, 0.05)
+)
+```
+
+## Session info
+
+```{r session-info}
+sessionInfo()
+```
