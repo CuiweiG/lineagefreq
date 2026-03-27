@@ -7,7 +7,7 @@
 \method{forecast}{lfq_fit}(object, horizon = 28L, ci_level = 0.95, n_sim = 1000L, ...)
 }
 \arguments{
-\item{object}{An \link{lfq_fit} object.}
+\item{object}{An \code{lfq_fit} object.}
 
 \item{horizon}{Number of days to forecast. Default 28 (4 weeks).}
 
@@ -36,10 +36,12 @@ Prediction uncertainty is quantified by parametric simulation from
 the estimated parameter distribution.
 }
 \examples{
+\donttest{
 sim <- simulate_dynamics(n_lineages = 3,
   advantages = c("A" = 1.2, "B" = 0.8), seed = 1)
 fit <- fit_model(sim, engine = "mlr")
 fc <- forecast(fit, horizon = 21)
 fc
+}
 
 }

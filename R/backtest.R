@@ -37,12 +37,14 @@
 #'   [compare_models()] to rank engines.
 #'
 #' @examples
+#' \donttest{
 #' sim <- simulate_dynamics(n_lineages = 3,
 #'   advantages = c("A" = 1.2, "B" = 0.8),
 #'   n_timepoints = 20, seed = 1)
 #' bt <- backtest(sim, engines = "mlr",
 #'   horizons = c(7, 14), min_train = 42)
 #' bt
+#' }
 #'
 #' @export
 backtest <- function(data,

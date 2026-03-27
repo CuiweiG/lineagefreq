@@ -32,7 +32,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: FirstName LastName \email{48gaocuiwei@gmail.com} (\href{https://orcid.org/0000-0000-0000-0000}{ORCID})
+\strong{Maintainer}: Cuiwei Gao \email{48gaocuiwei@gmail.com}
 
 }
 \keyword{internal}

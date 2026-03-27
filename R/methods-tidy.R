@@ -3,7 +3,7 @@
 #' Converts model results to a tidy tibble, compatible with the
 #' broom package ecosystem.
 #'
-#' @param x An [lfq_fit] object.
+#' @param x An `lfq_fit` object.
 #' @param conf.int Include confidence intervals? Default `TRUE`.
 #' @param conf.level Confidence level. Default 0.95.
 #' @param ... Ignored.
@@ -63,7 +63,7 @@ tidy.lfq_fit <- function(x, conf.int = TRUE, conf.level = 0.95, ...) {
 #'
 #' Returns a single-row tibble of model-level summary statistics.
 #'
-#' @param x An [lfq_fit] object.
+#' @param x An `lfq_fit` object.
 #' @param ... Ignored.
 #'
 #' @return A single-row tibble with columns: `engine`, `n_lineages`,
@@ -95,7 +95,7 @@ glance.lfq_fit <- function(x, ...) {
 
 #' Augment data with fitted values from an lfq_fit object
 #'
-#' @param x An [lfq_fit] object.
+#' @param x An `lfq_fit` object.
 #' @param ... Ignored.
 #'
 #' @return A tibble with columns: `.date`, `.lineage`, `.fitted_freq`,

@@ -3,7 +3,7 @@
 #' Computes relative fitness of each lineage from a fitted model.
 #' Supports four output formats for different use cases.
 #'
-#' @param fit An [lfq_fit] object returned by [fit_model()].
+#' @param fit An `lfq_fit` object returned by [fit_model()].
 #' @param type Output type:
 #'   * `"growth_rate"` (default): raw growth rate delta per
 #'     `time_scale` days (typically per week).

@@ -7,7 +7,7 @@
 \method{coef}{lfq_fit}(object, type = c("growth_rate", "all"), ...)
 }
 \arguments{
-\item{object}{An \link{lfq_fit} object.}
+\item{object}{An \code{lfq_fit} object.}
 
 \item{type}{What to return: \code{"growth_rate"} (default) for growth
 rates only, or \code{"all"} for intercepts and growth rates.}

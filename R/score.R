@@ -2,7 +2,7 @@
 #'
 #' Computes standardized accuracy metrics from backtesting results.
 #'
-#' @param bt An [lfq_backtest] object from [backtest()].
+#' @param bt An `lfq_backtest` object from [backtest()].
 #' @param metrics Character vector of metrics to compute:
 #'   * `"mae"`: Mean absolute error of frequency.
 #'   * `"rmse"`: Root mean squared error.
@@ -15,12 +15,14 @@
 #' @seealso [compare_models()] to rank engines based on scores.
 #'
 #' @examples
+#' \donttest{
 #' sim <- simulate_dynamics(n_lineages = 3,
 #'   advantages = c("A" = 1.2, "B" = 0.8),
 #'   n_timepoints = 20, seed = 1)
 #' bt <- backtest(sim, engines = "mlr",
 #'   horizons = c(7, 14), min_train = 42)
 #' score_forecasts(bt)
+#' }
 #'
 #' @export
 score_forecasts <- function(bt,
@@ -93,6 +95,7 @@ score_forecasts <- function(bt,
 #' @return A tibble with average scores per group, sorted by MAE.
 #'
 #' @examples
+#' \donttest{
 #' sim <- simulate_dynamics(n_lineages = 3,
 #'   advantages = c("A" = 1.2, "B" = 0.8),
 #'   n_timepoints = 20, seed = 1)
@@ -100,6 +103,7 @@ score_forecasts <- function(bt,
 #'   horizons = c(7, 14), min_train = 42)
 #' sc <- score_forecasts(bt)
 #' compare_models(sc)
+#' }
 #'
 #' @export
 compare_models <- function(scores, by = "engine") {
@@ -139,6 +143,7 @@ compare_models <- function(scores, by = "engine") {
 #' @return A ggplot object.
 #'
 #' @examples
+#' \donttest{
 #' sim <- simulate_dynamics(n_lineages = 3,
 #'   advantages = c("A" = 1.2, "B" = 0.8),
 #'   n_timepoints = 20, seed = 1)
@@ -146,6 +151,7 @@ compare_models <- function(scores, by = "engine") {
 #'   horizons = c(7, 14), min_train = 42)
 #' sc <- score_forecasts(bt)
 #' plot_backtest(sc)
+#' }
 #'
 #' @export
 plot_backtest <- function(scores) {

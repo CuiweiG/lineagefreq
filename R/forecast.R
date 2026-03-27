@@ -13,7 +13,7 @@ forecast <- function(object, ...) UseMethod("forecast")
 #' Prediction uncertainty is quantified by parametric simulation from
 #' the estimated parameter distribution.
 #'
-#' @param object An [lfq_fit] object.
+#' @param object An `lfq_fit` object.
 #' @param horizon Number of days to forecast. Default 28 (4 weeks).
 #' @param ci_level Confidence level for prediction intervals.
 #'   Default 0.95.
@@ -32,11 +32,13 @@ forecast <- function(object, ...) UseMethod("forecast")
 #' }
 #'
 #' @examples
+#' \donttest{
 #' sim <- simulate_dynamics(n_lineages = 3,
 #'   advantages = c("A" = 1.2, "B" = 0.8), seed = 1)
 #' fit <- fit_model(sim, engine = "mlr")
 #' fc <- forecast(fit, horizon = 21)
 #' fc
+#' }
 #'
 #' @export
 forecast.lfq_fit <- function(object, horizon  = 28L,

@@ -1,6 +1,6 @@
 #' Print a lineage frequency model
 #'
-#' @param x An [lfq_fit] object.
+#' @param x An `lfq_fit` object.
 #' @param ... Ignored.
 #'
 #' @return Invisibly returns `x`.
@@ -43,7 +43,7 @@ print.lfq_fit <- function(x, ...) {
 
 #' Summarise a lineage frequency model
 #'
-#' @param object An [lfq_fit] object.
+#' @param object An `lfq_fit` object.
 #' @param ... Ignored.
 #'
 #' @return Invisibly returns `object`.

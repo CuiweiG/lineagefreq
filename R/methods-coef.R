@@ -1,6 +1,6 @@
 #' Extract coefficients from a lineage frequency model
 #'
-#' @param object An [lfq_fit] object.
+#' @param object An `lfq_fit` object.
 #' @param type What to return: `"growth_rate"` (default) for growth
 #'   rates only, or `"all"` for intercepts and growth rates.
 #' @param ... Ignored.

@@ -7,7 +7,7 @@
 \method{summary}{lfq_fit}(object, ...)
 }
 \arguments{
-\item{object}{An \link{lfq_fit} object.}
+\item{object}{An \code{lfq_fit} object.}
 
 \item{...}{Ignored.}
 }
