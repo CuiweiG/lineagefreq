@@ -2,35 +2,48 @@ url: https://CuiweiG.github.io/lineagefreq/
 
 template:
   bootstrap: 5
+  bootswatch: cosmo
 
 reference:
-  - title: Data preparation
+  - title: "Data"
+    desc: "Create and manipulate lineage frequency data"
     contents:
       - lfq_data
       - is_lfq_data
+      - as_lfq_data
+      - simulate_dynamics
       - collapse_lineages
       - filter_sparse
-      - simulate_dynamics
 
-  - title: Model fitting
+  - title: "Modeling"
+    desc: "Fit frequency dynamics models"
     contents:
       - fit_model
+      - lfq_engines
 
-  - title: Inference and forecasting
+  - title: "Inference"
+    desc: "Extract growth advantages and forecasts"
     contents:
       - growth_advantage
       - starts_with("forecast")
       - summarize_emerging
       - sequencing_power
 
-  - title: Backtesting and evaluation
+  - title: "Backtesting"
+    desc: "Evaluate forecast accuracy"
     contents:
       - backtest
       - score_forecasts
       - compare_models
+
+  - title: "Visualization"
+    desc: "Publication-ready plots"
+    contents:
+      - starts_with("autoplot")
       - plot_backtest
 
-  - title: S3 methods
+  - title: "S3 Methods"
+    desc: "Standard R model interface"
     contents:
       - print.lfq_fit
       - summary.lfq_fit
@@ -38,20 +51,27 @@ reference:
       - tidy.lfq_fit
       - glance.lfq_fit
       - augment.lfq_fit
-      - starts_with("autoplot")
 
-  - title: Datasets
+  - title: "Utilities"
+    contents:
+      - lfq_stan_available
+      - lfq_version
+
+  - title: "Datasets"
+    desc: "Built-in example datasets"
     contents:
       - sarscov2_us_2022
       - influenza_h3n2
-
-  - title: Utilities
-    contents:
-      - lfq_stan_available
+      - cdc_sarscov2_jn1
 
 articles:
-  - title: Guides
+  - title: "Getting Started"
     contents:
       - introduction
+  - title: "Case Studies"
+    contents:
+      - real-data-analysis
+  - title: "Advanced Topics"
+    contents:
       - model-comparison
       - surveillance-workflow
