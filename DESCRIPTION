@@ -1,0 +1,54 @@
+Package: lineagefreq
+Title: Lineage Frequency Dynamics and Growth-Advantage Estimation from
+    Genomic Surveillance Counts
+Version: 0.1.0
+Authors@R:
+    person("FirstName", "LastName", , "48gaocuiwei@gmail.com",
+    role = c("aut", "cre"),
+    comment = c(ORCID = "0000-0000-0000-0000"))
+Description: Models pathogen lineage frequency dynamics from genomic
+    surveillance count data. Provides a unified interface for
+    multinomial logistic regression, hierarchical partial-pooling
+    models, and the Piantham approximation for relative reproduction
+    number estimation. Features include rolling-origin backtesting,
+    standardized forecast scoring, lineage collapsing, emergence
+    detection, and sequencing power analysis. Designed for real-time
+    public health surveillance of any variant-resolved pathogen.
+    Methods described in Abousamra, Figgins, and Bedford (2024)
+    <doi:10.1371/journal.pcbi.1012443>.
+License: MIT + file LICENSE
+URL: https://github.com/YOURUSER/lineagefreq
+BugReports: https://github.com/YOURUSER/lineagefreq/issues
+Depends:
+    R (>= 4.1.0)
+Imports:
+    cli (>= 3.4.0),
+    dplyr (>= 1.1.0),
+    ggplot2 (>= 3.4.0),
+    MASS,
+    nnet,
+    numDeriv,
+    rlang (>= 1.1.0),
+    stats,
+    tibble (>= 3.1.0),
+    tidyr (>= 1.3.0),
+    vctrs (>= 0.6.0)
+Suggests:
+    bayesplot,
+    broom,
+    cmdstanr (>= 0.8.0),
+    covr,
+    instantiate (>= 0.2.0),
+    knitr,
+    lme4,
+    posterior,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    withr
+Additional_repositories: https://mc-stan.org/r-packages/
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
