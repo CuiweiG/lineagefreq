@@ -123,7 +123,7 @@
                                by = c(".date", ".lineage"))
   resid_df$.pearson_resid <- NA_real_
 
-  # vcov placeholder (diagonal from final rho posterior)
+  # Diagonal vcov approximation from final rho posterior
   non_pivot   <- setdiff(lineages, pivot_name)
   n_params    <- 2L * (n_lin - 1L)
   vcov_mat    <- diag(n_params) * 0.01

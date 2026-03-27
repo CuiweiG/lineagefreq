@@ -20,6 +20,10 @@ as_lfq_data(x, ...)
 }
 \value{
 An \link{lfq_data} object.
+
+An \link{lfq_data} object.
+
+An \link{lfq_data} object.
 }
 \description{
 Generic function to convert various data formats into \link{lfq_data}
