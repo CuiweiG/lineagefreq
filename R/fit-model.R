@@ -98,6 +98,34 @@ fit_model <- function(data,
 }
 
 
-
-
+#' List available modeling engines
+#'
+#' Returns information about all modeling engines available in
+#' lineagefreq. Core engines (mlr, hier_mlr, piantham) are always
+#' available. Bayesian engines (fga, garw) require 'CmdStan'.
+#'
+#' @return A tibble with columns: `engine`, `type`, `time_varying`,
+#'   `available`, `description`.
+#'
+#' @examples
+#' lfq_engines()
+#'
+#' @export
+lfq_engines <- function() {
+  stan_ok <- lfq_stan_available()
+  tibble::tibble(
+    engine       = c("mlr", "hier_mlr", "piantham", "fga", "garw"),
+    type         = c("frequentist", "frequentist", "frequentist",
+                     "bayesian", "bayesian"),
+    time_varying = c(FALSE, FALSE, FALSE, FALSE, TRUE),
+    available    = c(TRUE, TRUE, TRUE, stan_ok, stan_ok),
+    description  = c(
+      "Multinomial logistic regression (MLE)",
+      "Hierarchical MLR with empirical Bayes shrinkage",
+      "Piantham Rt approximation from MLR growth rates",
+      "Fixed growth advantage (Stan)",
+      "Growth advantage random walk (Stan)"
+    )
+  )
+}
 

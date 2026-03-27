@@ -28,6 +28,28 @@
 #' @export
 ggplot2::autoplot
 
+#' Package version and system information
+#'
+#' Reports lineagefreq version and availability of optional
+#' backends. Useful for reproducibility and bug reports.
+#'
+#' @return A list with components: `version`, `r_version`,
+#'   `stan_available`, `engines`.
+#'
+#' @examples
+#' lfq_version()
+#'
+#' @export
+lfq_version <- function() {
+  eng <- lfq_engines()
+  list(
+    version        = as.character(utils::packageVersion("lineagefreq")),
+    r_version      = paste0(R.version$major, ".", R.version$minor),
+    stan_available = lfq_stan_available(),
+    engines        = eng$engine[eng$available]
+  )
+}
+
 # False-positive NSE bindings from data.frame column references
 utils::globalVariables(c("lineage", "count", "date", "variant",
                          "clade", "total", "location", "t_num"))
