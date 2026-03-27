@@ -1,0 +1,57 @@
+url: https://CuiweiG.github.io/lineagefreq/
+
+template:
+  bootstrap: 5
+
+reference:
+  - title: Data preparation
+    contents:
+      - lfq_data
+      - is_lfq_data
+      - collapse_lineages
+      - filter_sparse
+      - simulate_dynamics
+
+  - title: Model fitting
+    contents:
+      - fit_model
+
+  - title: Inference and forecasting
+    contents:
+      - growth_advantage
+      - starts_with("forecast")
+      - summarize_emerging
+      - sequencing_power
+
+  - title: Backtesting and evaluation
+    contents:
+      - backtest
+      - score_forecasts
+      - compare_models
+      - plot_backtest
+
+  - title: S3 methods
+    contents:
+      - print.lfq_fit
+      - summary.lfq_fit
+      - coef.lfq_fit
+      - tidy.lfq_fit
+      - glance.lfq_fit
+      - augment.lfq_fit
+      - starts_with("autoplot")
+
+  - title: Datasets
+    contents:
+      - sarscov2_us_2022
+      - influenza_h3n2
+
+  - title: Utilities
+    contents:
+      - lfq_stan_available
+
+articles:
+  - title: Guides
+    contents:
+      - introduction
+      - model-comparison
+      - surveillance-workflow
