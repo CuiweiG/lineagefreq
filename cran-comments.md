@@ -18,12 +18,3 @@ Installed size: ~1 MB.
 ## Reverse dependencies
 
 New package, no reverse dependencies.
-
-## Notes
-
-* `Additional_repositories` field lists the Stan R-universe
-  (`https://mc-stan.org/r-packages/`) because the optional
-  Suggested dependency `cmdstanr` is not on CRAN. All
-  CmdStan-dependent functionality is gated behind
-  `lfq_stan_available()` and wrapped in `\donttest{}`
-  or `skip_if_not()`.
