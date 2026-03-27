@@ -23,12 +23,14 @@ coef.lfq_fit <- function(object, type = c("growth_rate", "all"), ...) {
 }
 
 
+#' @return A named numeric matrix.
 #' @export
 vcov.lfq_fit <- function(object, ...) {
   object$vcov_matrix
 }
 
 
+#' @return An object of class `logLik`.
 #' @export
 logLik.lfq_fit <- function(object, ...) {
   ll <- object$loglik
@@ -39,6 +41,7 @@ logLik.lfq_fit <- function(object, ...) {
 }
 
 
+#' @return Integer scalar (total sequence count).
 #' @export
 nobs.lfq_fit <- function(object, ...) {
   object$nobs

@@ -5,6 +5,9 @@
 \alias{reexports}
 \alias{autoplot}
 \title{Objects exported from other packages}
+\value{
+See the specific method documentation.
+}
 \keyword{internal}
 \description{
 These objects are imported from other packages. Follow the links

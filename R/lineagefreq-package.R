@@ -24,6 +24,7 @@
 #' @keywords internal
 "_PACKAGE"
 
+#' @return See the specific method documentation.
 #' @export
 ggplot2::autoplot
 
