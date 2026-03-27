@@ -45,8 +45,10 @@ assert_date <- function(x, nm = deparse(substitute(x))) {
 #' @export
 lfq_stan_available <- function() {
   requireNamespace("cmdstanr", quietly = TRUE) &&
-    tryCatch(nchar(cmdstanr::cmdstan_path()) > 0,
-             error = function(e) FALSE)
+    tryCatch({
+      fn <- utils::getFromNamespace("cmdstan_path", "cmdstanr")
+      nchar(fn()) > 0
+    }, error = function(e) FALSE)
 }
 
 #' Log-sum-exp (numerically stable)
