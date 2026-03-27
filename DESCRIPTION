@@ -17,8 +17,8 @@ Description: Models pathogen lineage frequency dynamics from genomic
     Methods described in Abousamra, Figgins, and Bedford (2024)
     <doi:10.1371/journal.pcbi.1012443>.
 License: MIT + file LICENSE
-URL: https://github.com/YOURUSER/lineagefreq
-BugReports: https://github.com/YOURUSER/lineagefreq/issues
+URL: https://github.com/CuiweiG/lineagefreq
+BugReports: https://github.com/CuiweiG/lineagefreq/issues
 Depends:
     R (>= 4.1.0)
 Imports:
