@@ -32,9 +32,9 @@ assert_date <- function(x, nm = deparse(substitute(x))) {
   }
 }
 
-#' Check if CmdStan backend is available
+#' Check if 'CmdStan' backend is available
 #'
-#' Returns `TRUE` if CmdStanR and CmdStan are installed.
+#' Returns `TRUE` if 'CmdStanR' and 'CmdStan' are installed.
 #' Bayesian engines require this.
 #'
 #' @return Logical scalar.

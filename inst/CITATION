@@ -1,0 +1,8 @@
+bibentry(
+  bibtype = "Manual",
+  title   = "lineagefreq: Lineage Frequency Dynamics and Growth-Advantage Estimation",
+  author  = person("Cuiwei", "Gao"),
+  year    = "2026",
+  note    = "R package version 0.1.0",
+  url     = "https://github.com/CuiweiG/lineagefreq"
+)

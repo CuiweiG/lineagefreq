@@ -17,7 +17,7 @@ in this week (integer).}
 }
 \source{
 Simulated based on parameters from published CDC MMWR
-genomic surveillance reports and Nextstrain public data.
+genomic surveillance reports and 'Nextstrain' public data.
 }
 \usage{
 sarscov2_us_2022

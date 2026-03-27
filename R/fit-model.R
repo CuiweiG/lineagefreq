@@ -13,7 +13,7 @@
 #'     rates to relative reproduction numbers. Requires
 #'     `generation_time` argument.
 #'   * `"fga"`: Fixed growth advantage model (Bayesian via CmdStan).
-#'     Requires CmdStan; check with [lfq_stan_available()].
+#'     Requires 'CmdStan'; check with [lfq_stan_available()].
 #'   * `"garw"`: Growth advantage random walk model (Bayesian via
 #'     CmdStan). Allows fitness to change over time.
 #' @param pivot Reference lineage name. Growth rates are reported

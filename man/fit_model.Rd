@@ -26,7 +26,7 @@ locations. Requires \code{.location} column in data.
 rates to relative reproduction numbers. Requires
 \code{generation_time} argument.
 \item \code{"fga"}: Fixed growth advantage model (Bayesian via CmdStan).
-Requires CmdStan; check with \code{\link[=lfq_stan_available]{lfq_stan_available()}}.
+Requires 'CmdStan'; check with \code{\link[=lfq_stan_available]{lfq_stan_available()}}.
 \item \code{"garw"}: Growth advantage random walk model (Bayesian via
 CmdStan). Allows fitness to change over time.
 }}

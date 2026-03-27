@@ -1,6 +1,6 @@
 #' GARW engine (internal)
 #'
-#' Growth Advantage Random Walk model via CmdStan.
+#' Growth Advantage Random Walk model via 'CmdStan'.
 #' Allows growth advantages to change over time.
 #' Called by fit_model(engine = "garw"). Not exported.
 #'
@@ -15,7 +15,7 @@
 
   if (!lfq_stan_available()) {
     cli::cli_abort(c(
-      "CmdStan is required for the GARW engine.",
+      "'CmdStan' is required for the GARW engine.",
       "i" = "Install: {.code cmdstanr::install_cmdstan()}"
     ))
   }

@@ -14,7 +14,7 @@ A data frame with 96 rows and 4 columns:
 }
 }
 \source{
-Simulated based on Nextstrain influenza clade dynamics.
+Simulated based on 'Nextstrain' influenza clade dynamics.
 }
 \usage{
 influenza_h3n2

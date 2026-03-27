@@ -14,7 +14,7 @@
 
 ## Package size
 
-Installed size: approximately 1 MB (tarball: 103 KB).
+Installed size: approximately 1 MB (tarball: ~103 KB).
 
 ## Reverse dependencies
 
@@ -22,9 +22,16 @@ This is a new submission. No reverse dependencies.
 
 ## Additional notes
 
+* Five modeling engines are provided: 'mlr', 'hier_mlr', 'piantham'
+  (frequentist, no external dependencies), and 'fga'/'garw'
+  (Bayesian, require 'CmdStan').
+
 * The 'Additional_repositories' field lists the Stan R-universe
   (https://mc-stan.org/r-packages/) for the optional Suggested
+
   dependency 'cmdstanr', which is not on CRAN. All functionality
-  requiring 'CmdStan' is gated behind lfq_stan_available() checks
-  and corresponding examples/tests use \donttest{} and
-  skip_if_not() respectively.
+  requiring 'CmdStan' is gated behind `lfq_stan_available()` and
+  corresponding examples use `\donttest{}`, tests use `skip_if_not()`.
+
+* 197 unit tests pass, 6 are skipped (require 'CmdStan').
+  Test coverage: 91%.
