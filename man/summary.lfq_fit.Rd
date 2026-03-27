@@ -2,7 +2,7 @@
 % Please edit documentation in R/methods-print.R
 \name{summary.lfq_fit}
 \alias{summary.lfq_fit}
-\title{Summarise an lfq_fit object}
+\title{Summarise a lineage frequency model}
 \usage{
 \method{summary}{lfq_fit}(object, ...)
 }
@@ -15,13 +15,12 @@
 Invisibly returns \code{object}.
 }
 \description{
-Summarise an lfq_fit object
+Summarise a lineage frequency model
 }
 \examples{
-sim <- simulate_dynamics(
-  n_lineages = 3, advantages = c("JN.1" = 1.3, "KP.3" = 0.9),
-  n_timepoints = 15, seed = 42
-)
+sim <- simulate_dynamics(n_lineages = 3,
+  advantages = c("JN.1" = 1.3, "KP.3" = 0.9),
+  n_timepoints = 15, seed = 42)
 fit <- fit_model(sim, engine = "mlr")
 summary(fit)
 

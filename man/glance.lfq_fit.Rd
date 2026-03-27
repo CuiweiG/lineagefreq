@@ -12,19 +12,17 @@ glance.lfq_fit(x, ...)
 \item{...}{Ignored.}
 }
 \value{
-A one-row tibble with columns: \code{engine}, \code{n_lineages},
-\code{n_timepoints}, \code{nobs}, \code{df}, \code{logLik}, \code{AIC}, \code{BIC},
+A single-row tibble with columns: \code{engine}, \code{n_lineages},
+\code{n_timepoints}, \code{nobs}, \code{df}, \code{logLik}, \code{AIC}, \code{BIC}, \code{pivot},
 \code{convergence}.
 }
 \description{
-Returns a one-row summary tibble of model-level statistics.
+Returns a single-row tibble of model-level summary statistics.
 }
 \examples{
-sim <- simulate_dynamics(
-  n_lineages = 3, advantages = c("A" = 1.2, "B" = 0.8),
-  n_timepoints = 12, seed = 1
-)
-fit <- fit_model(sim, engine = "mlr")
+sim <- simulate_dynamics(n_lineages = 3,
+  advantages = c("A" = 1.2, "B" = 0.8), seed = 1)
+fit <- fit_model(sim)
 glance.lfq_fit(fit)
 
 }

@@ -2,28 +2,28 @@
 % Please edit documentation in R/methods-coef.R
 \name{coef.lfq_fit}
 \alias{coef.lfq_fit}
-\title{Extract coefficients from an lfq_fit object}
+\title{Extract coefficients from a lineage frequency model}
 \usage{
-\method{coef}{lfq_fit}(object, ...)
+\method{coef}{lfq_fit}(object, type = c("growth_rate", "all"), ...)
 }
 \arguments{
 \item{object}{An \link{lfq_fit} object.}
 
+\item{type}{What to return: \code{"growth_rate"} (default) for growth
+rates only, or \code{"all"} for intercepts and growth rates.}
+
 \item{...}{Ignored.}
 }
 \value{
-Named numeric vector with elements \verb{alpha_<lineage>} and
-\verb{delta_<lineage>} for each non-pivot lineage.
+Named numeric vector.
 }
 \description{
-Returns all growth rates and intercepts as a named numeric vector.
+Extract coefficients from a lineage frequency model
 }
 \examples{
-sim <- simulate_dynamics(
-  n_lineages = 3, advantages = c("A" = 1.2, "B" = 0.8),
-  n_timepoints = 12, seed = 1
-)
-fit <- fit_model(sim, engine = "mlr")
+sim <- simulate_dynamics(n_lineages = 3,
+  advantages = c("A" = 1.2, "B" = 0.8), seed = 1)
+fit <- fit_model(sim)
 coef(fit)
 
 }

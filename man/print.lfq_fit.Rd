@@ -2,7 +2,7 @@
 % Please edit documentation in R/methods-print.R
 \name{print.lfq_fit}
 \alias{print.lfq_fit}
-\title{Print an lfq_fit object}
+\title{Print a lineage frequency model}
 \usage{
 \method{print}{lfq_fit}(x, ...)
 }
@@ -15,13 +15,12 @@
 Invisibly returns \code{x}.
 }
 \description{
-Print an lfq_fit object
+Print a lineage frequency model
 }
 \examples{
-sim <- simulate_dynamics(
-  n_lineages = 3, advantages = c("JN.1" = 1.3, "KP.3" = 0.9),
-  n_timepoints = 15, seed = 42
-)
+sim <- simulate_dynamics(n_lineages = 3,
+  advantages = c("JN.1" = 1.3, "KP.3" = 0.9),
+  n_timepoints = 15, seed = 42)
 fit <- fit_model(sim, engine = "mlr")
 print(fit)
 
