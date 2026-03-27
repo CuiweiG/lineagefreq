@@ -48,3 +48,31 @@
 #'               date = date, count = count, total = total)
 #' x
 "influenza_h3n2"
+
+
+#' CDC SARS-CoV-2 variant proportions: JN.1 emergence (US, 2023-2024)
+#'
+#' A dataset of weekly SARS-CoV-2 variant sequence counts for the
+#' United States covering the JN.1 emergence wave (October 2023 to
+#' June 2024). Derived from CDC national genomic surveillance
+#' proportions, with approximate counts reconstructed using a
+#' reference total of 10,000 sequences per week.
+#'
+#' @format A data frame with 351 rows and 3 columns:
+#' \describe{
+#'   \item{date}{Week ending date (Date).}
+#'   \item{lineage}{Lineage name (character): JN.1, XBB.1.5, EG.5,
+#'     HV.1, HK.3, BA.2.86, KP.2, KP.3, Other.}
+#'   \item{count}{Approximate sequence count (integer).}
+#' }
+#'
+#' @source Simulated based on published proportions from CDC COVID
+#'   Data Tracker and MMWR Vol.73 No.42.
+#'   \doi{10.15585/mmwr.mm7342a1}
+#'
+#' @examples
+#' data(cdc_sarscov2_jn1)
+#' x <- lfq_data(cdc_sarscov2_jn1,
+#'               lineage = lineage, date = date, count = count)
+#' x
+"cdc_sarscov2_jn1"
