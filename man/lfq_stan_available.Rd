@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils-validation.R
 \name{lfq_stan_available}
 \alias{lfq_stan_available}
-\title{Check if CmdStan backend is available}
+\title{Check if 'CmdStan' backend is available}
 \usage{
 lfq_stan_available()
 }
@@ -10,7 +10,7 @@ lfq_stan_available()
 Logical scalar.
 }
 \description{
-Returns \code{TRUE} if CmdStanR and CmdStan are installed.
+Returns \code{TRUE} if 'CmdStanR' and 'CmdStan' are installed.
 Bayesian engines require this.
 }
 \examples{

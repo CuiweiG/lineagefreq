@@ -17,7 +17,7 @@
 #' }
 #'
 #' @source Simulated based on parameters from published CDC MMWR
-#'   genomic surveillance reports and Nextstrain public data.
+#'   genomic surveillance reports and 'Nextstrain' public data.
 #'
 #' @examples
 #' data(sarscov2_us_2022)
@@ -40,7 +40,7 @@
 #'   \item{total}{Total sequences for this week (integer).}
 #' }
 #'
-#' @source Simulated based on Nextstrain influenza clade dynamics.
+#' @source Simulated based on 'Nextstrain' influenza clade dynamics.
 #'
 #' @examples
 #' data(influenza_h3n2)

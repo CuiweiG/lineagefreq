@@ -1,6 +1,6 @@
 #' FGA engine (internal)
 #'
-#' Fixed Growth Advantage model via CmdStan.
+#' Fixed Growth Advantage model via 'CmdStan'.
 #' Called by fit_model(engine = "fga"). Not exported.
 #'
 #' @noRd
@@ -14,7 +14,7 @@
 
   if (!lfq_stan_available()) {
     cli::cli_abort(c(
-      "CmdStan is required for the FGA engine.",
+      "'CmdStan' is required for the FGA engine.",
       "i" = "Install: {.code cmdstanr::install_cmdstan()}"
     ))
   }
