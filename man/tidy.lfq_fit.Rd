@@ -7,7 +7,7 @@
 tidy.lfq_fit(x, conf.int = TRUE, conf.level = 0.95, ...)
 }
 \arguments{
-\item{x}{An \link{lfq_fit} object.}
+\item{x}{An \code{lfq_fit} object.}
 
 \item{conf.int}{Include confidence intervals? Default \code{TRUE}.}
 

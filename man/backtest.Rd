@@ -57,12 +57,14 @@ This implements the evaluation framework described in Abousamra
 et al. (2024).
 }
 \examples{
+\donttest{
 sim <- simulate_dynamics(n_lineages = 3,
   advantages = c("A" = 1.2, "B" = 0.8),
   n_timepoints = 20, seed = 1)
 bt <- backtest(sim, engines = "mlr",
   horizons = c(7, 14), min_train = 42)
 bt
+}
 
 }
 \seealso{

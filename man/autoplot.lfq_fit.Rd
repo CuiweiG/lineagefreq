@@ -12,7 +12,7 @@
 )
 }
 \arguments{
-\item{object}{An \link{lfq_fit} object.}
+\item{object}{An \code{lfq_fit} object.}
 
 \item{type}{Plot type: \code{"frequency"} (default), \code{"advantage"},
 \code{"trajectory"}, or \code{"residuals"}.}
@@ -28,10 +28,12 @@ A ggplot object.
 Plot lineage frequency model results
 }
 \examples{
+\donttest{
 sim <- simulate_dynamics(n_lineages = 3,
   advantages = c("A" = 1.2, "B" = 0.8), seed = 1)
 fit <- fit_model(sim)
 autoplot(fit)
 autoplot(fit, type = "advantage", generation_time = 5)
+}
 
 }

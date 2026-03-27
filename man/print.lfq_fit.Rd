@@ -7,7 +7,7 @@
 \method{print}{lfq_fit}(x, ...)
 }
 \arguments{
-\item{x}{An \link{lfq_fit} object.}
+\item{x}{An \code{lfq_fit} object.}
 
 \item{...}{Ignored.}
 }

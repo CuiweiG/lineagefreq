@@ -12,7 +12,7 @@ growth_advantage(
 )
 }
 \arguments{
-\item{fit}{An \link{lfq_fit} object returned by \code{\link[=fit_model]{fit_model()}}.}
+\item{fit}{An \code{lfq_fit} object returned by \code{\link[=fit_model]{fit_model()}}.}
 
 \item{type}{Output type:
 \itemize{

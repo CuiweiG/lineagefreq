@@ -7,7 +7,7 @@
 \method{autoplot}{lfq_forecast}(object, ...)
 }
 \arguments{
-\item{object}{An \link{lfq_forecast} object.}
+\item{object}{An \code{lfq_forecast} object.}
 
 \item{...}{Ignored.}
 }
@@ -18,10 +18,12 @@ A ggplot object.
 Plot a lineage frequency forecast
 }
 \examples{
+\donttest{
 sim <- simulate_dynamics(n_lineages = 3,
   advantages = c("A" = 1.2, "B" = 0.8), seed = 1)
 fit <- fit_model(sim)
 fc <- forecast(fit, horizon = 14)
 autoplot(fc)
+}
 
 }

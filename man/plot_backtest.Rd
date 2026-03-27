@@ -16,6 +16,7 @@ A ggplot object.
 Creates a panel plot of forecast accuracy by engine and horizon.
 }
 \examples{
+\donttest{
 sim <- simulate_dynamics(n_lineages = 3,
   advantages = c("A" = 1.2, "B" = 0.8),
   n_timepoints = 20, seed = 1)
@@ -23,5 +24,6 @@ bt <- backtest(sim, engines = "mlr",
   horizons = c(7, 14), min_train = 42)
 sc <- score_forecasts(bt)
 plot_backtest(sc)
+}
 
 }

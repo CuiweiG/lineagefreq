@@ -1,6 +1,6 @@
 #' Plot lineage frequency model results
 #'
-#' @param object An [lfq_fit] object.
+#' @param object An `lfq_fit` object.
 #' @param type Plot type: `"frequency"` (default), `"advantage"`,
 #'   `"trajectory"`, or `"residuals"`.
 #' @param generation_time Required when `type = "advantage"`.
@@ -9,11 +9,13 @@
 #' @return A ggplot object.
 #'
 #' @examples
+#' \donttest{
 #' sim <- simulate_dynamics(n_lineages = 3,
 #'   advantages = c("A" = 1.2, "B" = 0.8), seed = 1)
 #' fit <- fit_model(sim)
 #' autoplot(fit)
 #' autoplot(fit, type = "advantage", generation_time = 5)
+#' }
 #'
 #' @export
 autoplot.lfq_fit <- function(object,
@@ -32,17 +34,19 @@ autoplot.lfq_fit <- function(object,
 
 #' Plot a lineage frequency forecast
 #'
-#' @param object An [lfq_forecast] object.
+#' @param object An `lfq_forecast` object.
 #' @param ... Ignored.
 #'
 #' @return A ggplot object.
 #'
 #' @examples
+#' \donttest{
 #' sim <- simulate_dynamics(n_lineages = 3,
 #'   advantages = c("A" = 1.2, "B" = 0.8), seed = 1)
 #' fit <- fit_model(sim)
 #' fc <- forecast(fit, horizon = 14)
 #' autoplot(fc)
+#' }
 #'
 #' @export
 autoplot.lfq_forecast <- function(object, ...) {
@@ -74,6 +78,7 @@ autoplot.lfq_forecast <- function(object, ...) {
       linetype   = "dotted",
       colour     = "gray40"
     ) +
+    ggplot2::scale_x_date(date_labels = "%Y-%m-%d") +
     ggplot2::scale_y_continuous(
       labels = .pct_label,
       limits = c(0, 1),
@@ -113,6 +118,7 @@ autoplot.lfq_forecast <- function(object, ...) {
       limits = c(0, 1),
       expand = c(0, 0)
     ) +
+    ggplot2::scale_x_date(date_labels = "%Y-%m-%d") +
     ggplot2::labs(
       x      = NULL,
       y      = "Frequency",
@@ -169,6 +175,7 @@ autoplot.lfq_forecast <- function(object, ...) {
       linewidth = 0.8
     ) +
     ggplot2::facet_wrap(~ .data$.lineage, scales = "free_y") +
+    ggplot2::scale_x_date(date_labels = "%Y-%m-%d") +
     ggplot2::scale_y_continuous(labels = .pct_label) +
     ggplot2::labs(x = NULL, y = "Frequency") +
     ggplot2::theme_minimal(base_size = 11)
@@ -187,6 +194,7 @@ autoplot.lfq_forecast <- function(object, ...) {
   )) +
     ggplot2::geom_hline(yintercept = 0, linetype = "dashed") +
     ggplot2::geom_point(alpha = 0.6) +
+    ggplot2::scale_x_date(date_labels = "%Y-%m-%d") +
     ggplot2::labs(x = NULL, y = "Pearson residual",
                   colour = "Lineage") +
     ggplot2::theme_minimal(base_size = 12) +

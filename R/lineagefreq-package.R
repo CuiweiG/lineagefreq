@@ -26,3 +26,7 @@
 
 #' @export
 ggplot2::autoplot
+
+# False-positive NSE bindings from data.frame column references
+utils::globalVariables(c("lineage", "count", "date", "variant",
+                         "clade", "total", "location", "t_num"))

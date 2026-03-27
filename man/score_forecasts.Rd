@@ -7,7 +7,7 @@
 score_forecasts(bt, metrics = c("mae", "rmse", "coverage", "wis"))
 }
 \arguments{
-\item{bt}{An \link{lfq_backtest} object from \code{\link[=backtest]{backtest()}}.}
+\item{bt}{An \code{lfq_backtest} object from \code{\link[=backtest]{backtest()}}.}
 
 \item{metrics}{Character vector of metrics to compute:
 \itemize{
@@ -25,12 +25,14 @@ A tibble with columns: \code{engine}, \code{horizon}, \code{metric},
 Computes standardized accuracy metrics from backtesting results.
 }
 \examples{
+\donttest{
 sim <- simulate_dynamics(n_lineages = 3,
   advantages = c("A" = 1.2, "B" = 0.8),
   n_timepoints = 20, seed = 1)
 bt <- backtest(sim, engines = "mlr",
   horizons = c(7, 14), min_train = 42)
 score_forecasts(bt)
+}
 
 }
 \seealso{
