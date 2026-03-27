@@ -102,10 +102,4 @@ fit_model <- function(data,
   )
 }
 
-#' @noRd
-.engine_piantham <- function(data, pivot = NULL, ci_level = 0.95, ...) {
-  cli::cli_abort(
-    c("Engine {.val piantham} is not yet implemented.",
-      "i" = "Use {.code engine = 'mlr'} for now.")
-  )
-}
+
