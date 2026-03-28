@@ -33,17 +33,39 @@ jobs:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
 
-      - name: Install dependencies
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
         run: |
-          install.packages(c("remotes", "rcmdcheck"), repos = "https://cloud.r-project.org")
-          deps <- remotes::dev_package_deps(dependencies = TRUE)
-          # Remove cmdstanr and posterior (not on CRAN, install fails)
-          deps <- deps[!deps$package %in% c("cmdstanr", "posterior"), ]
-          remotes::install_deps(dependencies = TRUE, upgrade = "never")
-        shell: Rscript {0}
-        continue-on-error: false
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev
 
-      - name: Check
+      - name: Install R dependencies
+        run: |
+          install.packages(c("rcmdcheck", "remotes"), repos = "https://cloud.r-project.org")
+          # Strip cmdstanr/posterior from DESCRIPTION before installing deps
+          desc <- readLines("DESCRIPTION")
+          desc <- desc[!grepl("^\\s+cmdstanr", desc)]
+          desc <- desc[!grepl("^\\s+posterior", desc)]
+          desc <- desc[!grepl("^Additional_repositories", desc)]
+          # Fix trailing comma
+          for (i in seq_along(desc)) {
+            if (grepl(",\\s*$", desc[i]) && i < length(desc) &&
+                !grepl("^\\s", desc[i+1])) {
+              desc[i] <- sub(",\\s*$", "", desc[i])
+            }
+          }
+          writeLines(desc, "DESCRIPTION_CI")
+          file.copy("DESCRIPTION_CI", "DESCRIPTION", overwrite = TRUE)
+          remotes::install_deps(dependencies = TRUE, upgrade = "never")
+          # Restore original DESCRIPTION for check
+          if (file.exists("DESCRIPTION.bak")) file.copy("DESCRIPTION.bak", "DESCRIPTION", overwrite = TRUE)
+        shell: Rscript {0}
+
+      - name: Restore original DESCRIPTION
+        run: |
+          git checkout -- DESCRIPTION
+
+      - name: R CMD check
         run: |
           options(crayon.enabled = TRUE)
           rcmdcheck::rcmdcheck(
