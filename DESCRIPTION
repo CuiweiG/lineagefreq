@@ -1,6 +1,5 @@
 Package: lineagefreq
-Title: Lineage Frequency Dynamics and Growth-Advantage Estimation from
-    Genomic Surveillance Counts
+Title: Lineage Frequency Dynamics from Genomic Surveillance Counts
 Version: 0.1.0
 Authors@R:
     person("Cuiwei", "Gao", , "48gaocuiwei@gmail.com",
