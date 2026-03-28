@@ -23,7 +23,6 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
-      _R_CHECK_FORCE_SUGGESTS_: false
 
     steps:
       - uses: actions/checkout@v4
@@ -32,34 +31,11 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
-
-      - name: Remove non-CRAN Suggests before dependency install
-        run: |
-          desc <- readLines("DESCRIPTION")
-          # Remove lines containing cmdstanr or posterior
-          desc <- desc[!grepl("^\\s+cmdstanr", desc)]
-          desc <- desc[!grepl("^\\s+posterior", desc)]
-          # Clean up trailing commas in Suggests block
-          for (i in seq_along(desc)) {
-            if (grepl(",\\s*$", desc[i]) && i < length(desc) &&
-                (grepl("^(Additional|VignetteBuilder|Config)", desc[i+1]) ||
-                 !grepl("^\\s", desc[i+1]))) {
-              desc[i] <- sub(",\\s*$", "", desc[i])
-            }
-          }
-          writeLines(desc, "DESCRIPTION")
-          cat("Cleaned DESCRIPTION Suggests:\n")
-          cat(desc[grep("Suggests", desc)[1]:(grep("Suggests", desc)[1]+10)], sep="\n")
-        shell: Rscript {0}
-
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
-
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
           args: '"--no-manual", "--as-cran"'
-        env:
-          _R_CHECK_FORCE_SUGGESTS_: false
