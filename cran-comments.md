@@ -1,12 +1,30 @@
 ## Resubmission
 
-This is a resubmission. Changes from the previous submission:
+This is a resubmission. Changes from previous submission:
 
-* Removed `submit.R` from top-level directory.
-* The words flagged as possibly misspelled in DESCRIPTION are all
-  correct: Abousamra, Figgins, and Bedford are author surnames from
-  the cited reference; Piantham is a method name from published
-  literature; backtesting is a standard term in forecast evaluation.
+* Removed non-standard top-level file (submit.R).
+* Words flagged as possibly misspelled in DESCRIPTION are correct:
+  Abousamra, Figgins, Bedford (author surnames); Piantham (method
+  name from published literature); backtesting (standard term in
+  forecast evaluation).
+* Shortened Title to 59 characters.
+
+## Package motivation
+
+No CRAN package currently provides a unified interface for modeling
+pathogen variant/lineage frequency dynamics from genomic surveillance
+count data. Existing tools (e.g., Nextstrain's evofr) are not on
+CRAN and lack built-in forecast evaluation. lineagefreq fills this
+gap by providing:
+
+* Multinomial logistic regression with multiple engine backends
+* Growth advantage estimation validated against published values
+  (Lyngse et al. 2022, Abousamra et al. 2024)
+* Probabilistic forecasting with prediction intervals
+* Rolling-origin backtesting framework for honest accuracy assessment
+
+The package targets public health genomic surveillance teams working
+with SARS-CoV-2, influenza, RSV, and other variant-resolved pathogens.
 
 ## R CMD check results
 
@@ -15,11 +33,6 @@ This is a resubmission. Changes from the previous submission:
 * checking CRAN incoming feasibility ... NOTE
   New submission
 
-  Suggests or Enhances not in mainstream repositories:
-    cmdstanr
-  Availability using Additional_repositories specification:
-    cmdstanr   yes   https://mc-stan.org/r-packages/
-
 ## Test environments
 
 * local Windows 10, R 4.5.3
@@ -27,18 +40,6 @@ This is a resubmission. Changes from the previous submission:
 * GitHub Actions: macOS-latest (R release)
 * GitHub Actions: windows-latest (R release)
 
-## Package size
-
-Installed size: approximately 1 MB (tarball: ~1.4 MB including
-vignettes and PNG figures).
-
 ## Reverse dependencies
 
-This is a new submission. No reverse dependencies.
-
-## Additional notes
-
-* `cmdstanr` is listed in Suggests with `Additional_repositories`
-  pointing to `https://mc-stan.org/r-packages/`. It is only checked
-  at runtime via `lfq_stan_available()`. No tests, examples, or
-  vignettes depend on it.
+New package, no reverse dependencies.
