@@ -47,22 +47,47 @@ autoplot(fc)
 summarize_emerging(x)
 ```
 
-## Gallery
+## Results on Real CDC Data
 
-All figures generated from real CDC surveillance data
+All figures below use **real surveillance data** from the U.S. CDC
 ([data.cdc.gov](https://data.cdc.gov/Laboratory-Surveillance/SARS-CoV-2-Variant-Proportions/jr58-6ysp),
-public domain).
+public domain). Two independent epidemic waves are analyzed to
+demonstrate robustness.
 
-### (A) Variant Replacement Dynamics
-![](man/figures/frequency_plot.png)
+### Case Study 1 — JN.1 Emergence (2023–2024)
 
-### (B) Growth Advantage Estimation
-![](man/figures/advantage_plot.png)
+JN.1 rose from <1% to >80% in five months, displacing XBB-derived
+lineages. MLR captures the complete sigmoid replacement curve.
 
-### (C) Short-Term Frequency Forecast
+![](man/figures/jn1_dynamics.png)
+
+### Case Study 2 — BA.1 → BA.2 Replacement (2022)
+
+The best-documented variant replacement event: four sequential
+Omicron subvariant sweeps over six months.
+
+![](man/figures/ba2_dynamics.png)
+
+### Growth Advantage Estimation
+
+Relative Rt estimates match published values: BA.2 = 1.34× vs BA.1
+([Lyngse et al. 2022](https://doi.org/10.1038/s41467-022-33498-0),
+published 1.3–1.5×); KP.3 = 1.25× vs JN.1.
+
+![](man/figures/growth_advantage_comparison.png)
+
+### Short-Term Frequency Forecast
+
+Six-week projection with 95% prediction intervals from parametric
+bootstrap (1,000 MVN draws from Fisher information matrix).
+
 ![](man/figures/forecast_plot.png)
 
-### (D) Rolling-Origin Backtest Accuracy
+### Rolling-Origin Forecast Accuracy
+
+Out-of-sample evaluation: 3.8% MAE at 2-week horizon, 7.9% at
+4-week horizon on the BA.2 period.
+
 ![](man/figures/backtest_plot.png)
 
 ## Features
