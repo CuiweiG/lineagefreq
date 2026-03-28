@@ -13,6 +13,24 @@ An R package for modeling pathogen lineage frequencies, estimating
 growth advantages, and forecasting variant replacement dynamics from
 genomic surveillance counts.
 
+## Why lineagefreq?
+
+![](man/figures/before_after.png)
+
+**Three lines of code** transform raw surveillance counts into
+publication-ready model fits, growth advantage estimates, and
+probabilistic forecasts — with built-in backtesting for honest
+accuracy evaluation.
+
+| Without lineagefreq | With lineagefreq |
+|---------------------|------------------|
+| Raw point estimates, no model | MLR / hierarchical MLR / Piantham engines |
+| No uncertainty quantification | 95% prediction intervals (parameter + sampling) |
+| No forecasting | Probabilistic 2–6 week frequency forecasts |
+| No evaluation framework | Rolling-origin backtest + MAE/WIS/coverage |
+| Ad hoc scripts per analysis | Reproducible `lfq_data` → `fit_model` → `forecast` pipeline |
+| Not on CRAN | CRAN-distributable, tested on 4 platforms |
+
 ## Installation
 
 ```r
