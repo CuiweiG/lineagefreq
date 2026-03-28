@@ -8,6 +8,7 @@ BQ
 cdc
 CDC's
 clade
+CMD
 CmdStan
 CmdStanR
 CoV
@@ -29,6 +30,7 @@ lfq
 Lyngse
 mlr
 MMWR
+mpox
 MVN
 Nextstrain
 parseable
@@ -46,3 +48,4 @@ Tibble
 USC
 XBB
 ysp
+Zenodo
