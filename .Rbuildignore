@@ -14,3 +14,4 @@
 ^.*_audit\.R$
 ^ci_result\.json$
 ^final\.R$
+^[^/]*\.R$
