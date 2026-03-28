@@ -88,3 +88,36 @@
 #' fit <- fit_model(vd, engine = "mlr")
 #' growth_advantage(fit, type = "relative_Rt", generation_time = 5)
 "cdc_sarscov2_jn1"
+
+
+#' CDC SARS-CoV-2 variant proportions: BA.1 to BA.2 transition (US, 2022)
+#'
+#' Real surveillance data covering the Omicron BA.1 to BA.2 variant
+#' replacement in the United States, December 2021 through June 2022.
+#' This is one of the best-documented variant replacement events and
+#' serves as an independent validation dataset.
+#'
+#' @format A data frame with 150 rows and 4 columns:
+#' \describe{
+#'   \item{date}{Biweek ending date (Date).}
+#'   \item{lineage}{Lineage name: BA.1, BA.2, BA.2.12.1, BA.4/5, Other.}
+#'   \item{count}{Approximate sequence count per biweek (integer).}
+#'   \item{proportion}{CDC weighted proportion estimate (numeric).}
+#' }
+#'
+#' @source CDC COVID Data Tracker (data.cdc.gov, public domain).
+#'
+#' @references
+#' Lyngse FP, et al. (2022). Household transmission of SARS-CoV-2
+#' Omicron variant of concern subvariants BA.1 and BA.2 in Denmark.
+#' \emph{Nature Communications}, 13:5760.
+#' \doi{10.1038/s41467-022-33498-0}
+#'
+#' @examples
+#' data(cdc_ba2_transition)
+#' vd <- lfq_data(cdc_ba2_transition,
+#'                date = date, lineage = lineage, count = count)
+#' fit <- fit_model(vd, engine = "mlr", pivot = "BA.1")
+#' # BA.2 Rt ~ 1.34 (consistent with published estimates)
+#' growth_advantage(fit, type = "relative_Rt", generation_time = 3.2)
+"cdc_ba2_transition"
