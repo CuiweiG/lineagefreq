@@ -19,6 +19,14 @@ forecast <- function(object, ...) UseMethod("forecast")
 #'   Default 0.95.
 #' @param n_sim Number of parameter draws for prediction intervals.
 #'   Default 1000.
+#' @param sampling_noise Logical; add multinomial sampling noise to
+#'   prediction intervals? Default `TRUE`. When `TRUE`, each draw
+#'   includes both parameter uncertainty (from the MLE covariance)
+#'   and observation-level multinomial sampling variability.
+#' @param effective_n Effective sample size for multinomial sampling
+#'   noise. Default 100, corresponding to a typical weekly
+#'   sequencing volume per reporting unit. Smaller values produce
+#'   wider (more conservative) prediction intervals.
 #' @param ... Unused.
 #'
 #' @return An `lfq_forecast` object (tibble subclass) with columns:
@@ -43,7 +51,9 @@ forecast <- function(object, ...) UseMethod("forecast")
 #' @export
 forecast.lfq_fit <- function(object, horizon  = 28L,
                              ci_level = 0.95,
-                             n_sim    = 1000L, ...) {
+                             n_sim    = 1000L,
+                             sampling_noise = TRUE,
+                             effective_n = 100L, ...) {
 
   assert_pos_int(horizon, "horizon")
   assert_prob(ci_level, "ci_level")
@@ -124,7 +134,19 @@ forecast.lfq_fit <- function(object, horizon  = 28L,
 
       log_num   <- alpha_full + delta_full * t_val
       log_denom <- log_sum_exp(log_num)
-      freq_matrix[s, ] <- exp(log_num - log_denom)
+      probs     <- exp(log_num - log_denom)
+
+      if (sampling_noise && !is.null(object$nobs) &&
+          object$n_timepoints > 0) {
+        # Add multinomial sampling noise.
+        # Use effective sample size: cap at 500 to avoid
+        # underestimating uncertainty from reconstructed counts.
+        n_eff <- as.integer(effective_n)
+        counts   <- stats::rmultinom(1L, size = n_eff, prob = probs)
+        freq_matrix[s, ] <- as.numeric(counts) / n_eff
+      } else {
+        freq_matrix[s, ] <- probs
+      }
     }
 
     for (v_idx in seq_along(lineages)) {

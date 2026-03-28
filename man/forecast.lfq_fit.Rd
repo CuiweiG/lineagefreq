@@ -4,7 +4,15 @@
 \alias{forecast.lfq_fit}
 \title{Forecast lineage frequencies}
 \usage{
-\method{forecast}{lfq_fit}(object, horizon = 28L, ci_level = 0.95, n_sim = 1000L, ...)
+\method{forecast}{lfq_fit}(
+  object,
+  horizon = 28L,
+  ci_level = 0.95,
+  n_sim = 1000L,
+  sampling_noise = TRUE,
+  effective_n = 100L,
+  ...
+)
 }
 \arguments{
 \item{object}{An \code{lfq_fit} object.}
@@ -16,6 +24,16 @@ Default 0.95.}
 
 \item{n_sim}{Number of parameter draws for prediction intervals.
 Default 1000.}
+
+\item{sampling_noise}{Logical; add multinomial sampling noise to
+prediction intervals? Default \code{TRUE}. When \code{TRUE}, each draw
+includes both parameter uncertainty (from the MLE covariance)
+and observation-level multinomial sampling variability.}
+
+\item{effective_n}{Effective sample size for multinomial sampling
+noise. Default 100, corresponding to a typical weekly
+sequencing volume per reporting unit. Smaller values produce
+wider (more conservative) prediction intervals.}
 
 \item{...}{Unused.}
 }

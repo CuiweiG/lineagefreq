@@ -114,8 +114,27 @@ backtest <- function(data,
     )
 
     for (eng in engines) {
+      # Filter engine-specific args to avoid passing e.g.
+      # generation_time to MLR (which doesn't expect it)
+      dots <- list(...)
+      mlr_args <- c("window", "ci_method", "laplace_smooth")
+      piantham_args <- c("generation_time", mlr_args)
+      hier_args <- c("shrinkage_method")
+      stan_args <- c("chains", "iter_warmup", "iter_sampling")
+
+      allowed <- switch(eng,
+        mlr      = mlr_args,
+        hier_mlr = c(mlr_args, hier_args),
+        piantham = piantham_args,
+        fga      = c(stan_args),
+        garw     = c(stan_args),
+        names(dots)
+      )
+      engine_dots <- dots[names(dots) %in% allowed]
+
       fit <- tryCatch(
-        fit_model(train_data, engine = eng, ...),
+        do.call(fit_model,
+                c(list(data = train_data, engine = eng), engine_dots)),
         error = function(e) NULL
       )
 
