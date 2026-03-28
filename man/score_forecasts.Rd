@@ -14,7 +14,10 @@ score_forecasts(bt, metrics = c("mae", "rmse", "coverage", "wis"))
 \item \code{"mae"}: Mean absolute error of frequency.
 \item \code{"rmse"}: Root mean squared error.
 \item \code{"coverage"}: Proportion within prediction intervals.
-\item \code{"wis"}: Weighted interval score.
+\item \code{"wis"}: Simplified weighted interval score for the single
+prediction interval stored in the backtest (typically 95\%).
+For the full multi-quantile WIS per Bracher et al. (2021),
+use dedicated scoring packages such as 'scoringutils'.
 }}
 }
 \value{
@@ -34,6 +37,12 @@ bt <- backtest(sim, engines = "mlr",
 score_forecasts(bt)
 }
 
+}
+\references{
+Bracher J, Ray EL, Gneiting T, Reich NG (2021). Evaluating
+epidemic forecasts in an interval format. \emph{PLoS
+Computational Biology}, 17(2):e1008618.
+\doi{10.1371/journal.pcbi.1008618}
 }
 \seealso{
 \code{\link[=compare_models]{compare_models()}} to rank engines based on scores.

@@ -56,6 +56,13 @@ historical data and comparing predictions to held-out observations.
 This implements the evaluation framework described in Abousamra
 et al. (2024).
 }
+\details{
+Implements the rolling-origin evaluation framework described in
+Abousamra et al. (2024), Section 2.4. At each origin date, the
+model is fit on data up to that date and forecasts are compared
+to held-out future observations. This avoids look-ahead bias
+and provides an honest assessment of real-time forecast accuracy.
+}
 \examples{
 \donttest{
 sim <- simulate_dynamics(n_lineages = 3,
@@ -66,6 +73,12 @@ bt <- backtest(sim, engines = "mlr",
 bt
 }
 
+}
+\references{
+Abousamra E, Figgins M, Bedford T (2024). Fitness models provide
+accurate short-term forecasts of SARS-CoV-2 variant frequency.
+\emph{PLoS Computational Biology}, 20(9):e1012443.
+\doi{10.1371/journal.pcbi.1012443}
 }
 \seealso{
 \code{\link[=score_forecasts]{score_forecasts()}} to compute accuracy metrics,

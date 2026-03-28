@@ -30,6 +30,32 @@
 #'   \item{pivot}{Name of pivot (reference) lineage.}
 #' }
 #'
+#' @details
+#' The `"relative_Rt"` and `"selection_coefficient"` types use the
+#' Piantham approximation (Piantham et al. 2022,
+#' \doi{10.3390/v14112556}), which assumes:
+#' \enumerate{
+#'   \item Variants are in their exponential growth phase (not
+#'     saturating due to population-level immunity).
+#'   \item All variants share the same generation time distribution.
+#'   \item Growth advantage reflects transmissibility differences;
+#'     immune escape is not separately identified.
+#' }
+#' Confidence intervals for `"relative_Rt"` are computed in
+#' log-space (Wald intervals on log-Rt), which is more accurate
+#' than the linear delta method for ratios.
+#'
+#' @references
+#' Piantham C, Linton NM, Nishiura H (2022). Predicting the
+#' trajectory of replacements of SARS-CoV-2 variants using
+#' relative reproduction numbers. \emph{Viruses}, 14(11):2556.
+#' \doi{10.3390/v14112556}
+#'
+#' Abousamra E, Figgins M, Bedford T (2024). Fitness models provide
+#' accurate short-term forecasts of SARS-CoV-2 variant frequency.
+#' \emph{PLoS Computational Biology}, 20(9):e1012443.
+#' \doi{10.1371/journal.pcbi.1012443}
+#'
 #' @examples
 #' sim <- simulate_dynamics(
 #'   n_lineages = 3,

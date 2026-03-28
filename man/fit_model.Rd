@@ -67,6 +67,22 @@ An \code{lfq_fit} object (S3 class), a list containing:
 Unified interface for modeling lineage frequency dynamics. Supports
 multiple engines that share the same input/output contract.
 }
+\details{
+The MLR engine models the frequency of lineage \eqn{v} at time
+\eqn{t} as:
+\deqn{p_v(t) = \frac{\exp(\alpha_v + \delta_v t)}{\sum_k \exp(\alpha_k + \delta_k t)}}
+where \eqn{\alpha_v} is the intercept, \eqn{\delta_v} is the
+growth rate per \code{time_scale} days (default 7), and the pivot
+lineage has \eqn{\alpha = \delta = 0}. Parameters are estimated
+by maximum likelihood via \code{optim(method = "BFGS")} with the
+Hessian used for asymptotic Wald confidence intervals.
+
+The constant growth rate assumption is appropriate for monotonic
+variant replacement periods (typically 2--4 months). For longer
+periods or non-monotonic dynamics, use the \code{window} argument to
+restrict the estimation window, or consider the \code{"garw"} engine
+which allows time-varying growth advantages.
+}
 \examples{
 sim <- simulate_dynamics(
   n_lineages = 3,
@@ -82,6 +98,11 @@ Abousamra E, Figgins M, Bedford T (2024). Fitness models provide
 accurate short-term forecasts of SARS-CoV-2 variant frequency.
 \emph{PLoS Computational Biology}, 20(9):e1012443.
 \doi{10.1371/journal.pcbi.1012443}
+
+Piantham C, Linton NM, Nishiura H (2022). Predicting the
+trajectory of replacements of SARS-CoV-2 variants using relative
+reproduction numbers. \emph{Viruses}, 14(11):2556.
+\doi{10.3390/v14112556}
 }
 \seealso{
 \code{\link[=growth_advantage]{growth_advantage()}} to extract fitness estimates,
