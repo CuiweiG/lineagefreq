@@ -9,3 +9,8 @@
 ^README\.Rmd$
 ^\.Rproj\.user$
 ^lineagefreq\.Rproj$
+^submit\.R$
+^.*_check\.R$
+^.*_audit\.R$
+^ci_result\.json$
+^final\.R$
