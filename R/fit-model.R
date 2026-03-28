@@ -92,7 +92,22 @@ fit_model <- function(data,
                       ci_level = 0.95,
                       ...) {
 
-  engine <- match.arg(engine)
+  # Allow both built-in and registered engines
+  builtin <- c("mlr", "hier_mlr", "piantham", "fga", "garw")
+
+  # If default vector passed (length > 1), use match.arg
+  if (length(engine) > 1L) {
+    engine <- match.arg(engine, builtin)
+  }
+
+  registered_fn <- .get_registered_engine(engine)
+
+  if (is.null(registered_fn) && !engine %in% builtin) {
+    cli::cli_abort(c(
+      "Unknown engine {.val {engine}}.",
+      "i" = "Available: {.val {c(builtin, names(.get_registry()))}}"
+    ))
+  }
 
   if (!is_lfq_data(data)) {
     cli::cli_abort(
@@ -101,14 +116,17 @@ fit_model <- function(data,
   }
   assert_prob(ci_level, "ci_level")
 
-  result <- switch(engine,
-    mlr      = .engine_mlr(data, pivot = pivot, ci_level = ci_level, ...),
-    hier_mlr = .engine_hier_mlr(data, pivot = pivot, ci_level = ci_level, ...),
-    piantham = .engine_piantham(data, pivot = pivot, ci_level = ci_level, ...),
-    fga      = .engine_fga(data, pivot = pivot, ci_level = ci_level, ...),
-    garw     = .engine_garw(data, pivot = pivot, ci_level = ci_level, ...),
-    cli::cli_abort("Unknown engine {.val {engine}}.")
-  )
+  if (!is.null(registered_fn)) {
+    result <- registered_fn(data, pivot = pivot, ci_level = ci_level, ...)
+  } else {
+    result <- switch(engine,
+      mlr      = .engine_mlr(data, pivot = pivot, ci_level = ci_level, ...),
+      hier_mlr = .engine_hier_mlr(data, pivot = pivot, ci_level = ci_level, ...),
+      piantham = .engine_piantham(data, pivot = pivot, ci_level = ci_level, ...),
+      fga      = .engine_fga(data, pivot = pivot, ci_level = ci_level, ...),
+      garw     = .engine_garw(data, pivot = pivot, ci_level = ci_level, ...)
+    )
+  }
 
   result$engine   <- engine
   result$ci_level <- ci_level
@@ -134,7 +152,7 @@ fit_model <- function(data,
 #' @export
 lfq_engines <- function() {
   stan_ok <- lfq_stan_available()
-  tibble::tibble(
+  builtin <- tibble::tibble(
     engine       = c("mlr", "hier_mlr", "piantham", "fga", "garw"),
     type         = c("frequentist", "frequentist", "frequentist",
                      "bayesian", "bayesian"),
@@ -148,5 +166,19 @@ lfq_engines <- function() {
       "Growth advantage random walk (Stan)"
     )
   )
+
+  # Append registered engines
+  reg <- .get_registry()
+  if (length(reg) > 0) {
+    custom <- tibble::tibble(
+      engine       = vapply(reg, `[[`, "", "name"),
+      type         = vapply(reg, `[[`, "", "type"),
+      time_varying = vapply(reg, `[[`, FALSE, "time_varying"),
+      available    = TRUE,
+      description  = vapply(reg, `[[`, "", "description")
+    )
+    builtin <- dplyr::bind_rows(builtin, custom)
+  }
+  builtin
 }
 
