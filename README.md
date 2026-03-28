@@ -88,7 +88,7 @@ for full methodological notes.
 ### Forecast Accuracy
 
 Rolling-origin out-of-sample evaluation on the BA.2 period:
-3.9% MAE at 2-week horizon, 7.7% at 4-week horizon.
+approximately 4% MAE at 2-week and 8% at 4-week horizon.
 
 ![](man/figures/backtest_plot.png)
 
