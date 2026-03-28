@@ -49,16 +49,21 @@ summarize_emerging(x)
 
 ## Gallery
 
-Results from the built-in CDC JN.1 surveillance dataset:
+All figures generated from real CDC surveillance data
+([data.cdc.gov](https://data.cdc.gov/Laboratory-Surveillance/SARS-CoV-2-Variant-Proportions/jr58-6ysp),
+public domain).
 
-### Variant frequency dynamics
+### (A) Variant Replacement Dynamics
 ![](man/figures/frequency_plot.png)
 
-### Growth advantage estimation
+### (B) Growth Advantage Estimation
 ![](man/figures/advantage_plot.png)
 
-### Frequency forecast with prediction intervals
+### (C) Short-Term Frequency Forecast
 ![](man/figures/forecast_plot.png)
+
+### (D) Rolling-Origin Backtest Accuracy
+![](man/figures/backtest_plot.png)
 
 ## Features
 
