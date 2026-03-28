@@ -1,6 +1,12 @@
 # lineagefreq
 
+*Lineage Frequency Dynamics and Growth-Advantage Estimation from Genomic Surveillance Counts*
+
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/CuiweiG/lineagefreq/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/CuiweiG/lineagefreq/actions/workflows/R-CMD-check.yaml)
+[![CRAN status](https://www.r-pkg.org/badges/version/lineagefreq)](https://CRAN.R-project.org/package=lineagefreq)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![R ≥ 4.1.0](https://img.shields.io/badge/R-%E2%89%A5%204.1.0-brightgreen.svg)](https://cran.r-project.org/)
 <!-- badges: end -->
 
 An R package for modeling pathogen lineage frequencies, estimating
