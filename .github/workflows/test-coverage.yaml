@@ -2,23 +2,41 @@ name: test-coverage
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
 
 jobs:
   test-coverage:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      _R_CHECK_FORCE_SUGGESTS_: false
 
     steps:
       - uses: actions/checkout@v4
       - uses: r-lib/actions/setup-r@v2
         with:
           use-public-rspm: true
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::covr
-          needs: coverage
+
+      - name: Install dependencies
+        run: |
+          install.packages(c("remotes", "covr"), repos = "https://cloud.r-project.org")
+          desc <- readLines("DESCRIPTION")
+          desc <- desc[!grepl("^\\s+cmdstanr", desc)]
+          desc <- desc[!grepl("^\\s+posterior", desc)]
+          desc <- desc[!grepl("^Additional_repositories", desc)]
+          for (i in seq_along(desc)) {
+            if (grepl(",\\s*$", desc[i]) && i < length(desc) &&
+                !grepl("^\\s", desc[i+1])) {
+              desc[i] <- sub(",\\s*$", "", desc[i])
+            }
+          }
+          writeLines(desc, "DESCRIPTION")
+          remotes::install_deps(dependencies = TRUE, upgrade = "never")
+        shell: Rscript {0}
+
+      - name: Restore DESCRIPTION
+        run: git checkout -- DESCRIPTION
+
       - name: Test coverage
         run: |
           covr::codecov(quiet = FALSE, clean = FALSE)
