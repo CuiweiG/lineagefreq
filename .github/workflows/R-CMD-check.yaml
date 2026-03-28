@@ -32,11 +32,22 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::rcmdcheck
-          needs: check
+
+      - name: Install dependencies (excluding cmdstanr)
+        run: |
+          install.packages("pak", repos = sprintf("https://r-lib.github.io/p/pak/stable/%s/%s/%s", .Platform$pkgType, R.Version()$os, R.Version()$arch))
+          # Remove cmdstanr from Suggests before resolving
+          desc <- readLines("DESCRIPTION")
+          desc <- gsub("cmdstanr,?\\s*", "", desc)
+          desc <- gsub("posterior,?\\s*", "", desc)
+          writeLines(desc, "DESCRIPTION")
+          pak::local_install_deps(dependencies = c("soft", "Config/Needs/check"))
+          pak::pkg_install("any::rcmdcheck")
+        shell: Rscript {0}
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
           args: '"--no-manual", "--as-cran"'
+        env:
+          _R_CHECK_FORCE_SUGGESTS_: false
