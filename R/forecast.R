@@ -118,7 +118,7 @@ forecast.lfq_fit <- function(object, horizon  = 28L,
   for (j in seq_along(future_dates)) {
     t_val <- as.numeric(future_dates[j] - t0) / ts
 
-    # n_sim × n_lin frequency matrix
+    # n_sim  n_lin frequency matrix
     freq_matrix <- matrix(NA_real_, nrow = n_sim, ncol = n_lin)
 
     for (s in seq_len(n_sim)) {

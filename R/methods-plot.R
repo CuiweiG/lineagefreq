@@ -85,7 +85,7 @@ autoplot.lfq_forecast <- function(object, ...) {
 }
 
 
-# ── Internal helpers ──────────────────────────────────────────
+#  Internal helpers 
 
 #' @noRd
 .plot_frequency <- function(fit) {

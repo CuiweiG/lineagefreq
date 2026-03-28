@@ -22,6 +22,7 @@ Depends:
 Imports:
     cli (>= 3.4.0),
     dplyr (>= 1.1.0),
+    grDevices,
     ggplot2 (>= 3.4.0),
     MASS,
     numDeriv,
