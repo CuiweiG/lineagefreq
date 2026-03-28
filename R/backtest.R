@@ -33,6 +33,19 @@
 #'   \item{observed}{Observed frequency at target_date.}
 #' }
 #'
+#' @details
+#' Implements the rolling-origin evaluation framework described in
+#' Abousamra et al. (2024), Section 2.4. At each origin date, the
+#' model is fit on data up to that date and forecasts are compared
+#' to held-out future observations. This avoids look-ahead bias
+#' and provides an honest assessment of real-time forecast accuracy.
+#'
+#' @references
+#' Abousamra E, Figgins M, Bedford T (2024). Fitness models provide
+#' accurate short-term forecasts of SARS-CoV-2 variant frequency.
+#' \emph{PLoS Computational Biology}, 20(9):e1012443.
+#' \doi{10.1371/journal.pcbi.1012443}
+#'
 #' @seealso [score_forecasts()] to compute accuracy metrics,
 #'   [compare_models()] to rank engines.
 #'

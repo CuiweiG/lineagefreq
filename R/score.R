@@ -7,10 +7,19 @@
 #'   * `"mae"`: Mean absolute error of frequency.
 #'   * `"rmse"`: Root mean squared error.
 #'   * `"coverage"`: Proportion within prediction intervals.
-#'   * `"wis"`: Weighted interval score.
+#'   * `"wis"`: Simplified weighted interval score for the single
+#'     prediction interval stored in the backtest (typically 95%).
+#'     For the full multi-quantile WIS per Bracher et al. (2021),
+#'     use dedicated scoring packages such as 'scoringutils'.
 #'
 #' @return A tibble with columns: `engine`, `horizon`, `metric`,
 #'   `value`.
+#'
+#' @references
+#' Bracher J, Ray EL, Gneiting T, Reich NG (2021). Evaluating
+#' epidemic forecasts in an interval format. \emph{PLoS
+#' Computational Biology}, 17(2):e1008618.
+#' \doi{10.1371/journal.pcbi.1008618}
 #'
 #' @seealso [compare_models()] to rank engines based on scores.
 #'
@@ -72,7 +81,12 @@ score_forecasts <- function(bt,
 }
 
 
-#' Weighted Interval Score (internal)
+#' Simplified Weighted Interval Score (internal)
+#'
+#' Computes WIS for a single interval level (95% by default).
+#' The full WIS (Bracher et al. 2021) averages over multiple
+#' quantile levels; this simplified version uses only the
+#' prediction interval stored in the backtest output.
 #' @noRd
 .compute_wis <- function(df) {
   alpha      <- 0.05

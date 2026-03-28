@@ -49,6 +49,21 @@ A tibble with columns:
 Computes relative fitness of each lineage from a fitted model.
 Supports four output formats for different use cases.
 }
+\details{
+The \code{"relative_Rt"} and \code{"selection_coefficient"} types use the
+Piantham approximation (Piantham et al. 2022,
+\doi{10.3390/v14112556}), which assumes:
+\enumerate{
+\item Variants are in their exponential growth phase (not
+saturating due to population-level immunity).
+\item All variants share the same generation time distribution.
+\item Growth advantage reflects transmissibility differences;
+immune escape is not separately identified.
+}
+Confidence intervals for \code{"relative_Rt"} are computed in
+log-space (Wald intervals on log-Rt), which is more accurate
+than the linear delta method for ratios.
+}
 \examples{
 sim <- simulate_dynamics(
   n_lineages = 3,
@@ -63,4 +78,15 @@ growth_advantage(fit, type = "growth_rate")
 # Relative Rt (needs generation time)
 growth_advantage(fit, type = "relative_Rt", generation_time = 5)
 
+}
+\references{
+Piantham C, Linton NM, Nishiura H (2022). Predicting the
+trajectory of replacements of SARS-CoV-2 variants using
+relative reproduction numbers. \emph{Viruses}, 14(11):2556.
+\doi{10.3390/v14112556}
+
+Abousamra E, Figgins M, Bedford T (2024). Fitness models provide
+accurate short-term forecasts of SARS-CoV-2 variant frequency.
+\emph{PLoS Computational Biology}, 20(9):e1012443.
+\doi{10.1371/journal.pcbi.1012443}
 }
