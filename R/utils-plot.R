@@ -10,7 +10,7 @@
   else grDevices::colorRampPalette(base)(n)
 }
 
-#' Fill scale — "Other" always gray
+#' Fill scale ?"Other" always gray
 #' @noRd
 .lfq_scale_fill <- function(variants) {
   cols <- .lfq_palette(length(variants))
@@ -19,7 +19,7 @@
   ggplot2::scale_fill_manual(values = cols)
 }
 
-#' Colour scale — "Other" always gray
+#' Colour scale ?"Other" always gray
 #' @noRd
 .lfq_scale_colour <- function(variants) {
   cols <- .lfq_palette(length(variants))
