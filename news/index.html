@@ -3,11 +3,11 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="../index.html">lineagefreq</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,10 +34,33 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.0" id="lineagefreq-020">lineagefreq 0.2.0<a class="anchor" aria-label="anchor" href="#lineagefreq-020"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-2-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-2-0"></a></h3>
+<ul><li>
+<strong>Pipe-friendly API</strong>: <code><a href="../reference/lfq_fit.html">lfq_fit()</a></code>, <code><a href="../reference/lfq_advantage.html">lfq_advantage()</a></code>, <code><a href="../reference/lfq_forecast.html">lfq_forecast()</a></code>, <code><a href="../reference/lfq_score.html">lfq_score()</a></code> enable tidyverse-style chaining with <code>|&gt;</code>.</li>
+<li>
+<strong>Engine registry</strong>: <code><a href="../reference/register_engine.html">register_engine()</a></code> / <code><a href="../reference/unregister_engine.html">unregister_engine()</a></code> allow third-party packages to register custom modeling engines, similar to the parsnip engine system.</li>
+<li>
+<strong><code><a href="../reference/lfq_summary.html">lfq_summary()</a></code></strong>: One-row-per-lineage overview combining growth rates, confidence intervals, and relative Rt in a single tibble.</li>
+<li>
+<strong><code><a href="../reference/as.data.frame.lfq_data.html">as.data.frame.lfq_data()</a></code></strong>: Clean tibble export for interoperability.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="improvements-0-2-0">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-2-0"></a></h3>
+<ul><li>
+<code><a href="../reference/fit_model.html">fit_model()</a></code> now accepts both built-in and registered engine names.</li>
+<li>
+<code><a href="../reference/lfq_engines.html">lfq_engines()</a></code> lists all available engines including custom registrations.</li>
+<li>251 unit tests (up from 243 in v0.1.0).</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="lineagefreq-010">lineagefreq 0.1.0<a class="anchor" aria-label="anchor" href="#lineagefreq-010"></a></h2>
 <ul><li>Initial CRAN release.</li>
 </ul></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

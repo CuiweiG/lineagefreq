@@ -3,11 +3,11 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="../index.html">lineagefreq</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,7 +55,10 @@
 <dd><p>Character vector of metrics to compute:</p><ul><li><p><code>"mae"</code>: Mean absolute error of frequency.</p></li>
 <li><p><code>"rmse"</code>: Root mean squared error.</p></li>
 <li><p><code>"coverage"</code>: Proportion within prediction intervals.</p></li>
-<li><p><code>"wis"</code>: Weighted interval score.</p></li>
+<li><p><code>"wis"</code>: Simplified weighted interval score for the single
+prediction interval stored in the backtest (typically 95%).
+For the full multi-quantile WIS per Bracher et al. (2021),
+use dedicated scoring packages such as 'scoringutils'.</p></li>
 </ul></dd>
 
 </dl></div>
@@ -63,6 +66,13 @@
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A tibble with columns: <code>engine</code>, <code>horizon</code>, <code>metric</code>,
 <code>value</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Bracher J, Ray EL, Gneiting T, Reich NG (2021). Evaluating
+epidemic forecasts in an interval format. <em>PLoS
+Computational Biology</em>, 17(2):e1008618.
+<a href="https://doi.org/10.1371/journal.pcbi.1008618" class="external-link">doi:10.1371/journal.pcbi.1008618</a></p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -81,14 +91,14 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 8 × 4</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   engine horizon metric     value</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> mlr          7 mae      0.007<span style="text-decoration: underline;">23</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> mlr          7 rmse     0.009<span style="text-decoration: underline;">64</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> mlr          7 coverage 0.436  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> mlr          7 wis      0.001<span style="text-decoration: underline;">89</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> mlr         14 mae      0.006<span style="text-decoration: underline;">95</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> mlr         14 rmse     0.009<span style="text-decoration: underline;">09</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> mlr         14 coverage 0.583  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">8</span> mlr         14 wis      0.001<span style="text-decoration: underline;">50</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> mlr          7 mae      0.007<span style="text-decoration: underline;">36</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> mlr          7 rmse     0.009<span style="text-decoration: underline;">85</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> mlr          7 coverage 1      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> mlr          7 wis      0.002<span style="text-decoration: underline;">15</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> mlr         14 mae      0.006<span style="text-decoration: underline;">67</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> mlr         14 rmse     0.009<span style="text-decoration: underline;">50</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> mlr         14 coverage 1      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">8</span> mlr         14 wis      0.002<span style="text-decoration: underline;">14</span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

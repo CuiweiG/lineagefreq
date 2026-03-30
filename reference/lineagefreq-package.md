@@ -26,4 +26,4 @@ Useful links:
 
 ## Author
 
-**Maintainer**: Cuiwei Gao <48gaocuiwei@gmail.com>
+**Maintainer**: Cuiwei Gao <48gaocuiwei@gmail.com> \[copyright holder\]

@@ -25,11 +25,21 @@ score_forecasts(bt, metrics = c("mae", "rmse", "coverage", "wis"))
 
   - `"coverage"`: Proportion within prediction intervals.
 
-  - `"wis"`: Weighted interval score.
+  - `"wis"`: Simplified weighted interval score for the single
+    prediction interval stored in the backtest (typically 95%). For the
+    full multi-quantile WIS per Bracher et al. (2021), use dedicated
+    scoring packages such as 'scoringutils'.
 
 ## Value
 
 A tibble with columns: `engine`, `horizon`, `metric`, `value`.
+
+## References
+
+Bracher J, Ray EL, Gneiting T, Reich NG (2021). Evaluating epidemic
+forecasts in an interval format. *PLoS Computational Biology*,
+17(2):e1008618.
+[doi:10.1371/journal.pcbi.1008618](https://doi.org/10.1371/journal.pcbi.1008618)
 
 ## See also
 
@@ -49,13 +59,13 @@ score_forecasts(bt)
 #> # A tibble: 8 × 4
 #>   engine horizon metric     value
 #>   <chr>    <int> <chr>      <dbl>
-#> 1 mlr          7 mae      0.00723
-#> 2 mlr          7 rmse     0.00964
-#> 3 mlr          7 coverage 0.436  
-#> 4 mlr          7 wis      0.00189
-#> 5 mlr         14 mae      0.00695
-#> 6 mlr         14 rmse     0.00909
-#> 7 mlr         14 coverage 0.583  
-#> 8 mlr         14 wis      0.00150
+#> 1 mlr          7 mae      0.00736
+#> 2 mlr          7 rmse     0.00985
+#> 3 mlr          7 coverage 1      
+#> 4 mlr          7 wis      0.00215
+#> 5 mlr         14 mae      0.00667
+#> 6 mlr         14 rmse     0.00950
+#> 7 mlr         14 coverage 1      
+#> 8 mlr         14 wis      0.00214
 # }
 ```

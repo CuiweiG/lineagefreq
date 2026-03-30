@@ -4,8 +4,9 @@ pkgdown_sha: ~
 articles:
   introduction: introduction.html
   model-comparison: model-comparison.html
+  real-data-analysis: real-data-analysis.html
   surveillance-workflow: surveillance-workflow.html
-last_built: 2026-03-27T20:02Z
+last_built: 2026-03-30T15:06Z
 urls:
   reference: https://CuiweiG.github.io/lineagefreq/reference
   article: https://CuiweiG.github.io/lineagefreq/articles

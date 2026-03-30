@@ -35,7 +35,7 @@ A data frame with 200 rows and 4 columns:
 ## Source
 
 Simulated based on parameters from published CDC MMWR genomic
-surveillance reports and Nextstrain public data.
+surveillance reports and 'Nextstrain' public data.
 
 ## Examples
 

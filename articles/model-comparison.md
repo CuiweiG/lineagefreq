@@ -97,32 +97,35 @@ bt <- backtest(x,
   min_train = 56,
   generation_time = 5
 )
-#> Backtesting ■■■■■■                            16% | ETA:  6s
-#> Backtesting ■■■■■■■■■■■■■■■                   47% | ETA:  4s
-#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■           75% | ETA:  2s
-#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■    97% | ETA:  0s
+#> Backtesting ■■■■                               9% | ETA: 12s
+#> Backtesting ■■■■■■■■■                         28% | ETA: 11s
+#> Backtesting ■■■■■■■■■■■■■■                    44% | ETA:  9s
+#> Backtesting ■■■■■■■■■■■■■■■■■■■               59% | ETA:  7s
+#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■           73% | ETA:  5s
+#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■■■       86% | ETA:  3s
+#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■    97% | ETA:  1s
 #> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100% | ETA:  0s
 bt
 #> 
 #> ── Backtest results
-#> 450 predictions across 31 origins
+#> 900 predictions across 31 origins
 #> Engines: "mlr, piantham"
 #> Horizons: 7, 14, 21 days
 #> 
-#> # A tibble: 450 × 9
-#>    origin_date target_date horizon engine   lineage predicted    lower   upper
-#>  * <date>      <date>        <int> <chr>    <chr>       <dbl>    <dbl>   <dbl>
-#>  1 2022-03-05  2022-03-12        7 piantham BA.1     0.441    0.434    0.447  
-#>  2 2022-03-05  2022-03-12        7 piantham BA.2     0.180    0.175    0.186  
-#>  3 2022-03-05  2022-03-12        7 piantham BA.4/5   0.00493  0.00369  0.00655
-#>  4 2022-03-05  2022-03-12        7 piantham BQ.1     0.000616 0.000264 0.00143
-#>  5 2022-03-05  2022-03-12        7 piantham Other    0.374    0.367    0.381  
-#>  6 2022-03-05  2022-03-19       14 piantham BA.1     0.396    0.389    0.403  
-#>  7 2022-03-05  2022-03-19       14 piantham BA.2     0.205    0.198    0.213  
-#>  8 2022-03-05  2022-03-19       14 piantham BA.4/5   0.00646  0.00459  0.00899
-#>  9 2022-03-05  2022-03-19       14 piantham BQ.1     0.000897 0.000292 0.00231
-#> 10 2022-03-05  2022-03-19       14 piantham Other    0.391    0.382    0.398  
-#> # ℹ 440 more rows
+#> # A tibble: 900 × 9
+#>    origin_date target_date horizon engine lineage predicted lower  upper
+#>  * <date>      <date>        <int> <chr>  <chr>       <dbl> <dbl>  <dbl>
+#>  1 2022-03-05  2022-03-12        7 mlr    BA.1         0.44  0.34 0.53  
+#>  2 2022-03-05  2022-03-12        7 mlr    BA.2         0.18  0.11 0.26  
+#>  3 2022-03-05  2022-03-12        7 mlr    BA.4/5       0     0    0.02  
+#>  4 2022-03-05  2022-03-12        7 mlr    BQ.1         0     0    0.01  
+#>  5 2022-03-05  2022-03-12        7 mlr    Other        0.37  0.28 0.47  
+#>  6 2022-03-05  2022-03-19       14 mlr    BA.1         0.4   0.31 0.5   
+#>  7 2022-03-05  2022-03-19       14 mlr    BA.2         0.21  0.13 0.29  
+#>  8 2022-03-05  2022-03-19       14 mlr    BA.4/5       0     0    0.0252
+#>  9 2022-03-05  2022-03-19       14 mlr    BQ.1         0     0    0.01  
+#> 10 2022-03-05  2022-03-19       14 mlr    Other        0.39  0.29 0.49  
+#> # ℹ 890 more rows
 #> # ℹ 1 more variable: observed <dbl>
 ```
 
@@ -135,15 +138,21 @@ computes standardized accuracy metrics.
 sc <- score_forecasts(bt,
   metrics = c("mae", "coverage"))
 sc
-#> # A tibble: 6 × 4
-#>   engine   horizon metric     value
-#>   <chr>      <int> <chr>      <dbl>
-#> 1 piantham       7 mae      0.00255
-#> 2 piantham       7 coverage 0.613  
-#> 3 piantham      14 mae      0.00272
-#> 4 piantham      14 coverage 0.673  
-#> 5 piantham      21 mae      0.00291
-#> 6 piantham      21 coverage 0.703
+#> # A tibble: 12 × 4
+#>    engine   horizon metric     value
+#>    <chr>      <int> <chr>      <dbl>
+#>  1 mlr            7 mae      0.00399
+#>  2 mlr            7 coverage 1      
+#>  3 mlr           14 mae      0.00436
+#>  4 mlr           14 coverage 1      
+#>  5 mlr           21 mae      0.00447
+#>  6 mlr           21 coverage 1      
+#>  7 piantham       7 mae      0.00441
+#>  8 piantham       7 coverage 0.994  
+#>  9 piantham      14 mae      0.00448
+#> 10 piantham      14 coverage 1      
+#> 11 piantham      21 mae      0.00447
+#> 12 piantham      21 coverage 0.993
 ```
 
 ## Model ranking
@@ -153,12 +162,15 @@ summarizes scores per engine, sorted by MAE.
 
 ``` r
 compare_models(sc, by = c("engine", "horizon"))
-#> # A tibble: 3 × 4
+#> # A tibble: 6 × 4
 #>   engine   horizon     mae coverage
 #>   <chr>      <int>   <dbl>    <dbl>
-#> 1 piantham       7 0.00255    0.613
-#> 2 piantham      14 0.00272    0.673
-#> 3 piantham      21 0.00291    0.703
+#> 1 mlr            7 0.00399    1    
+#> 2 mlr           14 0.00436    1    
+#> 3 piantham       7 0.00441    0.994
+#> 4 mlr           21 0.00447    1    
+#> 5 piantham      21 0.00447    0.993
+#> 6 piantham      14 0.00448    1
 ```
 
 ## Visualization

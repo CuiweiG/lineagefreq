@@ -5,11 +5,11 @@ Supports four output formats for different use cases."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="../index.html">lineagefreq</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -105,6 +105,31 @@ level from the fitted model.</p></dd>
 
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The <code>"relative_Rt"</code> and <code>"selection_coefficient"</code> types use the
+Piantham approximation (Piantham et al. 2022,
+<a href="https://doi.org/10.3390/v14112556" class="external-link">doi:10.3390/v14112556</a>
+), which assumes:</p><ol><li><p>Variants are in their exponential growth phase (not
+saturating due to population-level immunity).</p></li>
+<li><p>All variants share the same generation time distribution.</p></li>
+<li><p>Growth advantage reflects transmissibility differences;
+immune escape is not separately identified.</p></li>
+</ol><p>Confidence intervals for <code>"relative_Rt"</code> are computed in
+log-space (Wald intervals on log-Rt), which is more accurate
+than the linear delta method for ratios.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Piantham C, Linton NM, Nishiura H (2022). Predicting the
+trajectory of replacements of SARS-CoV-2 variants using
+relative reproduction numbers. <em>Viruses</em>, 14(11):2556.
+<a href="https://doi.org/10.3390/v14112556" class="external-link">doi:10.3390/v14112556</a></p>
+<p>Abousamra E, Figgins M, Bedford T (2024). Fitness models provide
+accurate short-term forecasts of SARS-CoV-2 variant frequency.
+<em>PLoS Computational Biology</em>, 20(9):e1012443.
+<a href="https://doi.org/10.1371/journal.pcbi.1012443" class="external-link">doi:10.1371/journal.pcbi.1012443</a></p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>

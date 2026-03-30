@@ -6,3 +6,7 @@ to see their documentation.
 - ggplot2:
 
   [`autoplot`](https://ggplot2.tidyverse.org/reference/autoplot.html)
+
+## Value
+
+See the specific method documentation.

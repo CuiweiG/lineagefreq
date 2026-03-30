@@ -8,7 +8,15 @@ estimated parameter distribution.
 
 ``` r
 # S3 method for class 'lfq_fit'
-forecast(object, horizon = 28L, ci_level = 0.95, n_sim = 1000L, ...)
+forecast(
+  object,
+  horizon = 28L,
+  ci_level = 0.95,
+  n_sim = 1000L,
+  sampling_noise = TRUE,
+  effective_n = 100L,
+  ...
+)
 ```
 
 ## Arguments
@@ -28,6 +36,20 @@ forecast(object, horizon = 28L, ci_level = 0.95, n_sim = 1000L, ...)
 - n_sim:
 
   Number of parameter draws for prediction intervals. Default 1000.
+
+- sampling_noise:
+
+  Logical; add multinomial sampling noise to prediction intervals?
+  Default `TRUE`. When `TRUE`, each draw includes both parameter
+  uncertainty (from the MLE covariance) and observation-level
+  multinomial sampling variability.
+
+- effective_n:
+
+  Effective sample size for multinomial sampling noise. Default 100,
+  corresponding to a typical weekly sequencing volume per reporting
+  unit. Smaller values produce wider (more conservative) prediction
+  intervals.
 
 - ...:
 
@@ -73,23 +95,23 @@ fc
 #> 
 #> ── Lineage frequency forecast 
 #> Engine: mlr
-#> Forecast start: 2026-08-08 | Horizon: 21 days
+#> Forecast start: 2026-08-11 | Horizon: 21 days
 #> CI level: 95%
 #> 60 fitted + 9 forecast rows
 #> 
 #> # A tibble: 69 × 6
 #>    .date      .lineage .median .lower .upper .type 
 #>  * <date>     <chr>      <dbl>  <dbl>  <dbl> <chr> 
-#>  1 2026-03-27 A          0.341  0.341  0.341 fitted
-#>  2 2026-03-27 B          0.324  0.324  0.324 fitted
-#>  3 2026-03-27 ref        0.335  0.335  0.335 fitted
-#>  4 2026-04-03 A          0.408  0.408  0.408 fitted
-#>  5 2026-04-03 B          0.257  0.257  0.257 fitted
-#>  6 2026-04-03 ref        0.335  0.335  0.335 fitted
-#>  7 2026-04-10 A          0.476  0.476  0.476 fitted
-#>  8 2026-04-10 B          0.198  0.198  0.198 fitted
-#>  9 2026-04-10 ref        0.326  0.326  0.326 fitted
-#> 10 2026-04-17 A          0.541  0.541  0.541 fitted
+#>  1 2026-03-30 A          0.341  0.341  0.341 fitted
+#>  2 2026-03-30 B          0.324  0.324  0.324 fitted
+#>  3 2026-03-30 ref        0.335  0.335  0.335 fitted
+#>  4 2026-04-06 A          0.408  0.408  0.408 fitted
+#>  5 2026-04-06 B          0.257  0.257  0.257 fitted
+#>  6 2026-04-06 ref        0.335  0.335  0.335 fitted
+#>  7 2026-04-13 A          0.476  0.476  0.476 fitted
+#>  8 2026-04-13 B          0.198  0.198  0.198 fitted
+#>  9 2026-04-13 ref        0.326  0.326  0.326 fitted
+#> 10 2026-04-20 A          0.541  0.541  0.541 fitted
 #> # ℹ 59 more rows
 # }
 ```

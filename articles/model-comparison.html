@@ -16,11 +16,11 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="../index.html">lineagefreq</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -158,32 +158,35 @@ forecasts are compared to held-out future observations.</p>
 <span>  min_train <span class="op">=</span> <span class="fl">56</span>,</span>
 <span>  generation_time <span class="op">=</span> <span class="fl">5</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Backtesting <span style="color: #00BB00;">■■■■■■                          </span>  16% | ETA:  6s</span></span>
-<span><span class="co">#&gt; Backtesting <span style="color: #00BB00;">■■■■■■■■■■■■■■■                 </span>  47% | ETA:  4s</span></span>
-<span><span class="co">#&gt; Backtesting <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■         </span>  75% | ETA:  2s</span></span>
-<span><span class="co">#&gt; Backtesting <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  </span>  97% | ETA:  0s</span></span>
+<span><span class="co">#&gt; Backtesting <span style="color: #00BB00;">■■■■                            </span>   9% | ETA: 12s</span></span>
+<span><span class="co">#&gt; Backtesting <span style="color: #00BB00;">■■■■■■■■■                       </span>  28% | ETA: 11s</span></span>
+<span><span class="co">#&gt; Backtesting <span style="color: #00BB00;">■■■■■■■■■■■■■■                  </span>  44% | ETA:  9s</span></span>
+<span><span class="co">#&gt; Backtesting <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■             </span>  59% | ETA:  7s</span></span>
+<span><span class="co">#&gt; Backtesting <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■         </span>  73% | ETA:  5s</span></span>
+<span><span class="co">#&gt; Backtesting <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■     </span>  86% | ETA:  3s</span></span>
+<span><span class="co">#&gt; Backtesting <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  </span>  97% | ETA:  1s</span></span>
 <span><span class="co">#&gt; Backtesting <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100% | ETA:  0s</span></span>
 <span><span class="va">bt</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Backtest results</span></span>
-<span><span class="co">#&gt; 450 predictions across 31 origins</span></span>
+<span><span class="co">#&gt; 900 predictions across 31 origins</span></span>
 <span><span class="co">#&gt; Engines: <span style="color: #0000BB;">"mlr, piantham"</span></span></span>
 <span><span class="co">#&gt; Horizons: 7, 14, 21 days</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 450 × 9</span></span></span>
-<span><span class="co">#&gt;    origin_date target_date horizon engine   lineage predicted    lower   upper</span></span>
-<span><span class="co">#&gt;  <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 2022-03-05  2022-03-12        7 piantham BA.1     0.441    0.434    0.447  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 2022-03-05  2022-03-12        7 piantham BA.2     0.180    0.175    0.186  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2022-03-05  2022-03-12        7 piantham BA.4/5   0.004<span style="text-decoration: underline;">93</span>  0.003<span style="text-decoration: underline;">69</span>  0.006<span style="text-decoration: underline;">55</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 2022-03-05  2022-03-12        7 piantham BQ.1     0.000<span style="text-decoration: underline;">616</span> 0.000<span style="text-decoration: underline;">264</span> 0.001<span style="text-decoration: underline;">43</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 2022-03-05  2022-03-12        7 piantham Other    0.374    0.367    0.381  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 2022-03-05  2022-03-19       14 piantham BA.1     0.396    0.389    0.403  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 2022-03-05  2022-03-19       14 piantham BA.2     0.205    0.198    0.213  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 2022-03-05  2022-03-19       14 piantham BA.4/5   0.006<span style="text-decoration: underline;">46</span>  0.004<span style="text-decoration: underline;">59</span>  0.008<span style="text-decoration: underline;">99</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 2022-03-05  2022-03-19       14 piantham BQ.1     0.000<span style="text-decoration: underline;">897</span> 0.000<span style="text-decoration: underline;">292</span> 0.002<span style="text-decoration: underline;">31</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 2022-03-05  2022-03-19       14 piantham Other    0.391    0.382    0.398  </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 440 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 900 × 9</span></span></span>
+<span><span class="co">#&gt;    origin_date target_date horizon engine lineage predicted lower  upper</span></span>
+<span><span class="co">#&gt;  <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 2022-03-05  2022-03-12        7 mlr    BA.1         0.44  0.34 0.53  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 2022-03-05  2022-03-12        7 mlr    BA.2         0.18  0.11 0.26  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 2022-03-05  2022-03-12        7 mlr    BA.4/5       0     0    0.02  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 2022-03-05  2022-03-12        7 mlr    BQ.1         0     0    0.01  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 2022-03-05  2022-03-12        7 mlr    Other        0.37  0.28 0.47  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 2022-03-05  2022-03-19       14 mlr    BA.1         0.4   0.31 0.5   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 2022-03-05  2022-03-19       14 mlr    BA.2         0.21  0.13 0.29  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 2022-03-05  2022-03-19       14 mlr    BA.4/5       0     0    0.025<span style="text-decoration: underline;">2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 2022-03-05  2022-03-19       14 mlr    BQ.1         0     0    0.01  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 2022-03-05  2022-03-19       14 mlr    Other        0.39  0.29 0.49  </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 890 more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: observed &lt;dbl&gt;</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -195,15 +198,21 @@ metrics.</p>
 <code class="sourceCode R"><span><span class="va">sc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/score_forecasts.html">score_forecasts</a></span><span class="op">(</span><span class="va">bt</span>,</span>
 <span>  metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mae"</span>, <span class="st">"coverage"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">sc</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
-<span><span class="co">#&gt;   engine   horizon metric     value</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> piantham       7 mae      0.002<span style="text-decoration: underline;">55</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> piantham       7 coverage 0.613  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> piantham      14 mae      0.002<span style="text-decoration: underline;">72</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> piantham      14 coverage 0.673  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> piantham      21 mae      0.002<span style="text-decoration: underline;">91</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> piantham      21 coverage 0.703</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 12 × 4</span></span></span>
+<span><span class="co">#&gt;    engine   horizon metric     value</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> mlr            7 mae      0.003<span style="text-decoration: underline;">99</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> mlr            7 coverage 1      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> mlr           14 mae      0.004<span style="text-decoration: underline;">36</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> mlr           14 coverage 1      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> mlr           21 mae      0.004<span style="text-decoration: underline;">47</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> mlr           21 coverage 1      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> piantham       7 mae      0.004<span style="text-decoration: underline;">41</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> piantham       7 coverage 0.994  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> piantham      14 mae      0.004<span style="text-decoration: underline;">48</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> piantham      14 coverage 1      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> piantham      21 mae      0.004<span style="text-decoration: underline;">47</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> piantham      21 coverage 0.993</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="model-ranking">Model ranking<a class="anchor" aria-label="anchor" href="#model-ranking"></a>
@@ -212,12 +221,15 @@ metrics.</p>
 MAE.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/compare_models.html">compare_models</a></span><span class="op">(</span><span class="va">sc</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"engine"</span>, <span class="st">"horizon"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
 <span><span class="co">#&gt;   engine   horizon     mae coverage</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> piantham       7 0.002<span style="text-decoration: underline;">55</span>    0.613</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> piantham      14 0.002<span style="text-decoration: underline;">72</span>    0.673</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> piantham      21 0.002<span style="text-decoration: underline;">91</span>    0.703</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> mlr            7 0.003<span style="text-decoration: underline;">99</span>    1    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> mlr           14 0.004<span style="text-decoration: underline;">36</span>    1    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> piantham       7 0.004<span style="text-decoration: underline;">41</span>    0.994</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> mlr           21 0.004<span style="text-decoration: underline;">47</span>    1    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> piantham      21 0.004<span style="text-decoration: underline;">47</span>    0.993</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> piantham      14 0.004<span style="text-decoration: underline;">48</span>    1</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="visualization">Visualization<a class="anchor" aria-label="anchor" href="#visualization"></a>

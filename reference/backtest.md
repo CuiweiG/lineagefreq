@@ -96,6 +96,21 @@ An `lfq_backtest` object (tibble subclass) with columns:
 
   Observed frequency at target_date.
 
+## Details
+
+Implements the rolling-origin evaluation framework described in
+Abousamra et al. (2024), Section 2.4. At each origin date, the model is
+fit on data up to that date and forecasts are compared to held-out
+future observations. This avoids look-ahead bias and provides an honest
+assessment of real-time forecast accuracy.
+
+## References
+
+Abousamra E, Figgins M, Bedford T (2024). Fitness models provide
+accurate short-term forecasts of SARS-CoV-2 variant frequency. *PLoS
+Computational Biology*, 20(9):e1012443.
+[doi:10.1371/journal.pcbi.1012443](https://doi.org/10.1371/journal.pcbi.1012443)
+
 ## See also
 
 [`score_forecasts()`](https://CuiweiG.github.io/lineagefreq/reference/score_forecasts.md)
@@ -120,19 +135,18 @@ bt
 #> Horizons: 7, 14 days
 #> 
 #> # A tibble: 75 × 9
-#>    origin_date target_date horizon engine lineage predicted  lower  upper
-#>  * <date>      <date>        <int> <chr>  <chr>       <dbl>  <dbl>  <dbl>
-#>  1 2026-05-08  2026-05-15        7 mlr    A          0.730  0.699  0.762 
-#>  2 2026-05-08  2026-05-15        7 mlr    B          0.0414 0.0324 0.0531
-#>  3 2026-05-08  2026-05-15        7 mlr    ref        0.227  0.199  0.259 
-#>  4 2026-05-08  2026-05-22       14 mlr    A          0.766  0.730  0.797 
-#>  5 2026-05-08  2026-05-22       14 mlr    B          0.0294 0.0222 0.0391
-#>  6 2026-05-08  2026-05-22       14 mlr    ref        0.205  0.174  0.240 
-#>  7 2026-05-15  2026-05-22        7 mlr    A          0.777  0.748  0.802 
-#>  8 2026-05-15  2026-05-22        7 mlr    B          0.0259 0.0196 0.0336
-#>  9 2026-05-15  2026-05-22        7 mlr    ref        0.197  0.174  0.224 
-#> 10 2026-05-15  2026-05-29       14 mlr    A          0.807  0.779  0.833 
+#>    origin_date target_date horizon engine lineage predicted lower upper observed
+#>  * <date>      <date>        <int> <chr>  <chr>       <dbl> <dbl> <dbl>    <dbl>
+#>  1 2026-05-11  2026-05-18        7 mlr    A            0.73  0.64  0.82    0.76 
+#>  2 2026-05-11  2026-05-18        7 mlr    B            0.04  0.01  0.09    0.026
+#>  3 2026-05-11  2026-05-18        7 mlr    ref          0.23  0.14  0.32    0.214
+#>  4 2026-05-11  2026-05-25       14 mlr    A            0.76  0.68  0.85    0.78 
+#>  5 2026-05-11  2026-05-25       14 mlr    B            0.03  0     0.07    0.034
+#>  6 2026-05-11  2026-05-25       14 mlr    ref          0.21  0.13  0.29    0.186
+#>  7 2026-05-18  2026-05-25        7 mlr    A            0.78  0.68  0.85    0.78 
+#>  8 2026-05-18  2026-05-25        7 mlr    B            0.02  0     0.06    0.034
+#>  9 2026-05-18  2026-05-25        7 mlr    ref          0.2   0.12  0.29    0.186
+#> 10 2026-05-18  2026-06-01       14 mlr    A            0.81  0.72  0.89    0.82 
 #> # ℹ 65 more rows
-#> # ℹ 1 more variable: observed <dbl>
 # }
 ```

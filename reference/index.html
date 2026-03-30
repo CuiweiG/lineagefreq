@@ -3,11 +3,11 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="../index.html">lineagefreq</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,9 +33,9 @@
     </div>
 
     <div class="section level2">
-      <h2 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a></h2>
+      <h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a></h2>
 
-
+      <div class="section-desc"><p>Create and manipulate lineage frequency data</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -58,6 +58,34 @@
 
         <dt>
 
+          <code><a href="as_lfq_data.html">as_lfq_data()</a></code>
+
+        </dt>
+        <dd>Coerce to lfq_data</dd>
+
+        <dt>
+
+          <code><a href="as.data.frame.lfq_data.html">as.data.frame(<i>&lt;lfq_data&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Convert lfq_data to long-format tibble</dd>
+
+        <dt>
+
+          <code><a href="read_lineage_counts.html">read_lineage_counts()</a></code>
+
+        </dt>
+        <dd>Read lineage count data from a CSV file</dd>
+
+        <dt>
+
+          <code><a href="simulate_dynamics.html">simulate_dynamics()</a></code>
+
+        </dt>
+        <dd>Simulate lineage frequency dynamics</dd>
+
+        <dt>
+
           <code><a href="collapse_lineages.html">collapse_lineages()</a></code>
 
         </dt>
@@ -69,17 +97,10 @@
 
         </dt>
         <dd>Filter sparse time points and lineages</dd>
-
-        <dt>
-
-          <code><a href="simulate_dynamics.html">simulate_dynamics()</a></code>
-
-        </dt>
-        <dd>Simulate lineage frequency dynamics</dd>
       </dl></div><div class="section level2">
-      <h2 id="model-fitting">Model fitting<a class="anchor" aria-label="anchor" href="#model-fitting"></a></h2>
+      <h2 id="modeling">Modeling<a class="anchor" aria-label="anchor" href="#modeling"></a></h2>
 
-
+      <div class="section-desc"><p>Fit frequency dynamics models</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -92,10 +113,75 @@
 
         </dt>
         <dd>Fit a lineage frequency model</dd>
+
+        <dt>
+
+          <code><a href="lfq_engines.html">lfq_engines()</a></code>
+
+        </dt>
+        <dd>List available modeling engines</dd>
+
+        <dt>
+
+          <code><a href="register_engine.html">register_engine()</a></code>
+
+        </dt>
+        <dd>Register a custom modeling engine</dd>
+
+        <dt>
+
+          <code><a href="unregister_engine.html">unregister_engine()</a></code>
+
+        </dt>
+        <dd>Remove a registered engine</dd>
       </dl></div><div class="section level2">
-      <h2 id="inference-and-forecasting">Inference and forecasting<a class="anchor" aria-label="anchor" href="#inference-and-forecasting"></a></h2>
+      <h2 id="pipe-api">Pipe API<a class="anchor" aria-label="anchor" href="#pipe-api"></a></h2>
+
+      <div class="section-desc"><p>Tidyverse-style chaining</p></div>
+
+      <dl></dl></div><div class="section level2">
 
 
+
+
+      <dl><dt>
+
+          <code><a href="lfq_fit.html">lfq_fit()</a></code>
+
+        </dt>
+        <dd>Pipe-friendly model fitting</dd>
+
+        <dt>
+
+          <code><a href="lfq_advantage.html">lfq_advantage()</a></code>
+
+        </dt>
+        <dd>Pipe-friendly growth advantage extraction</dd>
+
+        <dt>
+
+          <code><a href="lfq_forecast.html">lfq_forecast()</a></code>
+
+        </dt>
+        <dd>Pipe-friendly forecasting</dd>
+
+        <dt>
+
+          <code><a href="lfq_score.html">lfq_score()</a></code>
+
+        </dt>
+        <dd>Pipe-friendly backtesting + scoring</dd>
+
+        <dt>
+
+          <code><a href="lfq_summary.html">lfq_summary()</a></code>
+
+        </dt>
+        <dd>Convert lfq_fit results to a summary tibble</dd>
+      </dl></div><div class="section level2">
+      <h2 id="inference">Inference<a class="anchor" aria-label="anchor" href="#inference"></a></h2>
+
+      <div class="section-desc"><p>Extract growth advantages and forecasts</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -137,9 +223,9 @@
         </dt>
         <dd>Sequencing power analysis</dd>
       </dl></div><div class="section level2">
-      <h2 id="backtesting-and-evaluation">Backtesting and evaluation<a class="anchor" aria-label="anchor" href="#backtesting-and-evaluation"></a></h2>
+      <h2 id="backtesting">Backtesting<a class="anchor" aria-label="anchor" href="#backtesting"></a></h2>
 
-
+      <div class="section-desc"><p>Evaluate forecast accuracy</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -166,6 +252,29 @@
 
         </dt>
         <dd>Compare model engines from backtest scores</dd>
+      </dl></div><div class="section level2">
+      <h2 id="visualization">Visualization<a class="anchor" aria-label="anchor" href="#visualization"></a></h2>
+
+      <div class="section-desc"><p>Publication-ready plots</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="autoplot.lfq_fit.html">autoplot(<i>&lt;lfq_fit&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Plot lineage frequency model results</dd>
+
+        <dt>
+
+          <code><a href="autoplot.lfq_forecast.html">autoplot(<i>&lt;lfq_forecast&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Plot a lineage frequency forecast</dd>
 
         <dt>
 
@@ -174,9 +283,9 @@
         </dt>
         <dd>Plot backtest scores</dd>
       </dl></div><div class="section level2">
-      <h2 id="s-methods">S3 methods<a class="anchor" aria-label="anchor" href="#s-methods"></a></h2>
+      <h2 id="s-methods">S3 Methods<a class="anchor" aria-label="anchor" href="#s-methods"></a></h2>
 
-
+      <div class="section-desc"><p>Standard R model interface</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -224,43 +333,6 @@
 
         </dt>
         <dd>Augment data with fitted values from an lfq_fit object</dd>
-
-        <dt>
-
-          <code><a href="autoplot.lfq_fit.html">autoplot(<i>&lt;lfq_fit&gt;</i>)</a></code>
-
-        </dt>
-        <dd>Plot lineage frequency model results</dd>
-
-        <dt>
-
-          <code><a href="autoplot.lfq_forecast.html">autoplot(<i>&lt;lfq_forecast&gt;</i>)</a></code>
-
-        </dt>
-        <dd>Plot a lineage frequency forecast</dd>
-      </dl></div><div class="section level2">
-      <h2 id="datasets">Datasets<a class="anchor" aria-label="anchor" href="#datasets"></a></h2>
-
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="sarscov2_us_2022.html">sarscov2_us_2022</a></code>
-
-        </dt>
-        <dd>Simulated SARS-CoV-2 variant frequency data (US, 2022)</dd>
-
-        <dt>
-
-          <code><a href="influenza_h3n2.html">influenza_h3n2</a></code>
-
-        </dt>
-        <dd>Simulated influenza A/H3N2 clade frequency data</dd>
       </dl></div><div class="section level2">
       <h2 id="utilities">Utilities<a class="anchor" aria-label="anchor" href="#utilities"></a></h2>
 
@@ -276,7 +348,51 @@
           <code><a href="lfq_stan_available.html">lfq_stan_available()</a></code>
 
         </dt>
-        <dd>Check if CmdStan backend is available</dd>
+        <dd>Check if 'CmdStan' backend is available</dd>
+
+        <dt>
+
+          <code><a href="lfq_version.html">lfq_version()</a></code>
+
+        </dt>
+        <dd>Package version and system information</dd>
+      </dl></div><div class="section level2">
+      <h2 id="datasets">Datasets<a class="anchor" aria-label="anchor" href="#datasets"></a></h2>
+
+      <div class="section-desc"><p>Built-in example datasets</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="sarscov2_us_2022.html">sarscov2_us_2022</a></code>
+
+        </dt>
+        <dd>Simulated SARS-CoV-2 variant frequency data (US, 2022)</dd>
+
+        <dt>
+
+          <code><a href="cdc_ba2_transition.html">cdc_ba2_transition</a></code>
+
+        </dt>
+        <dd>CDC SARS-CoV-2 variant proportions: BA.1 to BA.2 transition (US, 2022)</dd>
+
+        <dt>
+
+          <code><a href="cdc_sarscov2_jn1.html">cdc_sarscov2_jn1</a></code>
+
+        </dt>
+        <dd>CDC SARS-CoV-2 variant proportions: JN.1 emergence (US, 2023-2024)</dd>
+
+        <dt>
+
+          <code><a href="influenza_h3n2.html">influenza_h3n2</a></code>
+
+        </dt>
+        <dd>Simulated influenza A/H3N2 clade frequency data</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
