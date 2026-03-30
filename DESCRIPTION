@@ -1,6 +1,6 @@
 Package: lineagefreq
 Title: Lineage Frequency Dynamics from Genomic Surveillance Counts
-Version: 0.2.0.9000
+Version: 0.2.0
 Authors@R:
     person("Cuiwei", "Gao", , "48gaocuiwei@gmail.com",
     role = c("aut", "cre", "cph"))
