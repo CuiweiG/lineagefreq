@@ -11,6 +11,7 @@ reference:
       - lfq_data
       - is_lfq_data
       - as_lfq_data
+      - as.data.frame.lfq_data
       - read_lineage_counts
       - simulate_dynamics
       - collapse_lineages
@@ -21,6 +22,17 @@ reference:
     contents:
       - fit_model
       - lfq_engines
+      - register_engine
+      - unregister_engine
+
+  - title: "Pipe API"
+    desc: "Tidyverse-style chaining"
+    contents:
+      - lfq_fit
+      - lfq_advantage
+      - lfq_forecast
+      - lfq_score
+      - lfq_summary
 
   - title: "Inference"
     desc: "Extract growth advantages and forecasts"
@@ -62,8 +74,9 @@ reference:
     desc: "Built-in example datasets"
     contents:
       - sarscov2_us_2022
-      - influenza_h3n2
+      - cdc_ba2_transition
       - cdc_sarscov2_jn1
+      - influenza_h3n2
 
 articles:
   - title: "Getting Started"
