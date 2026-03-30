@@ -23,11 +23,14 @@ jobs:
         with:
           use-public-rspm: true
 
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libharfbuzz-dev libfribidi-dev
+
       - name: Install dependencies
         run: |
           install.packages("pak", repos = "https://cloud.r-project.org")
           # Strip cmdstanr/posterior from DESCRIPTION before resolving deps
-          # (not on CRAN; only on mc-stan.org repo which pak can't reach here)
+          # (not on CRAN; only on mc-stan.org repo which pak cannot reach)
           desc <- readLines("DESCRIPTION")
           desc <- desc[!grepl("^\\s+cmdstanr", desc)]
           desc <- desc[!grepl("^\\s+posterior", desc)]
