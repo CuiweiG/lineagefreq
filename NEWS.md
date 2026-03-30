@@ -1,4 +1,4 @@
-# lineagefreq 0.2.0 (development)
+# lineagefreq 0.2.0
 
 ## New features
 
