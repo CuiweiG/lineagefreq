@@ -2,6 +2,8 @@
 
 ## lineagefreq 0.2.0
 
+CRAN release: 2026-04-03
+
 ### New features
 
 - **Pipe-friendly API**:

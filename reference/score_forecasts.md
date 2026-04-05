@@ -59,13 +59,13 @@ score_forecasts(bt)
 #> # A tibble: 8 × 4
 #>   engine horizon metric     value
 #>   <chr>    <int> <chr>      <dbl>
-#> 1 mlr          7 mae      0.00736
-#> 2 mlr          7 rmse     0.00985
+#> 1 mlr          7 mae      0.00690
+#> 2 mlr          7 rmse     0.00932
 #> 3 mlr          7 coverage 1      
 #> 4 mlr          7 wis      0.00215
-#> 5 mlr         14 mae      0.00667
-#> 6 mlr         14 rmse     0.00950
+#> 5 mlr         14 mae      0.00619
+#> 6 mlr         14 rmse     0.00805
 #> 7 mlr         14 coverage 1      
-#> 8 mlr         14 wis      0.00214
+#> 8 mlr         14 wis      0.00213
 # }
 ```

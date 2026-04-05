@@ -163,19 +163,20 @@ accurate short-term forecasts of SARS-CoV-2 variant frequency.
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Horizons: 7, 14 days</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 75 × 9</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    origin_date target_date horizon engine lineage predicted lower upper observed</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 2026-05-11  2026-05-18        7 mlr    A            0.73  0.64  0.82    0.76 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 2026-05-11  2026-05-18        7 mlr    B            0.04  0.01  0.09    0.026</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 2026-05-11  2026-05-18        7 mlr    ref          0.23  0.14  0.32    0.214</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 2026-05-11  2026-05-25       14 mlr    A            0.76  0.68  0.85    0.78 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 2026-05-11  2026-05-25       14 mlr    B            0.03  0     0.07    0.034</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 2026-05-11  2026-05-25       14 mlr    ref          0.21  0.13  0.29    0.186</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 2026-05-18  2026-05-25        7 mlr    A            0.78  0.68  0.85    0.78 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 2026-05-18  2026-05-25        7 mlr    B            0.02  0     0.06    0.034</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 2026-05-18  2026-05-25        7 mlr    ref          0.2   0.12  0.29    0.186</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 2026-05-18  2026-06-01       14 mlr    A            0.81  0.72  0.89    0.82 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    origin_date target_date horizon engine lineage predicted lower  upper</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 2026-05-17  2026-05-24        7 mlr    A            0.73  0.64 0.815 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 2026-05-17  2026-05-24        7 mlr    B            0.04  0.01 0.09  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 2026-05-17  2026-05-24        7 mlr    ref          0.23  0.14 0.31  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 2026-05-17  2026-05-31       14 mlr    A            0.77  0.68 0.86  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 2026-05-17  2026-05-31       14 mlr    B            0.03  0    0.06  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 2026-05-17  2026-05-31       14 mlr    ref          0.2   0.12 0.3   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 2026-05-24  2026-05-31        7 mlr    A            0.78  0.68 0.86  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 2026-05-24  2026-05-31        7 mlr    B            0.02  0    0.065<span style="text-decoration: underline;">2</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 2026-05-24  2026-05-31        7 mlr    ref          0.19  0.12 0.285 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 2026-05-24  2026-06-07       14 mlr    A            0.81  0.73 0.88  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 65 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1 more variable: observed &lt;dbl&gt;</span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

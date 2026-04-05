@@ -169,7 +169,7 @@ fit <- fit_model(sim, engine = "mlr")
 fit
 #> Lineage frequency model (mlr)
 #> 3 lineages, 15 time points
-#> Date range: 2026-03-30 to 2026-07-06
+#> Date range: 2026-04-05 to 2026-07-12
 #> Pivot: "KP.3"
 #> 
 #> Growth rates (per 7-day unit):

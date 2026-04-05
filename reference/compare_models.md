@@ -38,6 +38,6 @@ compare_models(sc)
 #> # A tibble: 1 × 5
 #>   engine     mae    rmse coverage     wis
 #>   <chr>    <dbl>   <dbl>    <dbl>   <dbl>
-#> 1 mlr    0.00701 0.00967        1 0.00214
+#> 1 mlr    0.00655 0.00868        1 0.00214
 # }
 ```
