@@ -238,18 +238,21 @@ fig2a <- tryCatch({
   if (length(ecdc_list) > 0) {
     ecdc_df <- bind_rows(ecdc_list)
     n_lin <- n_distinct(ecdc_df$lineage)
+    # Use ggtitle with bold "a" prefix instead of tag/annotate —
+    # tag and annotate both repeat across facets
     ggplot(ecdc_df, aes(x = date, y = frequency, colour = lineage)) +
       geom_line(linewidth = LW_DATA) +
       facet_wrap(~country, nrow = 1) +
       scale_x_date(date_labels = "%b %Y", date_breaks = "3 months") +
       scale_y_continuous(labels = scales::percent_format(), limits = c(0, 1)) +
       scale_colour_manual(values = pal_n(n_lin)) +
-      labs(x = "Date", y = "Frequency", colour = NULL, tag = "a") +
+      labs(x = "Date", y = "Frequency", colour = NULL,
+           title = expression(bold("a") ~ "  5-country BA.2 frequency dynamics")) +
       theme_nature() +
       theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 5),
             strip.text = element_text(size = 7),
             legend.position = "bottom", legend.key.width = unit(4, "mm"),
-            plot.tag = element_text(size = 10, face = "bold", family = "Arial"))
+            plot.title = element_text(size = 9, hjust = 0))
   } else p_unavail("ECDC data unavailable")
 }, error = function(e) p_unavail(e$message))
 
@@ -337,10 +340,11 @@ fig2c <- tryCatch({
     geom_hline(yintercept = 1, linetype = "dashed", linewidth = LW_REF,
                colour = "#999999") +
     facet_wrap(~label, nrow = 2) +
-    labs(x = "PIT value", y = "Density", tag = "c") +
+    labs(x = "PIT value", y = "Density",
+         title = expression(bold("c") ~ "  PIT histograms (MLR)")) +
     theme_nature() +
     theme(strip.text = element_text(size = 6),
-          plot.tag = element_text(size = 10, face = "bold", family = "Arial"))
+          plot.title = element_text(size = 9, hjust = 0))
 }, error = function(e) p_unavail(e$message))
 
 # ── Panel d: Reliability diagram (shape + grayscale for dataset) ─────────────
@@ -380,8 +384,11 @@ fig2d <- tryCatch({
          colour = NULL, shape = NULL) +
     panel_label("d") +
     theme_nature() +
-    theme(legend.position = "bottom", legend.key.size = unit(3, "mm"),
-          legend.text = element_text(size = 6))
+    theme(legend.position = "bottom",
+          legend.key.size = unit(3, "mm"),
+          legend.text = element_text(size = 5.5),
+          legend.margin = margin(0, 0, 0, 0),
+          legend.spacing.x = unit(1, "mm"))
 }, error = function(e) p_unavail(e$message))
 
 # ── Panel e: Winkler score comparison with paired lines ──────────────────────
@@ -398,9 +405,15 @@ fig2e <- tryCatch({
     pivot_wider(names_from = method, values_from = winkler) |>
     mutate(improvement = (Parametric - Conformal) / Parametric * 100)
 
-  p <- ggplot(winkler_data, aes(x = dataset, y = winkler, fill = method)) +
+  # Alpha difference for grayscale redundancy: Parametric=1.0, Conformal=0.6
+  winkler_data <- winkler_data |>
+    mutate(bar_alpha = ifelse(method == "Parametric", 1.0, 0.6))
+
+  p <- ggplot(winkler_data, aes(x = dataset, y = winkler, fill = method,
+                                 alpha = bar_alpha)) +
     geom_col(position = position_dodge(width = 0.6), width = 0.5) +
-    scale_fill_manual(values = pal_methods)
+    scale_fill_manual(values = pal_methods) +
+    scale_alpha_identity()
 
   # Paired difference lines
   if (nrow(winkler_wide) > 0) {
@@ -639,9 +652,9 @@ ext1b <- tryCatch({
                hjust = 1.1, vjust = -0.5, size = 6 / .pt,
                family = "Arial", colour = "#D55E00") +
       scale_x_log10(breaks = c(100, 200, 500, 1000, 2000, 5000)) +
-      labs(x = "Sequences per period", y = "95% coverage (%)") +
-      panel_label("b") +
-      theme_nature()
+      labs(x = "Sequences per period", y = "95% coverage (%)", tag = "b") +
+      theme_nature() +
+      theme(plot.tag = element_text(size = 10, face = "bold", family = "Arial"))
   } else p_unavail("Sample size data unavailable")
 }, error = function(e) p_unavail(e$message))
 
@@ -659,9 +672,9 @@ ext1c <- tryCatch({
                hjust = 1.1, vjust = -0.5, size = 6 / .pt,
                family = "Arial", colour = "#D55E00") +
       scale_x_log10(breaks = c(100, 200, 500, 1000, 2000, 5000)) +
-      labs(x = "Sequences per period", y = "MAE (%)") +
-      panel_label("c") +
-      theme_nature()
+      labs(x = "Sequences per period", y = "MAE (%)", tag = "c") +
+      theme_nature() +
+      theme(plot.tag = element_text(size = 10, face = "bold", family = "Arial"))
   } else p_unavail("Sample size data unavailable")
 }, error = function(e) p_unavail(e$message))
 
