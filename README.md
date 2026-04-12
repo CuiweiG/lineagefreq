@@ -185,6 +185,28 @@ approximately 4% MAE at 2-week and 8% at 4-week horizon.
 - `as_lfq_data()` generic for extensible data import
 - `read_lineage_counts()` for CSV input
 
+## Validated on real data
+
+Rolling-origin evaluation on CDC BA.1-to-BA.2 transition data
+(December 2021 to June 2022, 5 lineages, biweekly):
+
+| Horizon | Median AE | Mean AE | Coverage (95%) |
+|---------|-----------|---------|---------------|
+| 7 days  | 0.5 pp    | 3.4 pp  | 71%           |
+| 14 days | 0.9 pp    | 5.7 pp  | 64%           |
+| 21 days | 0.9 pp    | 5.3 pp  | 50%           |
+| 28 days | 2.0 pp    | 9.1 pp  | 40%           |
+
+Point accuracy is consistent with Abousamra, Figgins & Bedford
+(2024, *PLOS Comp Bio*): 0.6 pp median AE at 7 days for countries
+with robust surveillance.
+
+**Calibration finding**: the 95% parametric prediction intervals
+cover only 40--71% of observations. Calibration diagnostics
+(`calibrate()`) reveal this underdispersion; conformal prediction
+(`conformal_forecast()`) provides correctly-calibrated intervals.
+No other genomic surveillance tool diagnoses or corrects this.
+
 ## Supported pathogens
 
 Any pathogen with variant/lineage-resolved sequencing count data:

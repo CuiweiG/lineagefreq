@@ -176,10 +176,14 @@ score_forecasts <- function(bt,
 
 
 #' Implied sigma from prediction interval (internal)
+#'
+#' Floors sigma at 0.001 to prevent numerical overflow in log score
+#' and DSS when prediction intervals have near-zero width (e.g.,
+#' fitted values with no uncertainty in the backtest).
 #' @noRd
 .implied_sigma <- function(df) {
   width <- df$upper - df$lower
-  pmax(width / (2 * stats::qnorm(0.975)), 1e-10)
+  pmax(width / (2 * stats::qnorm(0.975)), 0.001)
 }
 
 
