@@ -35,11 +35,12 @@ accuracy evaluation.
 ## Installation
 
 ```r
-# install.packages("pak")
-pak::pak("CuiweiG/lineagefreq")
+# Stable release from CRAN
+install.packages("lineagefreq")
 
-# Or with devtools:
-# devtools::install_github("CuiweiG/lineagefreq")
+# Development version from GitHub
+# install.packages("pak")
+# pak::pak("CuiweiG/lineagefreq")
 ```
 
 ## Quick example
@@ -151,11 +152,15 @@ SARS-CoV-2, influenza, RSV, mpox, and others.
 
 ## Citation
 
+If you use lineagefreq in published work, please cite:
+
+> Gao C (2026). "lineagefreq: Modelling Pathogen Lineage Frequency
+> Dynamics and Forecasting Variant Replacement from Genomic Surveillance
+> Data." *Journal of Open Source Software* (submitted).
+
 ```r
 citation("lineagefreq")
 ```
-
-A software paper and Zenodo DOI will be added upon publication.
 
 ## License
 
