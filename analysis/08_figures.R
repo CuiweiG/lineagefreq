@@ -44,8 +44,8 @@ pal_extended <- c("#0072B2", "#E69F00", "#009E73", "#D55E00", "#56B4E9",
                   "#CC79A7", "#F0E442", "#999999", "#000000", "#332288")
 pal_n <- function(n) head(pal_extended, max(n, 1))
 
-# Methods: blue vs orange (never red vs green)
-pal_methods <- c(Parametric = "#0072B2", Conformal = "#E69F00")
+# Methods: blue vs teal (NOT orange — avoid confusion with immune escape gold)
+pal_methods <- c(Parametric = "#0072B2", Conformal = "#009E73")
 
 # Fitness components
 pal_fitness <- c(Transmissibility = "#0072B2", Immune_escape = "#E69F00")
@@ -244,12 +244,12 @@ fig2a <- tryCatch({
       scale_x_date(date_labels = "%b %Y", date_breaks = "3 months") +
       scale_y_continuous(labels = scales::percent_format(), limits = c(0, 1)) +
       scale_colour_manual(values = pal_n(n_lin)) +
-      labs(x = "Date", y = "Frequency", colour = NULL) +
-      panel_label("a") +
+      labs(x = "Date", y = "Frequency", colour = NULL, tag = "a") +
       theme_nature() +
       theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 5),
             strip.text = element_text(size = 7),
-            legend.position = "bottom", legend.key.width = unit(4, "mm"))
+            legend.position = "bottom", legend.key.width = unit(4, "mm"),
+            plot.tag = element_text(size = 10, face = "bold", family = "Arial"))
   } else p_unavail("ECDC data unavailable")
 }, error = function(e) p_unavail(e$message))
 
@@ -337,10 +337,10 @@ fig2c <- tryCatch({
     geom_hline(yintercept = 1, linetype = "dashed", linewidth = LW_REF,
                colour = "#999999") +
     facet_wrap(~label, nrow = 2) +
-    labs(x = "PIT value", y = "Density") +
-    panel_label("c") +
+    labs(x = "PIT value", y = "Density", tag = "c") +
     theme_nature() +
-    theme(strip.text = element_text(size = 6))
+    theme(strip.text = element_text(size = 6),
+          plot.tag = element_text(size = 10, face = "bold", family = "Arial"))
 }, error = function(e) p_unavail(e$message))
 
 # ── Panel d: Reliability diagram (shape + grayscale for dataset) ─────────────
@@ -349,25 +349,30 @@ fig2d <- tryCatch({
   rel_df <- calibration$reliability |>
     filter(engine == "mlr", !is.na(observed_coverage))
 
-  # Assign shape: square for US, circle for European
+  # Abbreviate dataset names for legible legend
   rel_df <- rel_df |>
     mutate(
-      ds_shape = ifelse(grepl("US|builtin", dataset), "US", "Europe"),
-      ds_gray  = case_when(
-        grepl("US_BA2|ba2_transition", dataset) ~ "grey20",
-        grepl("US_JN1|jn1", dataset) ~ "grey35",
-        TRUE ~ "grey60"
-      )
+      ds_short = case_when(
+        grepl("Denmark", dataset)     ~ "DK",
+        grepl("France", dataset)      ~ "FR",
+        grepl("Germany", dataset)     ~ "DE",
+        grepl("Netherlands", dataset) ~ "NL",
+        grepl("Spain", dataset)       ~ "ES",
+        grepl("JN1|jn1", dataset)     ~ "US_JN1",
+        grepl("BA2|ba2", dataset)     ~ "US_BA2",
+        TRUE                          ~ dataset
+      ),
+      ds_shape = ifelse(grepl("US", ds_short), "US", "Europe")
     )
 
   ggplot(rel_df, aes(x = nominal_coverage, y = observed_coverage,
-                     group = dataset, shape = ds_shape)) +
+                     group = ds_short, shape = ds_shape)) +
     geom_ribbon(data = tibble(x = seq(0, 1, 0.01)),
                 aes(x = x, ymin = pmax(0, x - 0.10), ymax = pmin(1, x + 0.10)),
                 inherit.aes = FALSE, fill = "grey90", alpha = 0.5) +
     geom_abline(slope = 1, intercept = 0, linewidth = LW_REF, colour = "black") +
-    geom_line(aes(colour = dataset), linewidth = LW_DATA) +
-    geom_point(aes(colour = dataset), size = 1.2) +
+    geom_line(aes(colour = ds_short), linewidth = LW_DATA) +
+    geom_point(aes(colour = ds_short), size = 1.2) +
     coord_equal(xlim = c(0, 1), ylim = c(0, 1)) +
     scale_shape_manual(values = c(US = 15, Europe = 16)) +
     scale_colour_grey(start = 0.15, end = 0.7) +
@@ -376,77 +381,12 @@ fig2d <- tryCatch({
     panel_label("d") +
     theme_nature() +
     theme(legend.position = "bottom", legend.key.size = unit(3, "mm"),
-          legend.text = element_text(size = 5))
+          legend.text = element_text(size = 6))
 }, error = function(e) p_unavail(e$message))
 
-# ── Panel e: Parametric vs Conformal intervals (2 datasets, 2x2) ────────────
+# ── Panel e: Winkler score comparison with paired lines ──────────────────────
 
 fig2e <- tryCatch({
-  cc_keys <- names(calibration$calibration_comparison)
-  # Pick a European and US example
-  dk_key <- grep("Denmark|dk", cc_keys, ignore.case = TRUE, value = TRUE)
-  us_key <- grep("BA2_builtin|ba2_transition", cc_keys, ignore.case = TRUE, value = TRUE)
-  if (length(dk_key) == 0) dk_key <- cc_keys[1]
-  if (length(us_key) == 0) us_key <- cc_keys[min(2, length(cc_keys))]
-
-  make_interval_subpanel <- function(cc_key, dataset_label, method,
-                                     lo_col, hi_col, colour) {
-    cal_comp <- calibration$calibration_comparison[[cc_key]]
-    fcast_data <- if (method == "Parametric") cal_comp$parametric
-                  else cal_comp$conformal
-    if (is.null(fcast_data)) return(p_unavail())
-
-    top_lin <- fcast_data |>
-      group_by(lineage) |>
-      summarise(peak = max(observed, na.rm = TRUE), .groups = "drop") |>
-      slice_max(peak, n = 1) |> pull(lineage)
-    min_h <- min(fcast_data$horizon, na.rm = TRUE)
-    df <- fcast_data |> filter(lineage == top_lin[1], horizon == min_h)
-    if (nrow(df) == 0) return(p_unavail())
-
-    outside <- if (lo_col %in% names(df))
-      df |> filter(observed < .data[[lo_col]] | observed > .data[[hi_col]])
-    else tibble()
-
-    lo <- if (lo_col %in% names(df)) lo_col else "lower"
-    hi <- if (hi_col %in% names(df)) hi_col else "upper"
-
-    ggplot(df, aes(x = origin_date)) +
-      geom_ribbon(aes(ymin = .data[[lo]], ymax = .data[[hi]]),
-                  fill = colour, alpha = 0.2) +
-      geom_line(aes(y = predicted), colour = colour, linewidth = LW_DATA) +
-      geom_point(aes(y = observed), size = 0.4, colour = "black") +
-      {if (nrow(outside) > 0)
-        geom_point(data = outside, aes(y = observed),
-                   size = 0.8, colour = "#D55E00", shape = 16)} +
-      scale_x_date(date_labels = "%b %Y") +
-      scale_y_continuous(labels = scales::percent_format(),
-                         breaks = c(0, 0.5, 1), limits = c(0, 1)) +
-      labs(x = NULL, y = NULL,
-           title = paste0(dataset_label, " \u2014 ", method)) +
-      theme_nature() +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 5),
-            plot.title = element_text(size = 7))
-  }
-
-  dk_label <- sub("_BA2$", "", sub("__.*", "", dk_key[1]))
-  us_label <- sub("_BA2.*|__.*", "", us_key[1])
-
-  p_dk_para <- make_interval_subpanel(dk_key[1], dk_label, "Parametric",
-                                       "lower", "upper", pal_methods["Parametric"])
-  p_dk_conf <- make_interval_subpanel(dk_key[1], dk_label, "Conformal",
-                                       "conf_lower", "conf_upper", pal_methods["Conformal"])
-  p_us_para <- make_interval_subpanel(us_key[1], us_label, "Parametric",
-                                       "lower", "upper", pal_methods["Parametric"])
-  p_us_conf <- make_interval_subpanel(us_key[1], us_label, "Conformal",
-                                       "conf_lower", "conf_upper", pal_methods["Conformal"])
-
-  wrap_elements((p_dk_para | p_dk_conf) / (p_us_para | p_us_conf))
-}, error = function(e) p_unavail(e$message))
-
-# ── Panel f: Winkler score comparison with paired lines ──────────────────────
-
-fig2f <- tryCatch({
   winkler_data <- map_dfr(calibration$calibration_comparison, function(cc) {
     cc$metrics
   }) |>
@@ -473,18 +413,20 @@ fig2f <- tryCatch({
   }
 
   p + labs(x = NULL, y = "Winkler score (lower = better)", fill = NULL) +
-    panel_label("f") +
+    panel_label("e") +
     theme_nature() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 5),
           legend.position = "bottom", legend.key.size = unit(3, "mm"))
 }, error = function(e) p_unavail(e$message))
 
+# 5 panels: a(frequency), b(forest), c(PIT), d(reliability), e(Winkler)
+# Layout: 3 rows — top 2, middle 2, bottom 1 centered
 figure2 <- (fig2a | fig2b) /
             (fig2c | fig2d) /
-            (wrap_elements(fig2e) | fig2f) +
-  plot_layout(heights = c(1, 1, 1.2))
+            (plot_spacer() | fig2e | plot_spacer()) +
+  plot_layout(heights = c(1, 1, 0.8), widths = c(1, 2, 1))
 
-save_figure(figure2, "figure2", width_mm = 180, height_mm = 180)
+save_figure(figure2, "figure2", width_mm = 180, height_mm = 170)
 
 ###############################################################################
 # MAIN FIGURE 3: Mechanism + Generalization (180 x 100 mm)
@@ -657,10 +599,20 @@ ext1a <- tryCatch({
       geom_point(size = 0.5, colour = "black")
 
     for (i in seq_len(nrow(triggers))) {
-      p <- p + geom_vline(xintercept = triggers$trigger_date[i],
-                          colour = pal_methods[triggers$method[i]],
-                          linewidth = LW_DATA * 2)
+      trigger_col <- pal_methods[triggers$method[i]]
+      p <- p +
+        geom_vline(xintercept = triggers$trigger_date[i],
+                   colour = trigger_col, linewidth = LW_DATA * 2) +
+        annotate("text", x = triggers$trigger_date[i], y = 0,
+                 label = triggers$method[i], hjust = -0.1, vjust = -0.5,
+                 size = 5 / .pt, family = "Arial", colour = trigger_col)
     }
+
+    # Mark frequency peak
+    peak_row <- freq_df |> slice_max(frequency, n = 1)
+    p <- p + annotate("text", x = peak_row$date[1], y = peak_row$frequency[1],
+                       label = "Peak", hjust = -0.2, vjust = 0,
+                       size = 5 / .pt, family = "Arial", colour = "#E69F00")
 
     p + scale_x_date(date_labels = "%b %Y") +
       scale_y_continuous(labels = scales::percent_format()) +
@@ -730,9 +682,11 @@ ext2a <- tryCatch({
     trend <- cor(window_anal$window_weeks, window_anal$ks_D,
                  method = "spearman", use = "complete.obs")
 
+    # y-axis starts at 0 for honest representation of effect size
     ggplot(window_anal, aes(x = window_weeks, y = ks_D)) +
       geom_line(linewidth = LW_DATA, colour = "#0072B2") +
       geom_point(size = 2, colour = "#0072B2") +
+      scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.1))) +
       annotate("text", x = max(window_anal$window_weeks), y = Inf,
                label = sprintf("Spearman r = %.2f, n = %d windows", trend, n_w),
                hjust = 1, vjust = 1.5, size = 6 / .pt, family = "Arial") +
