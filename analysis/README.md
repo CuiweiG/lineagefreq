@@ -81,7 +81,7 @@ source("analysis/01_data_prep.R")
 | who_flunet.csv | WHO FluNet | https://www.who.int/tools/flunet | WHO Terms of Use |
 | owid_vaccinations.csv | Our World in Data (OWID) | https://github.com/owid/covid-19-data | CC BY 4.0 |
 | cdc_seroprevalence.csv | CDC Nationwide Blood Donor Seroprevalence Survey | https://covid.cdc.gov/covid-data-tracker/#nationwide-blood-donor-seroprevalence | Public Domain (US Government) |
-| cdc_sarscov2_ba2, cdc_sarscov2_jn1 | Package built-in | lineagefreq::cdc_sarscov2_ba2 | Per package license |
+| cdc_ba2_transition, cdc_sarscov2_jn1 | Package built-in | lineagefreq::cdc_ba2_transition | Per package license |
 
 ## Known Limitations
 

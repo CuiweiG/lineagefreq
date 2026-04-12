@@ -8,7 +8,7 @@ source("analysis/00_setup.R")
 
 set.seed(20240414)
 
-benchmark  <- readRDS("analysis/results/benchmark_multicountry.rds")
+benchmark   <- readRDS("analysis/results/benchmark_multicountry.rds")
 calibration <- readRDS("analysis/results/calibration_comparison.rds")
 
 ###############################################################################
@@ -19,19 +19,16 @@ cat("  [A] Vaccine update trigger analysis...\n")
 
 # Scenario: A public health agency triggers a vaccine composition update review
 # when a new variant's 95% LOWER confidence bound exceeds 30% frequency.
-# This threshold is relevant because it signals the new variant is likely to
-# become dominant, warranting urgent vaccine reformulation.
-#
 # We compare trigger timing across three interval estimation methods:
 # - Parametric: standard MLR-based intervals (potentially too narrow)
-# - Conformal: adaptive conformal intervals (wider, coverage-guaranteed)
-# - Recalibrated: isotonic regression recalibrated intervals
+# - Conformal: split conformal intervals from 03_calibration.R
+# - Recalibrated: scaled parametric intervals from 03_calibration.R
 
 TRIGGER_THRESHOLD <- 0.30  # 30% frequency
 
 # Find BA.2 backtest results (US built-in data preferred)
 ba2_keys <- names(benchmark$backtest_results) |>
-  grep("BA2|ba2", x = _, value = TRUE)
+  grep("BA2|ba2|ba2_transition", x = _, value = TRUE)
 
 if (length(ba2_keys) == 0) {
   cat("    WARNING: No BA.2 backtest results found; using first available\n")
@@ -46,86 +43,74 @@ for (key in ba2_keys) {
   tryCatch({
     cat(sprintf("    Analyzing trigger timing for %s...\n", bt$dataset))
 
-    fcast <- bt$result$forecasts
+    # backtest() returns an lfq_backtest tibble directly (no $forecasts)
+    # Columns: origin_date, target_date, horizon, engine, lineage, predicted,
+    #          lower, upper, observed
+    bt_tibble <- bt$result
 
-    # Identify BA.2 lineage column (may be named differently)
-    ba2_lineage <- fcast |>
+    # Identify BA.2 lineage
+    ba2_lineage <- bt_tibble |>
       filter(grepl("BA\\.2|BA2", lineage, ignore.case = TRUE)) |>
       pull(lineage) |>
       unique()
 
     if (length(ba2_lineage) == 0) {
       cat("      No BA.2 lineage found; using lineage with largest max frequency\n")
-      ba2_lineage <- fcast |>
+      ba2_lineage <- bt_tibble |>
         group_by(lineage) |>
-        summarise(max_obs = max(observed, na.rm = TRUE)) |>
+        summarise(max_obs = max(observed, na.rm = TRUE), .groups = "drop") |>
         slice_max(max_obs, n = 1) |>
         pull(lineage)
     }
 
-    ba2_fcast <- fcast |>
+    ba2_bt <- bt_tibble |>
       filter(lineage == ba2_lineage[1])
 
-    # Actual crossing date: first date when BA.2 observed > 30%
-    actual_crossing <- ba2_fcast |>
+    # Actual crossing date: first origin_date when BA.2 observed > 30%
+    actual_crossing <- ba2_bt |>
       filter(observed > TRIGGER_THRESHOLD) |>
-      slice_min(origin_date) |>
+      slice_min(origin_date, n = 1) |>
       pull(origin_date) |>
       min(na.rm = TRUE)
 
-    # Parametric trigger: first origin where lower_95 > threshold
-    parametric_trigger <- ba2_fcast |>
-      filter(lower_95 > TRIGGER_THRESHOLD) |>
-      slice_min(origin_date) |>
-      pull(origin_date) |>
-      min(na.rm = TRUE)
+    # Parametric trigger: first origin where lower > threshold
+    # Column is 'lower' (not 'lower_95')
+    parametric_trigger <- ba2_bt |>
+      filter(!is.na(lower), lower > TRIGGER_THRESHOLD) |>
+      slice_min(origin_date, n = 1) |>
+      pull(origin_date)
+    parametric_trigger <- if (length(parametric_trigger) > 0) min(parametric_trigger) else NA
 
-    # Conformal trigger
-    conformal_cal <- calibration$calibration_comparison[[key]]
+    # Conformal trigger: use conformal intervals from 03_calibration.R
     conformal_trigger <- NA
-    if (!is.null(conformal_cal$conformal)) {
-      conf_fcast <- if (is.data.frame(conformal_cal$conformal)) {
-        conformal_cal$conformal
-      } else {
-        conformal_cal$conformal$forecasts
-      }
+    cal_comp <- calibration$calibration_comparison[[key]]
+    if (!is.null(cal_comp) && !is.null(cal_comp$conformal)) {
+      conf_data <- cal_comp$conformal
+      conf_ba2 <- conf_data |>
+        filter(lineage == ba2_lineage[1])
 
-      if (!is.null(conf_fcast)) {
-        conf_ba2 <- conf_fcast |>
-          filter(grepl("BA\\.2|BA2", lineage, ignore.case = TRUE) |
-                   lineage == ba2_lineage[1])
-
-        if (nrow(conf_ba2) > 0) {
-          conformal_trigger <- conf_ba2 |>
-            filter(lower_95 > TRIGGER_THRESHOLD) |>
-            slice_min(origin_date) |>
-            pull(origin_date) |>
-            min(na.rm = TRUE)
-        }
+      if (nrow(conf_ba2) > 0 && "conf_lower" %in% names(conf_ba2)) {
+        triggered <- conf_ba2 |>
+          filter(!is.na(conf_lower), conf_lower > TRIGGER_THRESHOLD) |>
+          slice_min(origin_date, n = 1) |>
+          pull(origin_date)
+        conformal_trigger <- if (length(triggered) > 0) min(triggered) else NA
       }
     }
 
-    # Recalibrated trigger
+    # Recalibrated trigger: use recalibrated intervals from 03_calibration.R
     recal_trigger <- NA
-    if (!is.null(conformal_cal$recalibrated)) {
-      recal_fcast <- if (is.data.frame(conformal_cal$recalibrated)) {
-        conformal_cal$recalibrated
-      } else {
-        conformal_cal$recalibrated$forecasts
-      }
+    if (!is.null(cal_comp) && !is.null(cal_comp$recalibrated)) {
+      recal_data <- cal_comp$recalibrated
+      recal_ba2 <- recal_data |>
+        filter(lineage == ba2_lineage[1])
 
-      if (!is.null(recal_fcast)) {
-        recal_ba2 <- recal_fcast |>
-          filter(grepl("BA\\.2|BA2", lineage, ignore.case = TRUE) |
-                   lineage == ba2_lineage[1])
-
-        if (nrow(recal_ba2) > 0) {
-          recal_trigger <- recal_ba2 |>
-            filter(lower_95 > TRIGGER_THRESHOLD) |>
-            slice_min(origin_date) |>
-            pull(origin_date) |>
-            min(na.rm = TRUE)
-        }
+      if (nrow(recal_ba2) > 0 && "recal_lower" %in% names(recal_ba2)) {
+        triggered <- recal_ba2 |>
+          filter(!is.na(recal_lower), recal_lower > TRIGGER_THRESHOLD) |>
+          slice_min(origin_date, n = 1) |>
+          pull(origin_date)
+        recal_trigger <- if (length(triggered) > 0) min(triggered) else NA
       }
     }
 
@@ -133,52 +118,45 @@ for (key in ba2_keys) {
     trigger_df <- tibble(
       dataset = bt$dataset,
       method  = c("Parametric", "Conformal", "Recalibrated"),
-      trigger_date = c(parametric_trigger, conformal_trigger, recal_trigger),
+      trigger_date = as.Date(c(parametric_trigger, conformal_trigger, recal_trigger)),
       actual_crossing_date = actual_crossing,
       error_days = as.numeric(
-        c(parametric_trigger, conformal_trigger, recal_trigger) - actual_crossing
+        as.Date(c(parametric_trigger, conformal_trigger, recal_trigger)) - actual_crossing
       )
     )
 
     # False trigger rate: proportion of origins where method triggered
     # but actual hadn't crossed yet
-    compute_false_rate <- function(fcast_df, lineage_name) {
-      if (is.null(fcast_df) || nrow(fcast_df) == 0) return(NA_real_)
-      lin_data <- fcast_df |>
-        filter(lineage == lineage_name)
-      if (nrow(lin_data) == 0) return(NA_real_)
+    compute_false_rate <- function(bt_df, lower_col, lineage_name) {
+      lin_data <- bt_df |> filter(lineage == lineage_name)
+      if (nrow(lin_data) == 0 || !lower_col %in% names(lin_data)) return(NA_real_)
 
-      triggered <- lin_data |>
-        filter(lower_95 > TRIGGER_THRESHOLD)
-      false_triggers <- triggered |>
-        filter(observed <= TRIGGER_THRESHOLD)
-
+      triggered <- lin_data |> filter(.data[[lower_col]] > TRIGGER_THRESHOLD)
       if (nrow(triggered) == 0) return(0)
+      false_triggers <- triggered |> filter(observed <= TRIGGER_THRESHOLD)
       nrow(false_triggers) / nrow(triggered)
     }
 
     trigger_df$false_trigger_rate <- c(
-      compute_false_rate(ba2_fcast, ba2_lineage[1]),
-      tryCatch(compute_false_rate(
-        if (is.data.frame(conformal_cal$conformal)) conformal_cal$conformal
-        else conformal_cal$conformal$forecasts,
-        ba2_lineage[1]
-      ), error = function(e) NA_real_),
-      tryCatch(compute_false_rate(
-        if (is.data.frame(conformal_cal$recalibrated)) conformal_cal$recalibrated
-        else conformal_cal$recalibrated$forecasts,
-        ba2_lineage[1]
-      ), error = function(e) NA_real_)
+      compute_false_rate(ba2_bt, "lower", ba2_lineage[1]),
+      if (!is.null(cal_comp$conformal))
+        compute_false_rate(cal_comp$conformal, "conf_lower", ba2_lineage[1])
+      else NA_real_,
+      if (!is.null(cal_comp$recalibrated))
+        compute_false_rate(cal_comp$recalibrated, "recal_lower", ba2_lineage[1])
+      else NA_real_
     )
 
     trigger_results[[key]] <- trigger_df
     cat(sprintf("      Actual crossing: %s\n", actual_crossing))
-    cat(sprintf("      Parametric trigger: %s (%+d days)\n",
-                parametric_trigger, trigger_df$error_days[1]))
-    cat(sprintf("      Conformal trigger:  %s (%+d days)\n",
-                conformal_trigger, trigger_df$error_days[2]))
-    cat(sprintf("      Recalibrated trigger: %s (%+d days)\n",
-                recal_trigger, trigger_df$error_days[3]))
+    for (i in 1:3) {
+      cat(sprintf("      %s trigger: %s (%s days)\n",
+                  trigger_df$method[i],
+                  ifelse(is.na(trigger_df$trigger_date[i]), "Not triggered",
+                         as.character(trigger_df$trigger_date[i])),
+                  ifelse(is.na(trigger_df$error_days[i]), "N/A",
+                         sprintf("%+d", as.integer(trigger_df$error_days[i])))))
+    }
   },
   error = function(e) {
     cat(sprintf("    WARNING: Trigger analysis failed for %s: %s\n",
@@ -199,30 +177,49 @@ cat("  [B] Sample size vs coverage analysis...\n")
 
 # Systematically downsample the built-in BA.2 data to assess how sample size
 # affects both point forecast accuracy (MAE) and interval calibration (coverage).
-# This addresses the practical question: how many sequences per week are needed?
 
 sample_sizes <- c(5000L, 2000L, 1000L, 500L, 200L, 100L)
 n_replicates <- 50L
 
 # Load built-in BA.2 data
-ba2_data <- tryCatch(cdc_sarscov2_ba2, error = function(e) {
+# Dataset name is cdc_ba2_transition (not cdc_sarscov2_ba2)
+ba2_raw <- tryCatch(cdc_ba2_transition, error = function(e) {
   cat("    WARNING: Built-in BA.2 data not available; skipping\n")
   NULL
 })
 
-if (!is.null(ba2_data)) {
-  # Get original counts matrix
-  original_counts <- ba2_data$counts
-  original_dates  <- ba2_data$dates
+if (!is.null(ba2_raw)) {
+  # ba2_raw is a data.frame with columns: date, lineage, count, proportion
+  # Extract unique dates and lineages to compute proportions
+  ba2_wide <- ba2_raw |>
+    group_by(date, lineage) |>
+    summarise(count = sum(count), .groups = "drop") |>
+    group_by(date) |>
+    mutate(total = sum(count), prop = count / total) |>
+    ungroup()
 
-  # Total sequences per time point
-  original_totals <- rowSums(original_counts)
-  # Original proportions
-  original_props  <- original_counts / original_totals
+  unique_dates    <- sort(unique(ba2_wide$date))
+  unique_lineages <- sort(unique(ba2_wide$lineage))
 
-  cat(sprintf("    Original data: %d time points, %d-%d seqs/period\n",
-              nrow(original_counts),
-              min(original_totals), max(original_totals)))
+  # Build proportions matrix for downsampling
+  prop_matrix <- ba2_wide |>
+    select(date, lineage, prop) |>
+    pivot_wider(names_from = lineage, values_from = prop, values_fill = 0) |>
+    arrange(date)
+  original_dates <- prop_matrix$date
+  original_props <- as.matrix(prop_matrix |> select(-date))
+
+  cat(sprintf("    Original data: %d time points, %d lineages\n",
+              length(original_dates), ncol(original_props)))
+
+  # Create lfq_data from built-in for backtest validation
+  ba2_lfq <- tryCatch(
+    lfq_data(ba2_raw, lineage = lineage, date = date, count = count),
+    error = function(e) {
+      cat(sprintf("    WARNING: lfq_data() failed: %s\n", e$message))
+      NULL
+    }
+  )
 
   # Run downsampling in parallel
   downsample_configs <- expand.grid(
@@ -234,41 +231,39 @@ if (!is.null(ba2_data)) {
   cat(sprintf("    Running %d downsampling configs (%d sizes × %d reps)...\n",
               nrow(downsample_configs), length(sample_sizes), n_replicates))
 
-  run_downsample <- function(ss, rep_id, orig_props, orig_dates) {
+  run_downsample <- function(ss, rep_id, orig_props, orig_dates, lineage_names) {
     set.seed(20240414 + rep_id * 1000 + ss)
 
-    # Resample counts from multinomial with reduced total
-    n_times    <- nrow(orig_props)
-    n_lineages <- ncol(orig_props)
-    new_counts <- matrix(0L, nrow = n_times, ncol = n_lineages)
+    n_times <- nrow(orig_props)
 
+    # Resample counts from multinomial with reduced total
+    count_rows <- list()
     for (t in seq_len(n_times)) {
       probs <- orig_props[t, ]
       probs[probs < 0] <- 0
       probs <- probs / sum(probs)
-      new_counts[t, ] <- rmultinom(1, size = ss, prob = probs)
-    }
+      sampled <- rmultinom(1, size = ss, prob = probs)[, 1]
 
-    colnames(new_counts) <- colnames(orig_props)
+      for (j in seq_along(lineage_names)) {
+        count_rows[[length(count_rows) + 1]] <- tibble(
+          date = orig_dates[t], lineage = lineage_names[j], count = sampled[j]
+        )
+      }
+    }
+    ds_df <- bind_rows(count_rows)
 
     # Create lfq_data and run backtest
     tryCatch({
-      ds_data <- lfq_data(counts = new_counts, dates = orig_dates)
-      bt <- backtest(ds_data, engine = "mlr", horizons = c(14L),
-                     min_train = 42L)
+      ds_data <- lfq_data(ds_df, lineage = lineage, date = date, count = count)
+      # backtest() param is 'engines' (plural), not 'engine'
+      bt <- backtest(ds_data, engines = "mlr", horizons = 14L, min_train = 42L)
 
-      fcast <- bt$forecasts
+      # bt is an lfq_backtest tibble; columns: predicted, observed, lower, upper
+      mae <- mean(abs(bt$predicted - bt$observed), na.rm = TRUE)
+      cov95 <- mean(bt$observed >= bt$lower &
+                     bt$observed <= bt$upper, na.rm = TRUE)
 
-      mae <- mean(abs(fcast$predicted - fcast$observed), na.rm = TRUE)
-      cov95 <- mean(fcast$observed >= fcast$lower_95 &
-                       fcast$observed <= fcast$upper_95, na.rm = TRUE)
-
-      tibble(
-        sample_size = ss,
-        replicate   = rep_id,
-        mae         = mae,
-        coverage_95 = cov95
-      )
+      tibble(sample_size = ss, replicate = rep_id, mae = mae, coverage_95 = cov95)
     },
     error = function(e) {
       tibble(sample_size = ss, replicate = rep_id,
@@ -282,8 +277,9 @@ if (!is.null(ba2_data)) {
       rep_id = downsample_configs$replicate
     ),
     run_downsample,
-    orig_props = original_props,
-    orig_dates = original_dates,
+    orig_props     = original_props,
+    orig_dates     = original_dates,
+    lineage_names  = colnames(original_props),
     .options = furrr_options(seed = TRUE),
     .progress = TRUE
   )
@@ -297,8 +293,8 @@ if (!is.null(ba2_data)) {
       mae_median   = median(mae, na.rm = TRUE),
       cov95_mean   = mean(coverage_95, na.rm = TRUE),
       cov95_sd     = sd(coverage_95, na.rm = TRUE),
-      meets_mae5   = mean(mae < 0.05, na.rm = TRUE),      # MAE < 5%
-      meets_cov90  = mean(coverage_95 > 0.90, na.rm = TRUE), # Coverage > 90%
+      meets_mae5   = mean(mae < 0.05, na.rm = TRUE),
+      meets_cov90  = mean(coverage_95 > 0.90, na.rm = TRUE),
       n_success    = sum(!is.na(mae)),
       .groups = "drop"
     ) |>
@@ -323,22 +319,23 @@ cat("  [C] Training window vs PIT uniformity...\n")
 
 # Hypothesis: Shorter training windows produce more uniform PIT distributions
 # because the model assumption of constant growth advantage δ is less violated
-# over shorter periods. This empirically supports the theoretical argument that
-# model misspecification (time-varying δ) is the primary cause of miscalibration.
+# over shorter periods.
 
 window_lengths <- c(4L, 6L, 8L, 10L, 12L, 14L)  # weeks
 window_days    <- window_lengths * 7L
 
-if (!is.null(ba2_data)) {
+# Use the lfq_data object created from built-in BA.2 data
+if (exists("ba2_lfq") && !is.null(ba2_lfq)) {
   window_results <- list()
 
   for (wl in window_days) {
     cat(sprintf("    Training window = %d days (%d weeks)...\n", wl, wl / 7))
 
     tryCatch({
-      bt <- backtest(ba2_data, engine = "mlr",
-                     horizons = 14L, min_train = wl)
+      # backtest() param is 'engines' (plural)
+      bt <- backtest(ba2_lfq, engines = "mlr", horizons = 14L, min_train = wl)
 
+      # calibrate() accepts lfq_backtest directly
       cal <- calibrate(bt)
       pit <- cal$pit_values
       ks  <- ks.test(pit, "punif")
@@ -349,8 +346,8 @@ if (!is.null(ba2_data)) {
         ks_D         = ks$statistic,
         ks_p         = ks$p.value,
         n_pit        = length(pit),
-        pit_mean     = mean(pit),    # should be ~0.5 if uniform
-        pit_sd       = sd(pit)       # should be ~0.289 if uniform (1/sqrt(12))
+        pit_mean     = mean(pit),
+        pit_sd       = sd(pit)
       )
 
       cat(sprintf("      KS D = %.3f, p = %.3g\n", ks$statistic, ks$p.value))
@@ -362,7 +359,6 @@ if (!is.null(ba2_data)) {
 
   window_df <- bind_rows(window_results)
 
-  # Expected pattern: KS D should decrease (better uniformity) with shorter windows
   if (nrow(window_df) >= 2) {
     trend <- cor(window_df$window_weeks, window_df$ks_D, method = "spearman")
     cat(sprintf("    Window-KS correlation (Spearman): %.3f\n", trend))
@@ -377,7 +373,7 @@ if (!is.null(ba2_data)) {
   saveRDS(window_df, "analysis/results/window_analysis.rds")
   cat("    Saved window_analysis.rds\n")
 } else {
-  cat("    Skipped window analysis (no data)\n")
+  cat("    Skipped window analysis (no BA.2 lfq_data)\n")
 }
 
 cat("[04_decision_impact] Complete.\n")

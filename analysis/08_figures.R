@@ -18,7 +18,9 @@ evoi        <- tryCatch(readRDS("analysis/results/evoi_results.rds"), error = fu
 influenza   <- readRDS("analysis/results/influenza_results.rds")
 
 # Built-in data for plotting
-ba2_data <- tryCatch(cdc_sarscov2_ba2, error = function(e) NULL)
+# cdc_ba2_transition and cdc_sarscov2_jn1 are data.frames with
+# columns: date, lineage, count, proportion
+ba2_data <- tryCatch(cdc_ba2_transition, error = function(e) NULL)
 jn1_data <- tryCatch(cdc_sarscov2_jn1, error = function(e) NULL)
 
 ###############################################################################
@@ -125,12 +127,13 @@ annotate("segment", x = 2.2, xend = 2.8, y = 5.0, yend = 5.0,
 
 fig1b <- tryCatch({
   if (!is.null(ba2_data)) {
-    props <- ba2_data$counts / rowSums(ba2_data$counts)
-    df_ba2 <- tibble(
-      date = rep(ba2_data$dates, ncol(props)),
-      lineage = rep(colnames(props), each = nrow(props)),
-      frequency = as.vector(props)
-    )
+    # ba2_data is a data.frame with: date, lineage, count, proportion
+    df_ba2 <- ba2_data |>
+      group_by(date, lineage) |>
+      summarise(count = sum(count), .groups = "drop") |>
+      group_by(date) |>
+      mutate(frequency = count / sum(count)) |>
+      ungroup()
 
     ggplot(df_ba2, aes(x = date, y = frequency, colour = lineage)) +
       geom_point(size = 0.8, alpha = 0.6) +
@@ -164,13 +167,10 @@ fig1c <- tryCatch({
     obj <- ecdc_data[[nm]]
     country <- sub("_BA2$", "", nm)
 
-    props <- obj$counts / rowSums(obj$counts)
-    df <- tibble(
-      date = rep(obj$dates, ncol(props)),
-      lineage = rep(colnames(props), each = nrow(props)),
-      frequency = as.vector(props),
-      country = country
-    )
+    # lfq_data objects have columns: .date, .lineage, .freq
+    df <- obj |>
+      select(date = .date, lineage = .lineage, frequency = .freq) |>
+      mutate(country = country)
     ecdc_plot_list[[nm]] <- df
   }
 
@@ -380,16 +380,18 @@ fig2c <- tryCatch({
   cal_comp <- calibration$calibration_comparison[[jn1_key[1]]]
 
   # Helper to create panel for one method
-  make_interval_panel <- function(fcast_data, method_name, colour) {
+  # Data from 03_calibration.R: parametric uses lower/upper,
+  # conformal uses conf_lower/conf_upper, recalibrated uses recal_lower/recal_upper
+  make_interval_panel <- function(fcast_data, method_name, colour,
+                                  lo_col = "lower", hi_col = "upper") {
     if (is.null(fcast_data)) return(NULL)
-
-    fcast_df <- if (is.data.frame(fcast_data)) fcast_data else fcast_data$forecasts
-    if (is.null(fcast_df)) return(NULL)
+    fcast_df <- if (is.data.frame(fcast_data)) fcast_data else return(NULL)
+    if (!lo_col %in% names(fcast_df) || !hi_col %in% names(fcast_df)) return(NULL)
 
     # Pick dominant lineage
     top_lineage <- fcast_df |>
       group_by(lineage) |>
-      summarise(max_obs = max(observed, na.rm = TRUE)) |>
+      summarise(max_obs = max(observed, na.rm = TRUE), .groups = "drop") |>
       slice_max(max_obs, n = 1) |>
       pull(lineage)
 
@@ -399,10 +401,10 @@ fig2c <- tryCatch({
     if (nrow(fcast_lin) == 0) return(NULL)
 
     outside <- fcast_lin |>
-      filter(observed < lower_95 | observed > upper_95)
+      filter(observed < .data[[lo_col]] | observed > .data[[hi_col]])
 
     ggplot(fcast_lin, aes(x = origin_date)) +
-      geom_ribbon(aes(ymin = lower_95, ymax = upper_95),
+      geom_ribbon(aes(ymin = .data[[lo_col]], ymax = .data[[hi_col]]),
                   fill = colour, alpha = 0.2) +
       geom_line(aes(y = predicted), colour = colour, linewidth = LW_DATA) +
       geom_point(aes(y = observed), size = 0.6, colour = "black") +
@@ -417,9 +419,12 @@ fig2c <- tryCatch({
             plot.title = element_text(size = 8))
   }
 
-  p_para  <- make_interval_panel(cal_comp$parametric, "Parametric", pal_methods["Parametric"])
-  p_conf  <- make_interval_panel(cal_comp$conformal, "Conformal", pal_methods["Conformal"])
-  p_recal <- make_interval_panel(cal_comp$recalibrated, "Recalibrated", pal_methods["Recalibrated"])
+  p_para  <- make_interval_panel(cal_comp$parametric, "Parametric",
+               pal_methods["Parametric"], "lower", "upper")
+  p_conf  <- make_interval_panel(cal_comp$conformal, "Conformal",
+               pal_methods["Conformal"], "conf_lower", "conf_upper")
+  p_recal <- make_interval_panel(cal_comp$recalibrated, "Recalibrated",
+               pal_methods["Recalibrated"], "recal_lower", "recal_upper")
 
   panels <- Filter(Negate(is.null), list(p_para, p_conf, p_recal))
 
@@ -462,15 +467,19 @@ fig2d <- tryCatch({
 
 fig2e <- tryCatch({
   if (nrow(decision) > 0 && !is.null(ba2_data)) {
-    # Background: BA.2 frequency over time
-    props <- ba2_data$counts / rowSums(ba2_data$counts)
-    ba2_col <- grep("BA\\.2|BA2", colnames(props), ignore.case = TRUE)
-    if (length(ba2_col) == 0) ba2_col <- which.max(apply(props, 2, max))
-
-    freq_df <- tibble(
-      date = ba2_data$dates,
-      frequency = props[, ba2_col[1]]
-    )
+    # ba2_data is a data.frame with: date, lineage, count, proportion
+    ba2_lineage <- ba2_data |>
+      filter(grepl("BA\\.2|BA2", lineage, ignore.case = TRUE)) |>
+      pull(lineage) |>
+      unique()
+    if (length(ba2_lineage) == 0) {
+      ba2_lineage <- ba2_data |>
+        group_by(lineage) |> summarise(m = max(proportion, na.rm = TRUE), .groups = "drop") |>
+        slice_max(m, n = 1) |> pull(lineage)
+    }
+    freq_df <- ba2_data |>
+      filter(lineage == ba2_lineage[1]) |>
+      select(date, frequency = proportion)
 
     # Trigger dates from decision results
     triggers <- decision |>
@@ -578,14 +587,22 @@ cat("  [Figure 3] Advanced analyses...\n")
 
 fig3a <- tryCatch({
   if (!is.null(fitness) && !is.null(fitness$decomposition)) {
-    decomp <- fitness$decomposition
-    sens   <- fitness$sensitivity
+    # fitness$decomposition is a fitness_decomposition S3 object
+    # $decomposition tibble has: lineage, observed_advantage, beta,
+    #   escape_contribution, transmissibility_fraction, escape_fraction
+    decomp_obj <- fitness$decomposition
+    decomp <- if (inherits(decomp_obj, "fitness_decomposition")) {
+      decomp_obj$decomposition
+    } else if (is.data.frame(decomp_obj)) decomp_obj else NULL
+    sens <- fitness$sensitivity
 
-    if (is.data.frame(decomp)) {
-      # Pivot for stacked bar
+    if (!is.null(decomp) && is.data.frame(decomp)) {
+      # Pivot for stacked bar using correct column names
       decomp_long <- decomp |>
-        select(lineage, transmissibility, immune_escape) |>
-        pivot_longer(cols = c(transmissibility, immune_escape),
+        filter(!is.na(transmissibility_fraction)) |>
+        select(lineage, Transmissibility = beta,
+               Immune_escape = escape_contribution) |>
+        pivot_longer(cols = c(Transmissibility, Immune_escape),
                      names_to = "component", values_to = "value")
 
       # Sensitivity whiskers from ±20% perturbation
@@ -595,10 +612,10 @@ fig3a <- tryCatch({
           filter(abs(perturbation) == 0.20) |>
           group_by(lineage) |>
           summarise(
-            trans_lo  = min(transmissibility, na.rm = TRUE),
-            trans_hi  = max(transmissibility, na.rm = TRUE),
-            escape_lo = min(immune_escape, na.rm = TRUE),
-            escape_hi = max(immune_escape, na.rm = TRUE),
+            trans_lo  = min(beta, na.rm = TRUE),
+            trans_hi  = max(beta, na.rm = TRUE),
+            escape_lo = min(escape_contribution, na.rm = TRUE),
+            escape_hi = max(escape_contribution, na.rm = TRUE),
             .groups = "drop"
           )
       }
@@ -727,12 +744,9 @@ fig3d <- tryCatch({
 
   if (!is.null(flu$data)) {
     flu_obj <- flu$data
-    props <- flu_obj$counts / rowSums(flu_obj$counts)
-    flu_plot <- tibble(
-      date = rep(flu_obj$dates, ncol(props)),
-      subtype = rep(colnames(props), each = nrow(props)),
-      frequency = as.vector(props)
-    )
+    # flu_obj is lfq_data (tibble with .date, .lineage, .freq)
+    flu_plot <- flu_obj |>
+      select(date = .date, subtype = .lineage, frequency = .freq)
 
     source_label <- ifelse(flu$source == "simulated",
                            "SIMULATED DATA", "WHO FluNet")
@@ -763,13 +777,13 @@ fig3e <- tryCatch({
       nrow(fitness$sensitivity) > 0) {
     sens <- fitness$sensitivity
 
-    ggplot(sens, aes(x = perturbation * 100, y = immune_escape,
+    ggplot(sens, aes(x = perturbation * 100, y = escape_fraction,
                      colour = lineage)) +
       geom_line(linewidth = LW_DATA) +
       geom_point(size = 1) +
       geom_vline(xintercept = 0, linetype = "dashed", linewidth = LW_REF) +
       labs(x = "Immunity perturbation (%)",
-           y = "Immune escape proportion",
+           y = "Immune escape fraction",
            colour = "Lineage") +
       add_panel_label("e") +
       theme_nature() +

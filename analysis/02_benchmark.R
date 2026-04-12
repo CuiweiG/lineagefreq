@@ -19,13 +19,21 @@ cat(sprintf("    Loaded %d ECDC datasets\n", length(ecdc_data)))
 
 # Also include package built-in datasets
 builtin_datasets <- list()
+
+# Built-in datasets are raw data.frames; must convert to lfq_data first
+# cdc_ba2_transition: date, lineage, count, proportion
+# cdc_sarscov2_jn1: date, lineage, count, proportion
 tryCatch({
-  builtin_datasets[["US_BA2_builtin"]] <- cdc_sarscov2_ba2
-  cat("    Loaded built-in cdc_sarscov2_ba2\n")
-}, error = function(e) cat(sprintf("    WARNING: cdc_sarscov2_ba2 not available: %s\n", e$message)))
+  builtin_datasets[["US_BA2_builtin"]] <- lfq_data(
+    cdc_ba2_transition, lineage = lineage, date = date, count = count
+  )
+  cat("    Loaded built-in cdc_ba2_transition\n")
+}, error = function(e) cat(sprintf("    WARNING: cdc_ba2_transition not available: %s\n", e$message)))
 
 tryCatch({
-  builtin_datasets[["US_JN1_builtin"]] <- cdc_sarscov2_jn1
+  builtin_datasets[["US_JN1_builtin"]] <- lfq_data(
+    cdc_sarscov2_jn1, lineage = lineage, date = date, count = count
+  )
   cat("    Loaded built-in cdc_sarscov2_jn1\n")
 }, error = function(e) cat(sprintf("    WARNING: cdc_sarscov2_jn1 not available: %s\n", e$message)))
 
@@ -55,7 +63,7 @@ run_single_backtest <- function(dataset_name, engine_name, datasets_list) {
   # Time the backtest
   timing <- system.time({
     result <- tryCatch({
-      backtest(data_obj, engine = engine_name,
+      backtest(data_obj, engines = engine_name,
                horizons = horizons, min_train = min_train)
     },
     error = function(e) {
@@ -172,7 +180,7 @@ compute_metrics <- function(bt_result) {
         mae         = mae,
         median_ae   = median_ae,
         coverage_95 = coverage_95,
-        n_origins   = n_distinct(horizon_data$origin_date)
+        n_origins   = dplyr::n_distinct(horizon_data$origin_date)
       )
     })
 

@@ -17,79 +17,84 @@ cat("  [A] Fitness decomposition...\n")
 immune_data <- readRDS("analysis/results/immune_landscape.rds")
 
 # Load built-in BA.2 data
-ba2_data <- tryCatch(cdc_sarscov2_ba2, error = function(e) {
-  cat("    WARNING: cdc_sarscov2_ba2 not available\n")
+# Dataset name: cdc_ba2_transition (data.frame with date, lineage, count, proportion)
+ba2_raw <- tryCatch(cdc_ba2_transition, error = function(e) {
+  cat("    WARNING: cdc_ba2_transition not available\n")
   NULL
 })
 
-if (!is.null(ba2_data)) {
-  cat("    Fitting MLR on BA.2 data...\n")
+fit <- NULL
+decomp_result <- NULL
 
-  # Fit MLR model
-  fit <- tryCatch({
-    fit_model(ba2_data, engine = "mlr")
+if (!is.null(ba2_raw)) {
+  cat("    Creating lfq_data from built-in BA.2...\n")
+
+  ba2_lfq <- tryCatch({
+    lfq_data(ba2_raw, lineage = lineage, date = date, count = count)
   },
   error = function(e) {
-    cat(sprintf("    WARNING: fit_model() failed: %s\n", e$message))
+    cat(sprintf("    WARNING: lfq_data() failed: %s\n", e$message))
     NULL
   })
+
+  if (!is.null(ba2_lfq)) {
+    cat("    Fitting MLR on BA.2 data...\n")
+
+    fit <- tryCatch({
+      fit_model(ba2_lfq, engine = "mlr")
+    },
+    error = function(e) {
+      cat(sprintf("    WARNING: fit_model() failed: %s\n", e$message))
+      NULL
+    })
+  }
 
   if (!is.null(fit)) {
     cat("    Running fitness decomposition with corrected immune landscape...\n")
 
+    # fitness_decomposition() API:
+    #   fitness_decomposition(fit, landscape, generation_time)
+    # - fit: lfq_fit object
+    # - landscape: immune_landscape object
+    # - generation_time: numeric (days), e.g., 5.5 for SARS-CoV-2
+    GENERATION_TIME <- 5.5  # days, Omicron (Du et al. 2022, Emerging Inf Dis)
+
     decomp_result <- tryCatch({
-      fitness_decomposition(fit, immune_landscape = immune_data)
+      fitness_decomposition(fit, landscape = immune_data,
+                            generation_time = GENERATION_TIME)
     },
     error = function(e) {
       cat(sprintf("    WARNING: fitness_decomposition() failed: %s\n", e$message))
-      cat("    Attempting without immune_landscape argument...\n")
-
-      # Try alternative: pass immune data as data frame
-      tryCatch({
-        if (is.data.frame(immune_data)) {
-          fitness_decomposition(fit,
-            dates    = immune_data$date,
-            immunity = immune_data$total_immunity
-          )
-        } else {
-          fitness_decomposition(fit)
-        }
-      },
-      error = function(e2) {
-        cat(sprintf("    WARNING: Alternative also failed: %s\n", e2$message))
-        NULL
-      })
+      NULL
     })
 
     if (!is.null(decomp_result)) {
-      # Check biological plausibility
-      # BA.2: primarily transmissibility advantage (Lyngse et al. 2022, Lancet ID)
-      #   - Higher secondary attack rate in households
-      #   - Growth advantage δ ≈ 0.08-0.12/day over BA.1
-      # BA.4/5: significant immune escape (Tuekprakhon et al. 2022, Nature)
-      #   - Reduced neutralization by BA.1 convalescent sera
-      #   - Growth advantage partly from immune evasion
-
+      # decomp_result is a fitness_decomposition S3 object (list) with:
+      #   $decomposition: tibble with lineage, observed_advantage, beta,
+      #                   escape_contribution, transmissibility_fraction,
+      #                   escape_fraction
       cat("    Decomposition results:\n")
       print(decomp_result)
 
-      # Plausibility check
+      # Plausibility check using $decomposition tibble
       tryCatch({
-        if (is.data.frame(decomp_result)) {
-          for (i in seq_len(nrow(decomp_result))) {
-            lineage <- decomp_result$lineage[i]
-            trans   <- decomp_result$transmissibility[i]
-            escape  <- decomp_result$immune_escape[i]
+        decomp_df <- decomp_result$decomposition
 
-            cat(sprintf("      %s: transmissibility=%.3f, immune_escape=%.3f\n",
-                        lineage, trans, escape))
+        for (i in seq_len(nrow(decomp_df))) {
+          lin   <- decomp_df$lineage[i]
+          trans <- decomp_df$transmissibility_fraction[i]
+          esc   <- decomp_df$escape_fraction[i]
 
-            if (grepl("BA\\.2", lineage) && escape > trans) {
+          if (!is.na(trans) && !is.na(esc)) {
+            cat(sprintf("      %s: transmissibility=%.1f%%, escape=%.1f%%\n",
+                        lin, trans * 100, esc * 100))
+
+            if (grepl("BA\\.2", lin) && !is.na(esc) && esc > trans) {
               cat("      WARNING: BA.2 shows more escape than transmissibility\n")
               cat("      Expected: BA.2 fitness primarily from transmissibility\n")
               cat("      (Lyngse et al. 2022, Lancet Infectious Diseases)\n")
             }
-            if (grepl("BA\\.[45]", lineage) && escape < 0) {
+            if (grepl("BA\\.[45]", lin) && !is.na(esc) && esc < 0) {
               cat("      WARNING: BA.4/5 shows negative escape\n")
               cat("      Expected: BA.4/5 has significant immune escape\n")
               cat("      (Tuekprakhon et al. 2022, Nature)\n")
@@ -103,9 +108,6 @@ if (!is.null(ba2_data)) {
       })
     }
   }
-} else {
-  decomp_result <- NULL
-  fit <- NULL
 }
 
 ###############################################################################
@@ -115,61 +117,67 @@ if (!is.null(ba2_data)) {
 cat("  [B] Sensitivity analysis...\n")
 
 # Perturb the immune landscape by ±10%, ±20%, ±30% and re-run decomposition
-# This quantifies the identifiability limitation: how sensitive is the
-# transmissibility/escape decomposition to errors in immunity estimation?
+# This quantifies the identifiability limitation.
 
 perturbation_levels <- c(-0.30, -0.20, -0.10, 0, 0.10, 0.20, 0.30)
 
 sensitivity_results <- list()
 
 if (!is.null(fit) && !is.null(immune_data)) {
+  # immune_data is an immune_landscape object with $estimates tibble
+  # containing: date, lineage, immunity, type
+
   for (perturb in perturbation_levels) {
     cat(sprintf("    Perturbation: %+.0f%%...\n", perturb * 100))
 
     tryCatch({
-      # Perturb immunity values
-      if (is.data.frame(immune_data)) {
-        perturbed_immunity <- immune_data$total_immunity * (1 + perturb)
-        perturbed_immunity <- pmin(1, pmax(0, perturbed_immunity))  # clip to [0,1]
+      # Perturb immunity values in the estimates tibble
+      if (inherits(immune_data, "immune_landscape")) {
+        perturbed_df <- immune_data$estimates |>
+          mutate(immunity = pmin(1, pmax(0, immunity * (1 + perturb))))
 
         perturbed_obj <- tryCatch({
-          immune_landscape(dates = immune_data$date, immunity = perturbed_immunity)
+          immune_landscape(
+            data     = perturbed_df,
+            date     = date,
+            lineage  = lineage,
+            immunity = immunity
+          )
         },
         error = function(e) {
-          # Fall back to data frame
-          immune_data |> mutate(total_immunity = perturbed_immunity)
+          cat(sprintf("      WARNING: immune_landscape() failed: %s\n", e$message))
+          NULL
         })
-      } else {
-        # immune_data is already an immune_landscape object
-        # Extract and perturb
+      } else if (is.data.frame(immune_data)) {
+        # Fallback: immune_data is a raw data frame
+        perturbed_df <- immune_data |>
+          mutate(immunity = pmin(1, pmax(0, total_immunity * (1 + perturb))))
+
         perturbed_obj <- tryCatch({
-          orig_immunity <- immune_data$immunity
-          perturbed <- pmin(1, pmax(0, orig_immunity * (1 + perturb)))
-          immune_landscape(dates = immune_data$dates, immunity = perturbed)
+          immune_landscape(
+            data     = perturbed_df,
+            date     = date,
+            lineage  = lineage,
+            immunity = immunity
+          )
         },
-        error = function(e) immune_data)
+        error = function(e) NULL)
+      } else {
+        perturbed_obj <- NULL
       }
 
-      decomp_perturbed <- tryCatch({
-        fitness_decomposition(fit, immune_landscape = perturbed_obj)
-      },
-      error = function(e) {
-        tryCatch({
-          if (is.data.frame(perturbed_obj)) {
-            fitness_decomposition(fit,
-              dates    = perturbed_obj$date,
-              immunity = perturbed_obj$total_immunity
-            )
-          } else {
-            fitness_decomposition(fit)
-          }
+      if (!is.null(perturbed_obj)) {
+        decomp_perturbed <- tryCatch({
+          fitness_decomposition(fit, landscape = perturbed_obj,
+                                generation_time = GENERATION_TIME)
         },
-        error = function(e2) NULL)
-      })
+        error = function(e) NULL)
 
-      if (!is.null(decomp_perturbed) && is.data.frame(decomp_perturbed)) {
-        sensitivity_results[[as.character(perturb)]] <- decomp_perturbed |>
-          mutate(perturbation = perturb)
+        if (!is.null(decomp_perturbed)) {
+          sensitivity_results[[as.character(perturb)]] <-
+            decomp_perturbed$decomposition |>
+            mutate(perturbation = perturb)
+        }
       }
     },
     error = function(e) {
@@ -185,20 +193,21 @@ if (!is.null(fit) && !is.null(immune_data)) {
     sens_summary <- sensitivity_df |>
       group_by(lineage, perturbation) |>
       summarise(
-        transmissibility = mean(transmissibility, na.rm = TRUE),
-        immune_escape    = mean(immune_escape, na.rm = TRUE),
+        transmissibility_frac = mean(transmissibility_fraction, na.rm = TRUE),
+        escape_frac           = mean(escape_fraction, na.rm = TRUE),
         .groups = "drop"
       )
     print(sens_summary)
 
-    # Quantify sensitivity: how much does escape change per % immunity change?
+    # Quantify sensitivity
     tryCatch({
       for (lin in unique(sens_summary$lineage)) {
         lin_data <- sens_summary |> filter(lineage == lin)
-        if (nrow(lin_data) >= 3) {
-          escape_sensitivity <- coef(lm(immune_escape ~ perturbation,
+        if (nrow(lin_data) >= 3 && any(!is.na(lin_data$escape_frac))) {
+          escape_sensitivity <- coef(lm(escape_frac ~ perturbation,
                                          data = lin_data))[2]
-          cat(sprintf("      %s: Δescape/Δimmunity = %.3f\n", lin, escape_sensitivity))
+          cat(sprintf("      %s: Δescape_frac/Δimmunity = %.3f\n",
+                      lin, escape_sensitivity))
         }
       }
     }, error = function(e) NULL)
@@ -242,15 +251,10 @@ if (!is.null(fit) && !is.null(immune_data)) {
 #
 # In practice, we require immunity to change by >5 percentage points during
 # the observation window for the decomposition to be meaningfully identified.
-# With smaller changes, the transmissibility and escape components become
-# nearly collinear, leading to large confidence intervals.
 #
 # References:
 #   - Obermeyer et al. 2022, Science (PyR0 model)
 #   - Mlcochova et al. 2021, Nature (variant fitness)
-#   - Our immune landscape changes by ~15pp over Jan-Jun 2022, which is
-#     sufficient for identification but sensitivity analysis (Section B)
-#     shows the decomposition is moderately sensitive to immunity estimates.
 # ─────────────────────────────────────────────────────────────────────────────
 
 cat("[05_fitness] Complete.\n")

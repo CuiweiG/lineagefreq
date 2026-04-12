@@ -24,7 +24,6 @@ N_REPLICATES   <- 50L
 STRATEGIES     <- c("uniform", "proportional", "adaptive")
 
 # HHS region approximate populations (millions, 2022 Census estimates)
-# Used for proportional allocation
 region_pop <- c(
   Region_1  = 15.1,   # CT, ME, MA, NH, RI, VT
   Region_2  = 22.2,   # NJ, NY
@@ -38,31 +37,36 @@ region_pop <- c(
   Region_10 = 13.4    # AK, ID, OR, WA
 )
 
-# Normalize to match available regions
 available_regions <- intersect(names(cdc_regional), names(region_pop))
 region_pop <- region_pop[available_regions]
-pop_total  <- sum(region_pop)
 
 cat(sprintf("    %d regions with data, total budget = %d seq/biweek\n",
             length(available_regions), TOTAL_BUDGET))
 
-# ── Extract "true" regional frequencies from CDC data ─────────────────────────
+# ── Extract "true" regional frequencies from lfq_data objects ────────────────
+# lfq_data objects are tibbles with columns: .lineage, .date, .count, .total, .freq
 
 true_frequencies <- list()
 common_dates     <- NULL
 
 for (reg in available_regions) {
   obj <- cdc_regional[[reg]]
-  props <- obj$counts / rowSums(obj$counts)
+
+  # lfq_data is a tibble with .date, .lineage, .freq columns
+  freq_wide <- obj |>
+    select(.date, .lineage, .freq) |>
+    pivot_wider(names_from = .lineage, values_from = .freq, values_fill = 0) |>
+    arrange(.date)
+
   true_frequencies[[reg]] <- list(
-    dates = obj$dates,
-    props = props,
-    counts = obj$counts
+    dates = freq_wide$.date,
+    props = as.matrix(freq_wide |> select(-.date))
   )
+
   if (is.null(common_dates)) {
-    common_dates <- obj$dates
+    common_dates <- freq_wide$.date
   } else {
-    common_dates <- intersect(common_dates, obj$dates)
+    common_dates <- intersect(common_dates, freq_wide$.date)
   }
 }
 
@@ -79,7 +83,6 @@ allocate_uniform <- function(budget, n_regions) {
 allocate_proportional <- function(budget, populations) {
   shares <- populations / sum(populations)
   alloc  <- round(shares * budget)
-  # Adjust rounding to match budget exactly
   diff <- budget - sum(alloc)
   if (diff != 0) {
     idx <- order(shares * budget - alloc, decreasing = (diff > 0))
@@ -89,9 +92,6 @@ allocate_proportional <- function(budget, populations) {
 }
 
 allocate_adaptive <- function(budget, n_regions, entropy_scores) {
-  # Thompson sampling-inspired: allocate proportional to information gain
-  # Higher entropy (more lineage diversity / faster change) → more sequences
-  # Softmax with temperature to avoid extreme allocations
   temperature <- 0.5
   weights     <- exp(entropy_scores / temperature)
   weights     <- weights / sum(weights)
@@ -102,7 +102,7 @@ allocate_adaptive <- function(budget, n_regions, entropy_scores) {
     idx <- order(weights * budget - alloc, decreasing = (diff > 0))
     alloc[idx[1:abs(diff)]] <- alloc[idx[1:abs(diff)]] + sign(diff)
   }
-  pmax(alloc, 10L)  # minimum 10 sequences per region
+  pmax(alloc, 10L)
 }
 
 # ── Simulation engine ─────────────────────────────────────────────────────────
@@ -116,49 +116,37 @@ run_simulation <- function(rep_id, strategy, budget, regions, true_freq,
 
   mae_over_time   <- numeric(n_t)
   detection_times <- list()
-
-  # Track entropy for adaptive allocation
-  prev_entropy <- rep(1, n_reg)
+  prev_entropy    <- rep(1, n_reg)
 
   for (t_idx in seq_len(n_t)) {
     dt <- common_dt[t_idx]
 
-    # Determine allocation
     alloc <- switch(strategy,
       uniform       = allocate_uniform(budget, n_reg),
       proportional  = allocate_proportional(budget, region_pops),
       adaptive      = allocate_adaptive(budget, n_reg, prev_entropy)
     )
 
-    # Sample from true frequencies
     regional_errors <- numeric(n_reg)
-    regional_preds  <- list()
 
     for (r_idx in seq_along(regions)) {
       reg  <- regions[r_idx]
       tf   <- true_freq[[reg]]
 
-      # Find matching time point
       t_match <- which.min(abs(tf$dates - dt))
       true_props <- tf$props[t_match, ]
       true_props[is.na(true_props)] <- 0
       true_props <- true_props / max(sum(true_props), 1e-10)
 
       n_seq <- alloc[r_idx]
-      n_lin <- length(true_props)
-
-      # Multinomial sampling
       sampled_counts <- rmultinom(1, size = n_seq, prob = true_props)[, 1]
       sampled_props  <- sampled_counts / max(sum(sampled_counts), 1)
 
       regional_errors[r_idx] <- mean(abs(sampled_props - true_props))
-      regional_preds[[reg]]  <- sampled_props
 
-      # Update entropy for adaptive (Shannon entropy of sampled proportions)
       p <- sampled_props[sampled_props > 0]
       prev_entropy[r_idx] <- -sum(p * log(p))
 
-      # Check detection: has BA.2 crossed 5% in this region?
       ba2_col <- grep("BA\\.2|BA2", colnames(tf$props), ignore.case = TRUE)
       if (length(ba2_col) > 0 && true_props[ba2_col[1]] > 0.05) {
         if (sampled_props[ba2_col[1]] > 0.05) {
@@ -169,20 +157,17 @@ run_simulation <- function(rep_id, strategy, budget, regions, true_freq,
       }
     }
 
-    # National MAE: population-weighted average
     weights <- region_pops / sum(region_pops)
     mae_over_time[t_idx] <- sum(weights * regional_errors)
   }
 
-  # Detection delay: compare to first date BA.2 truly > 5%
   detection_delays <- sapply(regions, function(reg) {
     tf <- true_freq[[reg]]
     ba2_col <- grep("BA\\.2|BA2", colnames(tf$props), ignore.case = TRUE)
     if (length(ba2_col) == 0) return(NA_real_)
-
-    true_cross <- tf$dates[which(tf$props[, ba2_col[1]] > 0.05)[1]]
+    cross_idx <- which(tf$props[, ba2_col[1]] > 0.05)[1]
+    true_cross <- tf$dates[cross_idx]
     detected   <- detection_times[[reg]]
-
     if (is.na(true_cross) || is.null(detected)) return(NA_real_)
     as.numeric(detected - true_cross)
   })
@@ -214,24 +199,23 @@ sim_results <- future_pmap_dfr(
     strategy = sim_configs$strategy
   ),
   run_simulation,
-  budget     = TOTAL_BUDGET,
-  regions    = available_regions,
-  true_freq  = true_frequencies,
-  common_dt  = common_dates,
+  budget      = TOTAL_BUDGET,
+  regions     = available_regions,
+  true_freq   = true_frequencies,
+  common_dt   = common_dates,
   region_pops = region_pop,
   .options = furrr_options(seed = TRUE),
   .progress = TRUE
 )
 
-# Summarize by strategy
 sim_summary <- sim_results |>
   group_by(strategy) |>
   summarise(
-    mae_mean       = mean(mean_mae, na.rm = TRUE),
-    mae_sd         = sd(mean_mae, na.rm = TRUE),
-    delay_mean     = mean(mean_delay, na.rm = TRUE),
-    delay_sd       = sd(mean_delay, na.rm = TRUE),
-    n_reps         = n(),
+    mae_mean   = mean(mean_mae, na.rm = TRUE),
+    mae_sd     = sd(mean_mae, na.rm = TRUE),
+    delay_mean = mean(mean_delay, na.rm = TRUE),
+    delay_sd   = sd(mean_delay, na.rm = TRUE),
+    n_reps     = n(),
     .groups = "drop"
   )
 
@@ -250,44 +234,54 @@ cat("    Saved surveillance_simulation.rds\n")
 
 cat("  [B] EVOI computation...\n")
 
-# Expected Value of Information: marginal value of additional sequencing
-# Compute EVOI curve at different sample sizes
+# surveillance_value() API:
+#   surveillance_value(fit, n_current, n_additional, target_lineage)
+# - fit: lfq_fit (not lfq_data)
+# - n_current: integer — current sample size
+# - n_additional: integer vector — candidate additions
+# Returns: evoi S3 object with $values tibble (n_additional, evoi, marginal_evoi)
 
-evoi_budgets <- c(100L, 200L, 500L, 1000L, 2000L)
+# Fit a model on built-in BA.2 data
+ba2_raw <- tryCatch(cdc_ba2_transition, error = function(e) NULL)
 
-# Use a representative BA.2 dataset
-ba2_data <- tryCatch(cdc_sarscov2_ba2, error = function(e) NULL)
+if (!is.null(ba2_raw)) {
+  ba2_lfq <- tryCatch(
+    lfq_data(ba2_raw, lineage = lineage, date = date, count = count),
+    error = function(e) NULL
+  )
 
-if (!is.null(ba2_data)) {
-  evoi_results <- list()
-
-  for (budget in evoi_budgets) {
-    cat(sprintf("    EVOI at %d sequences...\n", budget))
-
-    tryCatch({
-      svd <- surveillance_value(ba2_data, n_sequences = budget)
-      evoi_results[[as.character(budget)]] <- tibble(
-        n_sequences = budget,
-        evoi        = svd$evoi,
-        mae_expected = svd$mae
-      )
-    },
-    error = function(e) {
-      cat(sprintf("      WARNING: surveillance_value() failed at n=%d: %s\n",
-                  budget, e$message))
-      # Fallback: estimate from sample size simulation results
-      evoi_results[[as.character(budget)]] <<- tibble(
-        n_sequences  = budget,
-        evoi         = NA_real_,
-        mae_expected = NA_real_
-      )
-    })
+  ba2_fit <- if (!is.null(ba2_lfq)) {
+    tryCatch(fit_model(ba2_lfq, engine = "mlr"), error = function(e) NULL)
   }
 
-  evoi_df <- bind_rows(evoi_results)
+  if (!is.null(ba2_fit)) {
+    evoi_budgets <- c(100L, 200L, 500L, 1000L, 2000L)
 
-  saveRDS(evoi_df, "analysis/results/evoi_results.rds")
-  cat("    Saved evoi_results.rds\n")
+    tryCatch({
+      evoi_result <- surveillance_value(
+        ba2_fit,
+        n_current    = 100L,
+        n_additional = evoi_budgets
+      )
+
+      # evoi_result is an evoi S3 object with $values tibble
+      evoi_df <- evoi_result$values
+      cat("    EVOI results:\n")
+      print(evoi_df)
+
+      saveRDS(evoi_df, "analysis/results/evoi_results.rds")
+      cat("    Saved evoi_results.rds\n")
+    },
+    error = function(e) {
+      cat(sprintf("    WARNING: surveillance_value() failed: %s\n", e$message))
+      # Save empty result for downstream scripts
+      saveRDS(tibble(n_additional = evoi_budgets,
+                     evoi = NA_real_, marginal_evoi = NA_real_),
+              "analysis/results/evoi_results.rds")
+    })
+  } else {
+    cat("    Skipped EVOI (fit_model failed)\n")
+  }
 } else {
   cat("    Skipped EVOI (no BA.2 data)\n")
 }
@@ -298,42 +292,65 @@ if (!is.null(ba2_data)) {
 
 cat("  [C] Alert threshold retrospective...\n")
 
-# Run alert_threshold() on JN.1 data to evaluate SPRT-based alerts
+# alert_threshold() API:
+#   alert_threshold(data, method, alpha, beta, delta_0, delta_1, threshold)
+# - data: lfq_data
+# Returns: tibble with lineage, date, statistic, alert, direction, confidence
 
-jn1_data <- tryCatch(cdc_sarscov2_jn1, error = function(e) NULL)
+jn1_raw <- tryCatch(cdc_sarscov2_jn1, error = function(e) NULL)
 
-if (!is.null(jn1_data)) {
-  tryCatch({
-    alert_result <- alert_threshold(jn1_data)
-
-    cat("    Alert threshold results:\n")
-    print(alert_result)
-
-    # Record alert date vs actual 5% crossing date
-    jn1_props <- jn1_data$counts / rowSums(jn1_data$counts)
-    jn1_cols  <- grep("JN\\.1|JN1", colnames(jn1_data$counts),
-                       ignore.case = TRUE)
-
-    if (length(jn1_cols) > 0) {
-      actual_5pct <- jn1_data$dates[which(jn1_props[, jn1_cols[1]] > 0.05)[1]]
-      cat(sprintf("    Actual 5%% crossing: %s\n", actual_5pct))
-
-      if (!is.null(alert_result$alert_date)) {
-        delay <- as.numeric(alert_result$alert_date - actual_5pct)
-        cat(sprintf("    Alert date: %s (delay: %+d days)\n",
-                    alert_result$alert_date, delay))
-      }
+if (!is.null(jn1_raw)) {
+  jn1_lfq <- tryCatch(
+    lfq_data(jn1_raw, lineage = lineage, date = date, count = count),
+    error = function(e) {
+      cat(sprintf("    WARNING: lfq_data() failed for JN.1: %s\n", e$message))
+      NULL
     }
+  )
 
-    saveRDS(alert_result, "analysis/results/alert_threshold.rds")
-    cat("    Saved alert_threshold.rds\n")
-  },
-  error = function(e) {
-    cat(sprintf("    WARNING: alert_threshold() failed: %s\n", e$message))
-    cat("    This may be due to biweekly data granularity.\n")
-    cat("    SPRT requires sufficient temporal resolution for sequential testing.\n")
-    cat("    Consider interpolating to weekly data if available.\n")
-  })
+  if (!is.null(jn1_lfq)) {
+    tryCatch({
+      alert_result <- alert_threshold(jn1_lfq)
+
+      cat("    Alert threshold results:\n")
+      print(alert_result)
+
+      # alert_result is a tibble with columns: lineage, date, statistic,
+      #   alert, direction, confidence
+      # Find JN.1 alert
+      jn1_alert <- alert_result |>
+        filter(grepl("JN\\.1|JN1", lineage, ignore.case = TRUE), alert == TRUE)
+
+      if (nrow(jn1_alert) > 0) {
+        alert_date <- min(jn1_alert$date)
+
+        # Compute actual 5% crossing from the lfq_data
+        jn1_freqs <- jn1_lfq |>
+          filter(grepl("JN\\.1|JN1", .lineage, ignore.case = TRUE)) |>
+          arrange(.date)
+
+        actual_5pct <- jn1_freqs |>
+          filter(.freq > 0.05) |>
+          slice_min(.date, n = 1) |>
+          pull(.date)
+
+        if (length(actual_5pct) > 0) {
+          delay <- as.numeric(alert_date - actual_5pct[1])
+          cat(sprintf("    Actual 5%% crossing: %s\n", actual_5pct[1]))
+          cat(sprintf("    Alert date: %s (delay: %+d days)\n", alert_date, delay))
+        }
+      } else {
+        cat("    No JN.1 alert triggered\n")
+      }
+
+      saveRDS(alert_result, "analysis/results/alert_threshold.rds")
+      cat("    Saved alert_threshold.rds\n")
+    },
+    error = function(e) {
+      cat(sprintf("    WARNING: alert_threshold() failed: %s\n", e$message))
+      cat("    This may be due to biweekly data granularity.\n")
+    })
+  }
 } else {
   cat("    Skipped alert threshold (no JN.1 data)\n")
 }
