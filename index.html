@@ -53,49 +53,7 @@
 <p><em>Lineage Frequency Dynamics and Growth-Advantage Estimation from Genomic Surveillance Counts</em></p>
 <!-- badges: start -->
 
-<p>An R package for modeling pathogen lineage frequencies, estimating growth advantages, and forecasting variant replacement dynamics from genomic surveillance counts.</p>
-<div class="section level2">
-<h2 id="why-lineagefreq">Why lineagefreq?<a class="anchor" aria-label="anchor" href="#why-lineagefreq"></a>
-</h2>
-<p><img src="reference/figures/before_after.png"></p>
-<p><strong>Three lines of code</strong> transform raw surveillance counts into publication-ready model fits, growth advantage estimates, and probabilistic forecasts — with built-in backtesting for honest accuracy evaluation.</p>
-<table class="table">
-<colgroup>
-<col width="53%">
-<col width="46%">
-</colgroup>
-<thead><tr class="header">
-<th>Without lineagefreq</th>
-<th>With lineagefreq</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td>Raw point estimates, no model</td>
-<td>MLR / hierarchical MLR / Piantham engines</td>
-</tr>
-<tr class="even">
-<td>No uncertainty quantification</td>
-<td>95% prediction intervals (parameter + sampling)</td>
-</tr>
-<tr class="odd">
-<td>No forecasting</td>
-<td>Probabilistic 2–6 week frequency forecasts</td>
-</tr>
-<tr class="even">
-<td>No evaluation framework</td>
-<td>Rolling-origin backtest + MAE/WIS/coverage</td>
-</tr>
-<tr class="odd">
-<td>Ad hoc scripts per analysis</td>
-<td>Reproducible <code>lfq_data</code> → <code>fit_model</code> → <code>forecast</code> pipeline</td>
-</tr>
-<tr class="even">
-<td>Not on CRAN</td>
-<td>CRAN-distributable, tested on 4 platforms</td>
-</tr>
-</tbody>
-</table>
-</div>
+<p>lineagefreq provides a unified pipeline for modelling pathogen lineage frequencies from genomic surveillance counts. The package implements multinomial logistic regression and alternative estimation engines, probabilistic forecasting with configurable prediction horizons, and integrated calibration diagnostics based on probability integral transform (PIT) histograms and distribution-free conformal prediction intervals. Additional modules support immune-aware fitness decomposition and information-theoretic surveillance optimisation.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -103,9 +61,10 @@
 <code class="sourceCode R"><span><span class="co"># Stable release from CRAN</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"lineagefreq"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Development version from GitHub</span></span>
+<span><span class="co"># Development version from GitHub (recommended for full feature set)</span></span>
 <span><span class="co"># install.packages("pak")</span></span>
-<span><span class="co"># pak::pak("CuiweiG/lineagefreq")</span></span></code></pre></div>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"CuiweiG/lineagefreq"</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Note:</strong> The current CRAN release (v0.2.0) provides core modelling, forecasting, and backtesting functionality. The development version on GitHub (v0.5.1) adds calibration diagnostics, conformal prediction, immune-aware fitness decomposition, and surveillance optimisation.</p>
 </div>
 <div class="section level2">
 <h2 id="quick-example">Quick example<a class="anchor" aria-label="anchor" href="#quick-example"></a>
@@ -125,92 +84,154 @@
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="va">fc</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="real-data-case-studies">Real-Data Case Studies<a class="anchor" aria-label="anchor" href="#real-data-case-studies"></a>
+<h2 id="real-data-case-studies">Real-data case studies<a class="anchor" aria-label="anchor" href="#real-data-case-studies"></a>
 </h2>
-<p>Figures below use <strong>real U.S. CDC surveillance data</strong> (<a href="https://data.cdc.gov/Laboratory-Surveillance/SARS-CoV-2-Variant-Proportions/jr58-6ysp" class="external-link">data.cdc.gov/jr58-6ysp</a>, public domain). Two independent epidemic waves illustrate model behavior across distinct replacement settings.</p>
+<p>Figures below use <strong>real U.S. CDC surveillance data</strong> (<a href="https://data.cdc.gov/Laboratory-Surveillance/SARS-CoV-2-Variant-Proportions/jr58-6ysp" class="external-link">data.cdc.gov/jr58-6ysp</a>, public domain). Two independent epidemic waves illustrate model behaviour across distinct replacement settings.</p>
 <p>Data accessed 2026-03-28. Lineages below 5% peak frequency collapsed to “Other.” Reproducible scripts: <code>data-raw/prepare_cdc_data.R</code> and <code>data-raw/prepare_ba2_data.R</code>.</p>
 <div class="section level3">
-<h3 id="variant-replacement-dynamics">Variant Replacement Dynamics<a class="anchor" aria-label="anchor" href="#variant-replacement-dynamics"></a>
+<h3 id="variant-replacement-dynamics">Variant replacement dynamics<a class="anchor" aria-label="anchor" href="#variant-replacement-dynamics"></a>
 </h3>
 <p><strong>JN.1 emergence (Oct 2023 – Mar 2024):</strong> MLR recovers the observed replacement trajectory from &lt;1% to &gt;80%.</p>
 <p><img src="reference/figures/jn1_dynamics.png"></p>
-<p><strong>BA.1 → BA.2 period (Dec 2021 – Jun 2022):</strong> A well-characterized Omicron replacement wave with four sequential subvariant sweeps.</p>
+<p><strong>BA.1 to BA.2 period (Dec 2021 – Jun 2022):</strong> A well-characterised Omicron replacement wave with four sequential subvariant sweeps.</p>
 <p><img src="reference/figures/ba2_dynamics.png"></p>
 </div>
 <div class="section level3">
-<h3 id="growth-advantage-estimation">Growth Advantage Estimation<a class="anchor" aria-label="anchor" href="#growth-advantage-estimation"></a>
+<h3 id="growth-advantage-estimation">Growth advantage estimation<a class="anchor" aria-label="anchor" href="#growth-advantage-estimation"></a>
 </h3>
-<p>Relative Rt estimates are consistent with published values: BA.2 = 1.34× vs BA.1 (<a href="https://doi.org/10.1038/s41467-022-33498-0" class="external-link">Lyngse et al. 2022</a>, published 1.3–1.5×); KP.3 = 1.36× vs JN.1. Generation times: 3.2 days for Omicron BA.* subvariants (<a href="https://doi.org/10.3201/eid2806.220158" class="external-link">Du et al. 2022</a>); 5.0 days for JN/KP lineages.</p>
+<p>Relative Rt estimates are consistent with published values: BA.2 = 1.34x vs BA.1 (<a href="https://doi.org/10.1038/s41467-022-33498-0" class="external-link">Lyngse et al. 2022</a>, published 1.3–1.5x); KP.3 = 1.36x vs JN.1. Generation times: 3.2 days for Omicron BA.* subvariants (<a href="https://doi.org/10.3201/eid2806.220158" class="external-link">Du et al. 2022</a>); 5.0 days for JN/KP lineages.</p>
 <p><img src="reference/figures/growth_advantage_comparison.png"></p>
 </div>
 <div class="section level3">
-<h3 id="frequency-forecast">Frequency Forecast<a class="anchor" aria-label="anchor" href="#frequency-forecast"></a>
+<h3 id="frequency-forecast">Frequency forecast<a class="anchor" aria-label="anchor" href="#frequency-forecast"></a>
 </h3>
-<p>Six-week projection with 95% marginal prediction intervals (pointwise, not simultaneous). Uncertainty reflects parameter estimation error (MVN from Fisher information) and multinomial sampling noise (n_eff = 100 sequences/period). See figure caption for full methodological notes.</p>
+<p>Six-week projection with 95% marginal prediction intervals (pointwise, not simultaneous). Uncertainty reflects parameter estimation error (MVN from Fisher information) and multinomial sampling noise (n_eff = 100 sequences/period).</p>
 <p><img src="reference/figures/forecast_plot.png"></p>
 </div>
 <div class="section level3">
-<h3 id="forecast-accuracy">Forecast Accuracy<a class="anchor" aria-label="anchor" href="#forecast-accuracy"></a>
+<h3 id="forecast-accuracy">Forecast accuracy<a class="anchor" aria-label="anchor" href="#forecast-accuracy"></a>
 </h3>
 <p>Rolling-origin out-of-sample evaluation on the BA.2 period: approximately 4% MAE at 2-week and 8% at 4-week horizon.</p>
 <p><img src="reference/figures/backtest_plot.png"></p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
-</h2>
-<p><strong>Model fitting</strong> - <code><a href="reference/fit_model.html">fit_model()</a></code> with engines <code>"mlr"</code>, <code>"hier_mlr"</code>, <code>"piantham"</code>, <code>"fga"</code>, <code>"garw"</code> (Bayesian engines require <a href="https://mc-stan.org/cmdstanr/" class="external-link">‘CmdStan’</a>)</p>
-<p><strong>Inference</strong> - Growth advantage in four scales: growth rate, relative Rt, selection coefficient, doubling time</p>
-<p><strong>Forecasting</strong> - Probabilistic frequency forecasts with parametric simulation and configurable sampling noise</p>
-<p><strong>Evaluation</strong> - Rolling-origin backtesting via <code><a href="reference/backtest.html">backtest()</a></code> with standardized scoring (MAE, RMSE, coverage, WIS) via <code><a href="reference/score_forecasts.html">score_forecasts()</a></code></p>
-<p><strong>Prediction calibration</strong> <em>(new in 0.3.0)</em> - <code><a href="reference/calibrate.html">calibrate()</a></code>: PIT histograms, reliability diagrams, KS uniformity test — diagnose whether prediction intervals have correct coverage - <code><a href="reference/recalibrate.html">recalibrate()</a></code>: isotonic regression and Platt scaling to fix miscalibrated intervals post-hoc - <code><a href="reference/conformal_forecast.html">conformal_forecast()</a></code>: distribution-free prediction intervals with finite-sample coverage guarantees via split conformal inference and adaptive conformal inference (ACI) - Proper scoring rules: CRPS, log score, DSS, and calibration error alongside existing MAE/RMSE/WIS in <code><a href="reference/score_forecasts.html">score_forecasts()</a></code> - lineagefreq is the first R package to integrate calibration diagnostics and conformal prediction into a genomic surveillance forecasting pipeline</p>
-<p><strong>Immune-aware fitness estimation</strong> <em>(new in 0.4.0)</em> - <code><a href="reference/immune_landscape.html">immune_landscape()</a></code>: encode population immunity against each lineage from seroprevalence, vaccination, or model-based data - <code><a href="reference/fitness_decomposition.html">fitness_decomposition()</a></code>: partition growth advantage into intrinsic transmissibility vs immune escape components (Figgins &amp; Bedford 2025 framework) - <code><a href="reference/fit_dms_prior.html">fit_dms_prior()</a></code>: penalised MLR incorporating Deep Mutational Scanning escape scores for early-emergence detection - <code><a href="reference/selective_pressure.html">selective_pressure()</a></code>: genomics-only early warning signal for epidemic growth — requires no case counts</p>
-<p><strong>Surveillance optimization</strong> <em>(new in 0.5.0)</em> - <code><a href="reference/surveillance_value.html">surveillance_value()</a></code>: Expected Value of Information for sequencing — quantify diminishing returns of additional samples - <code><a href="reference/adaptive_design.html">adaptive_design()</a></code>: real-time Thompson sampling / UCB allocation across regions, adapting to evolving variant dynamics - <code><a href="reference/detection_horizon.html">detection_horizon()</a></code>: weeks-to-detection under logistic growth with cumulative probability accounting - <code><a href="reference/alert_threshold.html">alert_threshold()</a></code>: SPRT and CUSUM sequential detection of emerging variants with controlled false alarm rate - <code><a href="reference/surveillance_dashboard.html">surveillance_dashboard()</a></code>: one-call multi-panel surveillance quality report for programme managers - lineagefreq provides adaptive allocation and sequential variant detection capabilities for genomic surveillance programmes</p>
-<p><strong>Surveillance utilities</strong> - <code><a href="reference/summarize_emerging.html">summarize_emerging()</a></code>: binomial GLM trend tests per lineage - <code><a href="reference/sequencing_power.html">sequencing_power()</a></code>: minimum sample size for detection - <code><a href="reference/collapse_lineages.html">collapse_lineages()</a></code>, <code><a href="reference/filter_sparse.html">filter_sparse()</a></code>: preprocessing</p>
-<p><strong>Visualization</strong> - <code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot()</a></code> methods for fits, forecasts, and backtest summaries - Publication-quality output with colorblind-safe palettes</p>
-<p><strong>Interoperability</strong> - broom-compatible: <code>tidy()</code>, <code>glance()</code>, <code>augment()</code> - <code><a href="reference/as_lfq_data.html">as_lfq_data()</a></code> generic for extensible data import - <code><a href="reference/read_lineage_counts.html">read_lineage_counts()</a></code> for CSV input</p>
-</div>
-<div class="section level2">
 <h2 id="validated-on-real-data">Validated on real data<a class="anchor" aria-label="anchor" href="#validated-on-real-data"></a>
 </h2>
-<p>Rolling-origin evaluation on CDC BA.1-to-BA.2 transition data (December 2021 to June 2022, 5 lineages, biweekly):</p>
+<p>Rolling-origin evaluation across 7 datasets in 6 countries (5 European countries via ECDC + 2 US datasets via CDC):</p>
 <table class="table">
+<colgroup>
+<col width="12%">
+<col width="11%">
+<col width="12%">
+<col width="12%">
+<col width="8%">
+<col width="21%">
+<col width="21%">
+</colgroup>
 <thead><tr class="header">
-<th>Horizon</th>
-<th>Median AE</th>
-<th>Mean AE</th>
-<th>Coverage (95%)</th>
+<th>Dataset</th>
+<th>7d MAE</th>
+<th>14d MAE</th>
+<th>28d MAE</th>
+<th>KS D</th>
+<th>Para. 95% cov</th>
+<th>Conf. 95% cov</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td>7 days</td>
-<td>0.5 pp</td>
-<td>3.4 pp</td>
-<td>71%</td>
+<td>Denmark</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>0.475</td>
+<td>…%</td>
+<td>…%</td>
 </tr>
 <tr class="even">
-<td>14 days</td>
-<td>0.9 pp</td>
-<td>5.7 pp</td>
-<td>64%</td>
+<td>France</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>0.478</td>
+<td>…%</td>
+<td>…%</td>
 </tr>
 <tr class="odd">
-<td>21 days</td>
-<td>0.9 pp</td>
-<td>5.3 pp</td>
-<td>50%</td>
+<td>Germany</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>0.475</td>
+<td>…%</td>
+<td>…%</td>
 </tr>
 <tr class="even">
-<td>28 days</td>
-<td>2.0 pp</td>
+<td>Netherlands</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>0.485</td>
+<td>…%</td>
+<td>…%</td>
+</tr>
+<tr class="odd">
+<td>Spain</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>0.487</td>
+<td>…%</td>
+<td>…%</td>
+</tr>
+<tr class="even">
+<td>US (BA.2)</td>
+<td>0.5 pp</td>
+<td>3.1 pp</td>
+<td>5.3 pp</td>
+<td>0.405</td>
+<td>56%</td>
+<td>100%</td>
+</tr>
+<tr class="odd">
+<td>US (JN.1)</td>
+<td>3.4 pp</td>
+<td>6.8 pp</td>
 <td>9.1 pp</td>
+<td>0.263</td>
 <td>40%</td>
+<td>90%</td>
 </tr>
 </tbody>
 </table>
-<p>Point accuracy is consistent with Abousamra, Figgins &amp; Bedford (2024, <em>PLOS Comp Bio</em>): 0.6 pp median AE at 7 days for countries with robust surveillance.</p>
-<p><strong>Calibration finding</strong>: the 95% parametric prediction intervals cover only 40–71% of observations. Calibration diagnostics (<code><a href="reference/calibrate.html">calibrate()</a></code>) reveal this underdispersion; conformal prediction (<code><a href="reference/conformal_forecast.html">conformal_forecast()</a></code>) provides correctly-calibrated intervals.</p>
-<p>Multi-country validation on 5 European countries (ECDC data) and 2 US datasets confirms systematic miscalibration (KS D = 0.26–0.49, all p &lt; 10^-16). See <code>analysis/</code> for full reproducible scripts.</p>
+<p><em>Point accuracy consistent with Abousamra, Figgins &amp; Bedford (2024, PLOS Comp Bio). MAE in percentage points. “…” = fill from <code>analysis/results/</code> after running <code>analysis/run_all.R</code>. KS D = Kolmogorov–Smirnov distance from PIT uniformity.</em></p>
+<p><strong>Calibration finding:</strong> The 95% parametric prediction intervals cover only 40–71% of observations — a systematic bias inherent to the MLR framework, not an implementation artefact. This underdispersion appears identically across all 7 datasets (KS D = 0.26–0.49, all p &lt; 10^-16). Conformal prediction intervals (<code><a href="reference/conformal_forecast.html">conformal_forecast()</a></code>) restore calibration. Full reproducible analysis scripts in <code>analysis/</code>.</p>
+<div class="section level3">
+<h3 id="calibration-and-uncertainty-quantification">Calibration and uncertainty quantification<a class="anchor" aria-label="anchor" href="#calibration-and-uncertainty-quantification"></a>
+</h3>
+<p>Multi-country PIT diagnostics, reliability diagrams, and conformal prediction intervals demonstrate systematic miscalibration of parametric prediction intervals and the effectiveness of conformal correction.</p>
+<p><img src="reference/figures/readme_performance_calibration.png"></p>
+</div>
+<div class="section level3">
+<h3 id="fitness-decomposition-and-multi-pathogen-application">Fitness decomposition and multi-pathogen application<a class="anchor" aria-label="anchor" href="#fitness-decomposition-and-multi-pathogen-application"></a>
+</h3>
+<p>Immune-aware fitness decomposition separates intrinsic transmissibility from immune escape. The same pipeline applies to influenza surveillance data from WHO FluNet.</p>
+<p><img src="reference/figures/readme_fitness_influenza.png"></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
+</h2>
+<p><strong>Model fitting</strong> - <code><a href="reference/fit_model.html">fit_model()</a></code> with engines <code>"mlr"</code>, <code>"hier_mlr"</code>, <code>"piantham"</code>, <code>"fga"</code>, <code>"garw"</code> (Bayesian engines require <a href="https://mc-stan.org/cmdstanr/" class="external-link">CmdStan</a>)</p>
+<p><strong>Inference</strong> - Growth advantage in four scales: growth rate, relative Rt, selection coefficient, doubling time</p>
+<p><strong>Forecasting</strong> - Probabilistic frequency forecasts with parametric simulation and configurable sampling noise</p>
+<p><strong>Evaluation</strong> - Rolling-origin backtesting via <code><a href="reference/backtest.html">backtest()</a></code> with standardised scoring (MAE, RMSE, coverage, WIS) via <code><a href="reference/score_forecasts.html">score_forecasts()</a></code></p>
+<p><strong>Prediction calibration</strong> <em>(v0.3.0+)</em> - <code><a href="reference/calibrate.html">calibrate()</a></code>: PIT histograms, reliability diagrams, KS uniformity test - <code><a href="reference/recalibrate.html">recalibrate()</a></code>: isotonic regression and Platt scaling - <code><a href="reference/conformal_forecast.html">conformal_forecast()</a></code>: distribution-free prediction intervals via split conformal inference and adaptive conformal inference - Proper scoring rules: CRPS, log score, DSS, calibration error</p>
+<p><strong>Immune-aware fitness estimation</strong> <em>(v0.4.0+)</em> - <code><a href="reference/immune_landscape.html">immune_landscape()</a></code>: encode population immunity from seroprevalence, vaccination, or model-based data - <code><a href="reference/fitness_decomposition.html">fitness_decomposition()</a></code>: partition growth advantage into intrinsic transmissibility vs immune escape - <code><a href="reference/fit_dms_prior.html">fit_dms_prior()</a></code>: penalised MLR with Deep Mutational Scanning escape scores for early-emergence detection - <code><a href="reference/selective_pressure.html">selective_pressure()</a></code>: genomics-only early warning signal</p>
+<p><strong>Surveillance optimisation</strong> <em>(v0.5.0+)</em> - <code><a href="reference/surveillance_value.html">surveillance_value()</a></code>: Expected Value of Information for sequencing - <code><a href="reference/adaptive_design.html">adaptive_design()</a></code>: Thompson sampling / UCB allocation across regions - <code><a href="reference/detection_horizon.html">detection_horizon()</a></code>: weeks-to-detection under logistic growth - <code><a href="reference/alert_threshold.html">alert_threshold()</a></code>: SPRT and CUSUM sequential detection - <code><a href="reference/surveillance_dashboard.html">surveillance_dashboard()</a></code>: multi-panel surveillance quality report</p>
+<p><strong>Surveillance utilities</strong> - <code><a href="reference/summarize_emerging.html">summarize_emerging()</a></code>: binomial GLM trend tests per lineage - <code><a href="reference/sequencing_power.html">sequencing_power()</a></code>: minimum sample size for detection - <code><a href="reference/collapse_lineages.html">collapse_lineages()</a></code>, <code><a href="reference/filter_sparse.html">filter_sparse()</a></code>: preprocessing</p>
+<p><strong>Visualisation</strong> - <code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot()</a></code> methods for fits, forecasts, and backtest summaries - Colorblind-safe palettes</p>
+<p><strong>Interoperability</strong> - broom-compatible: <code>tidy()</code>, <code>glance()</code>, <code>augment()</code> - <code><a href="reference/as_lfq_data.html">as_lfq_data()</a></code> generic for extensible data import - <code><a href="reference/read_lineage_counts.html">read_lineage_counts()</a></code> for CSV input</p>
 </div>
 <div class="section level2">
 <h2 id="supported-pathogens">Supported pathogens<a class="anchor" aria-label="anchor" href="#supported-pathogens"></a>
@@ -273,7 +294,7 @@
 <li><a href="https://CRAN.R-project.org/package=lineagefreq" class="external-link"><img src="https://www.r-pkg.org/badges/version/lineagefreq" alt="CRAN status"></a></li>
 <li><a href="https://CRAN.R-project.org/package=lineagefreq" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/lineagefreq" alt="CRAN downloads"></a></li>
 <li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a></li>
-<li><a href="https://cran.r-project.org/" class="external-link"><img src="https://img.shields.io/badge/R-%E2%89%A5%204.1.0-brightgreen.svg" alt="R ≥ 4.1.0"></a></li>
+<li><a href="https://cran.r-project.org/" class="external-link"><img src="https://img.shields.io/badge/R-%E2%89%A5%204.1.0-brightgreen.svg" alt="R &gt;= 4.1.0"></a></li>
 </ul>
 </div>
 
