@@ -8,7 +8,7 @@ cat("[00_setup] Starting...\n")
 # ─── System detection ────────────────────────────────────────────────────────
 
 n_cores_available <- parallel::detectCores(logical = TRUE)
-n_cores_use       <- max(1L, floor(n_cores_available * 0.80))
+n_cores_use       <- max(1L, min(floor(n_cores_available * 0.80), 120))
 ram_gb            <- tryCatch({
   as.numeric(system("powershell -command \"[math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB)\"", intern = TRUE))
 }, error = function(e) {
