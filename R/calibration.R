@@ -41,7 +41,7 @@
 #' the standard normal CDF.
 #'
 #' The reliability diagram plots observed coverage against nominal
-#' coverage at levels 10\%, 20\%, \ldots, 90\%. Perfect calibration
+#' coverage at levels 10 through 90 percent. Perfect calibration
 #' lies on the diagonal.
 #'
 #' @references

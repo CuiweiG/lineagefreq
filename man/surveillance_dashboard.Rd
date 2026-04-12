@@ -15,7 +15,7 @@ surveillance_dashboard(fit, data, bt = NULL, target_prevalence = 0.01)
 panel. If \code{NULL}, the calibration panel is omitted.}
 
 \item{target_prevalence}{Prevalence for detection power
-calculation. Default 0.01 (1\\%).}
+calculation. Default 0.01 (1 percent).}
 }
 \value{
 A list of ggplot objects with class
@@ -29,17 +29,10 @@ into a single figure suitable for weekly surveillance reports.
 Designed for programme managers rather than statisticians.
 }
 \details{
-The dashboard contains up to four panels:
-\enumerate{
-\item \strong{Current landscape}: Frequency trajectory from
-the fitted model.
-\item \strong{Growth advantages}: Forest plot of relative
-fitness.
-\item \strong{Detection power}: Probability of detecting a
-1\\% variant as a function of sample size.
-\item \strong{Calibration}: Reliability diagram (if backtest
-data provided).
-}
+The dashboard contains up to four panels: (1) current frequency
+landscape, (2) growth advantage forest plot, (3) detection power
+curve, and (4) calibration reliability diagram (if backtest data
+are provided).
 }
 \examples{
 \donttest{

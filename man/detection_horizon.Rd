@@ -15,10 +15,10 @@ detection_horizon(
 }
 \arguments{
 \item{initial_prev}{Initial prevalence of the emerging variant.
-Default 0.001 (0.1\\%).}
+Default 0.001 (0.1 percent).}
 
 \item{growth_rate}{Per-week multiplicative growth rate on the
-frequency scale. Default 1.3 (30\\% per week).}
+frequency scale. Default 1.3 (30 percent per week).}
 
 \item{n_per_period}{Sequences collected per surveillance period.
 Default 500.}
@@ -32,18 +32,11 @@ target lineage required to declare detection. Default 1.}
 \item{confidence}{Detection probability threshold. Default 0.95.}
 }
 \value{
-A tibble with columns:
-\describe{
-\item{period}{Integer period index (1-based).}
-\item{prevalence}{Variant prevalence at that period.}
-\item{detection_prob}{Cumulative probability of at least
-\code{detection_threshold} sequences by that period.}
-\item{detected}{Logical; whether \code{detection_prob}
-exceeds \code{confidence}.}
-}
-An attribute \code{weeks_to_detection} contains the first
-period where detection probability exceeds the confidence
-threshold, or \code{NA} if not reached.
+A tibble with columns \code{period}, \code{prevalence},
+\code{detection_prob} (cumulative detection probability), and
+\code{detected} (logical). An attribute \code{weeks_to_detection}
+contains the first period where detection probability exceeds
+the confidence threshold, or \code{NA} if not reached.
 }
 \description{
 Given current sequencing capacity and a hypothetical variant at

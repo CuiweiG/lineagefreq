@@ -15,21 +15,14 @@
 #' @param delta_0 Null hypothesis growth rate (no emergence).
 #'   Default 0 (frequency is stable).
 #' @param delta_1 Alternative hypothesis growth rate (emergence).
-#'   Default 0.03 (3\% per-week increase on logit scale).
+#'   Default 0.03 (3 percent per-week increase on logit scale).
 #' @param threshold CUSUM decision threshold. Default 5.0.
 #'   Only used when \code{method = "cusum"}.
 #'
-#' @return A tibble with columns:
-#'   \describe{
-#'     \item{lineage}{Lineage name.}
-#'     \item{date}{Date of alert (or last observation if no alert).}
-#'     \item{statistic}{Test statistic (log-likelihood ratio for
-#'       SPRT, cumulative sum for CUSUM).}
-#'     \item{alert}{Logical; whether the threshold was crossed.}
-#'     \item{direction}{\code{"emerging"}, \code{"declining"}, or
-#'       \code{"stable"}.}
-#'     \item{confidence}{Confidence level (1 - alpha).}
-#'   }
+#' @return A tibble with columns \code{lineage}, \code{date},
+#'   \code{statistic} (log-likelihood ratio or CUSUM value),
+#'   \code{alert} (logical), \code{direction} (emerging/declining/
+#'   stable), and \code{confidence} (1 - alpha).
 #'
 #' @details
 #' \strong{SPRT} (Wald, 1945) computes the log-likelihood ratio

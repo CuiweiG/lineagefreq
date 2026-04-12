@@ -10,24 +10,17 @@
 #' @param bt Optional \code{lfq_backtest} object for calibration
 #'   panel. If \code{NULL}, the calibration panel is omitted.
 #' @param target_prevalence Prevalence for detection power
-#'   calculation. Default 0.01 (1\%).
+#'   calculation. Default 0.01 (1 percent).
 #'
 #' @return A list of ggplot objects with class
 #'   \code{surveillance_dashboard}. A print method renders all
 #'   panels.
 #'
 #' @details
-#' The dashboard contains up to four panels:
-#' \enumerate{
-#'   \item \strong{Current landscape}: Frequency trajectory from
-#'     the fitted model.
-#'   \item \strong{Growth advantages}: Forest plot of relative
-#'     fitness.
-#'   \item \strong{Detection power}: Probability of detecting a
-#'     1\% variant as a function of sample size.
-#'   \item \strong{Calibration}: Reliability diagram (if backtest
-#'     data provided).
-#' }
+#' The dashboard contains up to four panels: (1) current frequency
+#' landscape, (2) growth advantage forest plot, (3) detection power
+#' curve, and (4) calibration reliability diagram (if backtest data
+#' are provided).
 #'
 #' @seealso \code{\link{surveillance_value}} for EVOI analysis,
 #'   \code{\link{alert_threshold}} for sequential detection.
