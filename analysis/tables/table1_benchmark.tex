@@ -1,0 +1,20 @@
+\begin{table}[!h]
+\centering
+\caption{\label{tab:tab:benchmark}Forecast accuracy: lineagefreq vs Bedford Lab (2024)}
+\centering
+\begin{tabular}[t]{lrlllll}
+\toprule
+Engine & Horizon & Median AE & Mean AE & CRPS & Coverage (95\%) & Origins\\
+\midrule
+mlr & 7 & 0.0050 & 0.0178 & 0.0129 & 74.8\% & 23\\
+mlr & 14 & 0.0089 & 0.0395 & 0.0310 & 66.4\% & 22\\
+mlr & 21 & 0.0100 & 0.0544 & 0.0441 & 51.4\% & 21\\
+mlr & 28 & 0.0228 & 0.0908 & 0.0765 & 40.0\% & 20\\
+mlr (reference) & 7 & 0.0060 & NA & --- & --- & ---\\
+\addlinespace
+mlr (reference) & 14 & NA & 0.0600 & --- & --- & ---\\
+mlr (reference) & 21 & NA & 0.0800 & --- & --- & ---\\
+mlr (reference) & 28 & NA & 0.0900 & --- & --- & ---\\
+\bottomrule
+\end{tabular}
+\end{table}
