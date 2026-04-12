@@ -1,0 +1,4 @@
+# Large CSV datasets — download via analysis scripts, not stored in git
+*.csv
+# README documenting data sources IS tracked
+!.gitignore
