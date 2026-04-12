@@ -1,68 +1,79 @@
-#!/usr/bin/env Rscript
-# ============================================================
-# run_all.R — Master script: run all analysis in order
-# ============================================================
+###############################################################################
+# run_all.R — Execute all analysis scripts in sequence
+# lineagefreq validation analysis
 #
-# Usage:
-#   setwd("path/to/lineagefreq")
-#   source("analysis/run_all.R")
+# Expected total runtime on AMD EPYC 9654 (96 cores, 192 GB RAM):
+#   ~20-40 minutes depending on data sizes and backtest complexity
 #
-# Expected runtime on AMD EPYC 9654 (192 cores): ~2 minutes
-# Expected runtime on standard workstation (8 cores): ~10 minutes
-# Expected runtime on laptop (4 cores): ~20 minutes
-#
-# Each script is independent after 00_setup.R has been run.
-# Intermediate results are saved to analysis/results/, so
-# individual scripts can be re-run without recomputing everything.
-# ============================================================
+# Usage: source("analysis/run_all.R") in RStudio or Rscript analysis/run_all.R
+###############################################################################
 
-total_start <- Sys.time()
+cat("═══════════════════════════════════════════════════════════════\n")
+cat("  lineagefreq — Nature Methods validation analysis\n")
+cat("  Starting full pipeline\n")
+cat(sprintf("  Time: %s\n", Sys.time()))
+cat("═══════════════════════════════════════════════════════════════\n\n")
 
-cat("============================================================\n")
-cat("lineagefreq v0.5.1 — Full validation analysis\n")
-cat(sprintf("Started: %s\n", total_start))
-cat("============================================================\n\n")
+total_start <- proc.time()
+
+scripts <- c(
+  "analysis/00_setup.R",
+  "analysis/01_data_prep.R",
+  "analysis/02_benchmark.R",
+  "analysis/03_calibration.R",
+  "analysis/04_decision_impact.R",
+  "analysis/05_fitness.R",
+  "analysis/06_surveillance.R",
+  "analysis/07_influenza.R",
+  "analysis/08_figures.R",
+  "analysis/09_tables.R"
+)
 
 timings <- list()
 
-run_section <- function(script_name) {
-  t0 <- Sys.time()
-  source(file.path("analysis", script_name), local = FALSE)
-  elapsed <- as.numeric(difftime(Sys.time(), t0, units = "secs"))
-  timings[[script_name]] <<- elapsed
-  cat(sprintf("  [%s: %.1f seconds]\n\n", script_name, elapsed))
+for (script in scripts) {
+  script_name <- basename(script)
+  cat(sprintf("\n{'='*60}\n  Running: %s\n{'='*60}\n", script_name))
+
+  t0 <- proc.time()
+
+  status <- tryCatch({
+    source(script, local = FALSE)
+    "SUCCESS"
+  },
+  error = function(e) {
+    cat(sprintf("\n  *** ERROR in %s ***\n  %s\n\n", script_name,
+                conditionMessage(e)))
+    paste("FAILED:", conditionMessage(e))
+  })
+
+  elapsed <- (proc.time() - t0)["elapsed"]
+  timings[[script_name]] <- list(status = status, elapsed = elapsed)
+
+  cat(sprintf("\n  %s: %s (%.1f sec)\n", script_name, status, elapsed))
 }
 
-run_section("00_setup.R")
-run_section("01_benchmark.R")
-run_section("02_calibration.R")
-run_section("03_surveillance.R")
-run_section("04_fitness.R")
-run_section("05_influenza.R")
-run_section("06_figures.R")
-run_section("07_tables.R")
+total_elapsed <- (proc.time() - total_start)["elapsed"]
 
-# ---- Summary ----
-total_elapsed <- as.numeric(difftime(Sys.time(), total_start,
-                                      units = "secs"))
+cat("\n═══════════════════════════════════════════════════════════════\n")
+cat("  Pipeline summary\n")
+cat("═══════════════════════════════════════════════════════════════\n\n")
 
-cat("============================================================\n")
-cat("Analysis complete.\n")
-cat(sprintf("Total runtime: %.1f seconds (%.1f minutes)\n",
-            total_elapsed, total_elapsed / 60))
-cat("\nPer-section timing:\n")
 for (nm in names(timings)) {
-  cat(sprintf("  %-20s %6.1f s\n", nm, timings[[nm]]))
+  t <- timings[[nm]]
+  status_icon <- ifelse(t$status == "SUCCESS", "[OK]", "[!!]")
+  cat(sprintf("  %s %-25s %6.1f sec  %s\n",
+              status_icon, nm, t$elapsed, t$status))
 }
-cat("\nOutput manifest:\n")
-cat(sprintf("  Figures: %d PDF + %d PNG\n",
-  length(list.files("analysis/figures", pattern = "\\.pdf$")),
-  length(list.files("analysis/figures", pattern = "\\.png$"))))
-cat(sprintf("  Tables:  %d .tex files\n",
-  length(list.files("analysis/tables", pattern = "\\.tex$"))))
-cat(sprintf("  Results: %d .rds files\n",
-  length(list.files("analysis/results", pattern = "\\.rds$"))))
-cat("============================================================\n")
 
-# Clean up parallel workers
-plan(sequential)
+n_ok   <- sum(sapply(timings, function(t) t$status == "SUCCESS"))
+n_fail <- length(timings) - n_ok
+
+cat(sprintf("\n  Total: %d/%d succeeded, %.1f sec (%.1f min)\n",
+            n_ok, length(timings), total_elapsed, total_elapsed / 60))
+cat(sprintf("  Completed: %s\n", Sys.time()))
+cat("═══════════════════════════════════════════════════════════════\n")
+
+if (n_fail > 0) {
+  cat(sprintf("\n  WARNING: %d script(s) failed. Check output above.\n", n_fail))
+}

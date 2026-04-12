@@ -1,109 +1,100 @@
-# Validation Analysis
+# lineagefreq Validation Analysis — Nature Methods
 
-Supplementary analysis scripts for the lineagefreq R package.
-Produces all figures, tables, and benchmark results reported in
-the manuscript.
+## Execution
 
-## Execution order
+Run the full pipeline from the package root directory:
 
-```
-00_setup.R       → Environment configuration, parallel backend
-01_benchmark.R   → Rolling-origin backtest, forecast accuracy
-02_calibration.R → PIT diagnostics, conformal comparison
-03_surveillance.R → EVOI, adaptive allocation, alert threshold
-04_fitness.R     → Immune landscape, fitness decomposition
-05_influenza.R   → Multi-pathogen demonstration
-06_figures.R     → Generate all 10 publication figures
-07_tables.R      → Generate all 3 LaTeX tables
-```
-
-## Running
-
-**Full analysis** (recommended):
 ```r
-setwd("path/to/lineagefreq")
 source("analysis/run_all.R")
 ```
 
-**Individual sections** (after 00_setup.R):
+Or run individual scripts in order:
+
 ```r
 source("analysis/00_setup.R")
-source("analysis/02_calibration.R")  # loads saved results from 01
+source("analysis/01_data_prep.R")
+# ... etc.
 ```
 
-Each script after 01 loads results from `analysis/results/`, so
-you can rerun individual sections without repeating the full
-backtest computation.
+**Important:** Scripts must be run in numerical order. Each depends on outputs from prior scripts.
 
-## Expected runtime
+## Expected Runtime (AMD EPYC 9654, 96 cores, 192 GB RAM)
 
-| System | Cores | Approx. time |
-|--------|-------|-------------|
-| AMD EPYC 9654 | 192 | ~2 min |
-| Standard workstation | 8 | ~10 min |
-| Laptop | 4 | ~20 min |
+| Script | Description | Est. Time |
+|--------|------------|-----------|
+| 00_setup.R | System config, theme | <5 sec |
+| 01_data_prep.R | All data preprocessing | 1-2 min |
+| 02_benchmark.R | Multi-country backtest | 5-15 min |
+| 03_calibration.R | PIT, reliability, conformal | 3-5 min |
+| 04_decision_impact.R | Trigger analysis, sample size, window | 5-10 min |
+| 05_fitness.R | Fitness decomposition + sensitivity | 2-3 min |
+| 06_surveillance.R | Adaptive allocation simulation | 3-5 min |
+| 07_influenza.R | Multi-pathogen demonstration | 1-2 min |
+| 08_figures.R | Nature Methods 3-figure layout | 1-2 min |
+| 09_tables.R | LaTeX booktabs tables | <30 sec |
+| **Total** | | **~20-40 min** |
 
-Most time is spent in 01_benchmark.R (backtesting). Sections
-02-07 load saved results and run in seconds.
+## Output Manifest
 
-## Required packages
+### Results (analysis/results/)
 
-Core (from lineagefreq):
-- R >= 4.1.0, devtools
+| File | Description |
+|------|-------------|
+| ecdc_prepared.rds | ECDC multi-country lfq_data objects |
+| cdc_regional_prepared.rds | CDC HHS regional lfq_data objects |
+| immune_landscape.rds | Time-varying immunity estimates |
+| flunet_prepared.rds | WHO FluNet influenza data |
+| benchmark_multicountry.rds | Backtest metrics, runtime, Bedford comparison |
+| calibration_comparison.rds | PIT, reliability, conformal/recalibrated |
+| decision_impact.rds | Vaccine trigger timing analysis |
+| sample_size_analysis.rds | MAE and coverage vs sample size |
+| window_analysis.rds | Training window vs PIT uniformity |
+| fitness_sensitivity.rds | Fitness decomposition + perturbation |
+| surveillance_simulation.rds | Adaptive allocation simulation results |
+| evoi_results.rds | Expected Value of Information curve |
+| influenza_results.rds | Multi-pathogen demonstration results |
+| alert_threshold.rds | SPRT alert retrospective |
 
-Analysis-specific:
-- ggplot2, dplyr, tidyr, tibble
-- viridis, scales, gridExtra
-- future, furrr (parallel computation)
-- kableExtra (LaTeX tables)
-- desc (version detection)
+### Figures (analysis/figures/)
 
-Install all:
-```r
-install.packages(c("devtools", "ggplot2", "dplyr", "tidyr",
-  "tibble", "viridis", "scales", "gridExtra", "future", "furrr",
-  "kableExtra", "desc"))
-```
+| File | Description | Dimensions |
+|------|-------------|-----------|
+| figure1.pdf / .png | Overview + Benchmark (6 panels) | 180 × 220 mm |
+| figure2.pdf / .png | Calibration (6 panels) | 180 × 250 mm |
+| figure3.pdf / .png | Advanced analyses (5 panels) | 180 × 200 mm |
 
-## Known limitations
+### Tables (analysis/tables/)
 
-- **Bayesian engines (fga, garw)** require CmdStan. If not
-  installed, 01_benchmark.R benchmarks only the frequentist
-  engines (mlr, hier_mlr, piantham). This is documented honestly
-  in the output.
-- **SPRT alerting** may not trigger on biweekly CDC data due to
-  insufficient observations. This is a real limitation of
-  sequential testing on low-frequency data, documented in
-  03_surveillance.R.
-- **Fitness decomposition** requires external immunity estimates.
-  The values used in 04_fitness.R are approximate and should be
-  treated as illustrative.
+| File | Description |
+|------|-------------|
+| table1.tex | Multi-country benchmark with Bedford Lab reference |
+| table2.tex | Calibration comparison (Parametric/Conformal/Recalibrated) |
+| table3.tex | Decision impact: vaccine trigger timing |
+| table4.tex | Sample size requirements for MAE and coverage |
 
-## Output manifest
+## Data Provenance
 
-```
-analysis/
-├── results/
-│   ├── benchmark_ba2.rds       Backtest + scores, BA.2 dataset
-│   ├── benchmark_jn1.rds       Backtest + scores, JN.1 dataset
-│   ├── calibration_results.rds PIT, reliability, conformal data
-│   ├── surveillance_results.rds EVOI, allocation, alerts
-│   ├── fitness_results.rds     Decomposition results
-│   └── influenza_results.rds   Influenza demo data
-├── figures/
-│   ├── fig01_benchmark.pdf     Accuracy heatmap
-│   ├── fig02_mae_horizon.pdf   MAE by horizon with CI
-│   ├── fig03_pit.pdf           PIT histograms (KEY FIGURE)
-│   ├── fig04_reliability.pdf   Reliability diagram
-│   ├── fig05_conformal.pdf     Conformal vs parametric
-│   ├── fig06_surveillance.pdf  EVOI + allocation
-│   ├── fig07_alert.pdf         JN.1 detection
-│   ├── fig08_fitness.pdf       Fitness decomposition
-│   ├── fig09_influenza.pdf     Influenza demo
-│   └── fig10_abstract.pdf      Graphical abstract
-│   └── (+ .png versions of each)
-└── tables/
-    ├── table1_benchmark.tex    Accuracy comparison
-    ├── table2_calibration.tex  Calibration metrics
-    └── table3_surveillance.tex Allocation comparison
-```
+| Dataset | Source | URL | License |
+|---------|--------|-----|---------|
+| cdc_variant_proportions_full.csv | CDC COVID Data Tracker, Variant Proportions | https://data.cdc.gov/Laboratory-Surveillance/SARS-CoV-2-Variant-Proportions/jr58-6ysp | Public Domain (US Government) |
+| ecdc_variants.csv | ECDC TESSy, Genomic surveillance | https://www.ecdc.europa.eu/en/publications-data/data-virus-variants-covid-19-eueea | ECDC Copyright, reuse permitted |
+| who_flunet.csv | WHO FluNet | https://www.who.int/tools/flunet | WHO Terms of Use |
+| owid_vaccinations.csv | Our World in Data (OWID) | https://github.com/owid/covid-19-data | CC BY 4.0 |
+| cdc_seroprevalence.csv | CDC Nationwide Blood Donor Seroprevalence Survey | https://covid.cdc.gov/covid-data-tracker/#nationwide-blood-donor-seroprevalence | Public Domain (US Government) |
+| cdc_sarscov2_ba2, cdc_sarscov2_jn1 | Package built-in | lineagefreq::cdc_sarscov2_ba2 | Per package license |
+
+## Known Limitations
+
+1. **Reconstructed counts (CDC regional):** Proportions converted to counts assuming 800 sequences per region per biweekly period. This is a conservative assumption; actual sequencing volume varied.
+
+2. **FluNet data format:** WHO FluNet data may be downloaded as HTML tables rather than CSV. If parsing fails, the pipeline falls back to simulated influenza data (clearly labeled).
+
+3. **Piantham engine:** Requires CmdStan. If unavailable, only the MLR engine is benchmarked (reported honestly as a 1-row heatmap per dataset).
+
+4. **Immune landscape construction:** Vaccine efficacy waning model uses simplified exponential decay (half-life = 6 months). Real-world waning is heterogeneous by age, vaccine type, and prior infection history.
+
+5. **Fitness decomposition identifiability:** The transmissibility/escape decomposition requires time-varying immunity (>5 pp change during observation window). Sensitivity analysis (±30% perturbation) quantifies this limitation.
+
+6. **ACI coverage guarantee:** Adaptive conformal inference provides asymptotic coverage guarantees (Gibbs & Candès 2021). Finite-sample coverage may deviate under strong distribution shift.
+
+7. **Sample size analysis:** Uses multinomial resampling from observed proportions, which assumes the original data represents "truth." This understates uncertainty from systematic biases in genomic surveillance.
