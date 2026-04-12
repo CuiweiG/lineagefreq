@@ -36,8 +36,12 @@ oi <- c(
   gray      = "#999999"
 )
 
-# 5 lineage colours (subset of Okabe-Ito)
-pal_lineages <- unname(oi[c("dark_blue", "orange", "green", "vermillion", "sky_blue")])
+# Extended Okabe-Ito palette — enough for up to 10 categories
+pal_extended <- c("#0072B2", "#E69F00", "#009E73", "#D55E00", "#56B4E9",
+                  "#CC79A7", "#F0E442", "#999999", "#000000", "#332288")
+
+# Dynamic palette: returns n colours from the extended set
+pal_n <- function(n) head(pal_extended, max(n, 1))
 
 # 2-method comparison: Parametric vs Conformal (NO Recalibrated)
 pal_2methods <- c(Parametric = unname(oi["dark_blue"]),
@@ -84,7 +88,7 @@ fig1a <- tryCatch({
     ggplot(plot_df, aes(x = date, y = frequency, colour = lineage)) +
       geom_point(size = 0.8, alpha = 0.5) +
       geom_line(linewidth = LW_DATA) +
-      scale_colour_manual(values = setNames(pal_lineages[seq_along(top5)], top5)) +
+      scale_colour_manual(values = setNames(pal_n(length(top5)), top5)) +
       scale_x_date(date_labels = "%Y-%m-%d", date_breaks = "1 month") +
       scale_y_continuous(labels = scales::percent_format(), limits = c(0, 1)) +
       labs(x = "Date", y = "Frequency", colour = NULL) +
@@ -176,12 +180,13 @@ fig2a <- tryCatch({
   if (length(ecdc_plot_list) > 0) {
     ecdc_df <- bind_rows(ecdc_plot_list)
 
+    n_lin <- n_distinct(ecdc_df$lineage)
     ggplot(ecdc_df, aes(x = date, y = frequency, colour = lineage)) +
       geom_line(linewidth = LW_DATA) +
       facet_wrap(~country, nrow = 1) +
       scale_x_date(date_labels = "%Y-%m-%d", date_breaks = "3 months") +
       scale_y_continuous(labels = scales::percent_format(), limits = c(0, 1)) +
-      scale_colour_manual(values = pal_lineages) +
+      scale_colour_manual(values = pal_n(n_lin)) +
       labs(x = "Date", y = "Frequency", colour = NULL) +
       panel_label("a") +
       theme_nature() +
@@ -281,7 +286,7 @@ fig3b <- tryCatch({
     geom_line(linewidth = LW_DATA) +
     geom_point(size = 1) +
     coord_equal(xlim = c(0, 1), ylim = c(0, 1)) +
-    scale_colour_manual(values = pal_lineages) +
+    scale_colour_manual(values = pal_n(n_distinct(rel_df$dataset))) +
     labs(x = "Nominal coverage", y = "Observed coverage", colour = NULL) +
     panel_label("b") +
     theme_nature() +
@@ -647,7 +652,7 @@ fig5c <- tryCatch({
       geom_line(linewidth = LW_DATA) +
       scale_x_date(date_labels = "%Y-%m-%d") +
       scale_y_continuous(labels = scales::percent_format()) +
-      scale_colour_manual(values = pal_lineages[1:3]) +
+      scale_colour_manual(values = pal_n(length(top3))) +
       labs(x = "Date", y = "Frequency", colour = NULL,
            title = source_label) +
       panel_label("c") +
