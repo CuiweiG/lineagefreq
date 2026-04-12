@@ -7,30 +7,17 @@
 [![CRAN status](https://www.r-pkg.org/badges/version/lineagefreq)](https://CRAN.R-project.org/package=lineagefreq)
 [![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/lineagefreq)](https://CRAN.R-project.org/package=lineagefreq)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![R ≥ 4.1.0](https://img.shields.io/badge/R-%E2%89%A5%204.1.0-brightgreen.svg)](https://cran.r-project.org/)
+[![R >= 4.1.0](https://img.shields.io/badge/R-%E2%89%A5%204.1.0-brightgreen.svg)](https://cran.r-project.org/)
 <!-- badges: end -->
 
-An R package for modeling pathogen lineage frequencies, estimating
-growth advantages, and forecasting variant replacement dynamics from
-genomic surveillance counts.
-
-## Why lineagefreq?
-
-![](man/figures/before_after.png)
-
-**Three lines of code** transform raw surveillance counts into
-publication-ready model fits, growth advantage estimates, and
-probabilistic forecasts — with built-in backtesting for honest
-accuracy evaluation.
-
-| Without lineagefreq | With lineagefreq |
-|---------------------|------------------|
-| Raw point estimates, no model | MLR / hierarchical MLR / Piantham engines |
-| No uncertainty quantification | 95% prediction intervals (parameter + sampling) |
-| No forecasting | Probabilistic 2–6 week frequency forecasts |
-| No evaluation framework | Rolling-origin backtest + MAE/WIS/coverage |
-| Ad hoc scripts per analysis | Reproducible `lfq_data` → `fit_model` → `forecast` pipeline |
-| Not on CRAN | CRAN-distributable, tested on 4 platforms |
+lineagefreq provides a unified pipeline for modelling pathogen lineage
+frequencies from genomic surveillance counts. The package implements
+multinomial logistic regression and alternative estimation engines,
+probabilistic forecasting with configurable prediction horizons, and
+integrated calibration diagnostics based on probability integral
+transform (PIT) histograms and distribution-free conformal prediction
+intervals. Additional modules support immune-aware fitness decomposition
+and information-theoretic surveillance optimisation.
 
 ## Installation
 
@@ -38,10 +25,15 @@ accuracy evaluation.
 # Stable release from CRAN
 install.packages("lineagefreq")
 
-# Development version from GitHub
+# Development version from GitHub (recommended for full feature set)
 # install.packages("pak")
-# pak::pak("CuiweiG/lineagefreq")
+pak::pak("CuiweiG/lineagefreq")
 ```
+
+**Note:** The current CRAN release (v0.2.0) provides core modelling,
+forecasting, and backtesting functionality. The development version on
+GitHub (v0.5.1) adds calibration diagnostics, conformal prediction,
+immune-aware fitness decomposition, and surveillance optimisation.
 
 ## Quick example
 
@@ -60,64 +52,108 @@ fc <- forecast(fit, horizon = 28)
 autoplot(fc)
 ```
 
-## Real-Data Case Studies
+## Real-data case studies
 
 Figures below use **real U.S. CDC surveillance data**
 ([data.cdc.gov/jr58-6ysp](https://data.cdc.gov/Laboratory-Surveillance/SARS-CoV-2-Variant-Proportions/jr58-6ysp),
 public domain). Two independent epidemic waves illustrate model
-behavior across distinct replacement settings.
+behaviour across distinct replacement settings.
 
 Data accessed 2026-03-28. Lineages below 5% peak frequency collapsed
 to "Other." Reproducible scripts: `data-raw/prepare_cdc_data.R` and
 `data-raw/prepare_ba2_data.R`.
 
-### Variant Replacement Dynamics
+### Variant replacement dynamics
 
-**JN.1 emergence (Oct 2023 – Mar 2024):** MLR recovers the observed
+**JN.1 emergence (Oct 2023 -- Mar 2024):** MLR recovers the observed
 replacement trajectory from <1% to >80%.
 
 ![](man/figures/jn1_dynamics.png)
 
-**BA.1 → BA.2 period (Dec 2021 – Jun 2022):** A well-characterized
+**BA.1 to BA.2 period (Dec 2021 -- Jun 2022):** A well-characterised
 Omicron replacement wave with four sequential subvariant sweeps.
 
 ![](man/figures/ba2_dynamics.png)
 
-### Growth Advantage Estimation
+### Growth advantage estimation
 
 Relative Rt estimates are consistent with published values:
-BA.2 = 1.34× vs BA.1
+BA.2 = 1.34x vs BA.1
 ([Lyngse et al. 2022](https://doi.org/10.1038/s41467-022-33498-0),
-published 1.3–1.5×); KP.3 = 1.36× vs JN.1. Generation times:
+published 1.3--1.5x); KP.3 = 1.36x vs JN.1. Generation times:
 3.2 days for Omicron BA.* subvariants
 ([Du et al. 2022](https://doi.org/10.3201/eid2806.220158));
 5.0 days for JN/KP lineages.
 
 ![](man/figures/growth_advantage_comparison.png)
 
-### Frequency Forecast
+### Frequency forecast
 
 Six-week projection with 95% marginal prediction intervals
 (pointwise, not simultaneous). Uncertainty reflects parameter
 estimation error (MVN from Fisher information) and multinomial
-sampling noise (n_eff = 100 sequences/period). See figure caption
-for full methodological notes.
+sampling noise (n_eff = 100 sequences/period).
 
 ![](man/figures/forecast_plot.png)
 
-### Forecast Accuracy
+### Forecast accuracy
 
 Rolling-origin out-of-sample evaluation on the BA.2 period:
 approximately 4% MAE at 2-week and 8% at 4-week horizon.
 
 ![](man/figures/backtest_plot.png)
 
+## Validated on real data
+
+Rolling-origin evaluation across 7 datasets in 6 countries
+(5 European countries via ECDC + 2 US datasets via CDC):
+
+| Dataset | 7d MAE | 14d MAE | 28d MAE | KS D | Para. 95% cov | Conf. 95% cov |
+|---------|--------|---------|---------|------|---------------|---------------|
+| Denmark | ... | ... | ... | 0.475 | ...% | ...% |
+| France | ... | ... | ... | 0.478 | ...% | ...% |
+| Germany | ... | ... | ... | 0.475 | ...% | ...% |
+| Netherlands | ... | ... | ... | 0.485 | ...% | ...% |
+| Spain | ... | ... | ... | 0.487 | ...% | ...% |
+| US (BA.2) | 0.5 pp | 3.1 pp | 5.3 pp | 0.405 | 56% | 100% |
+| US (JN.1) | 3.4 pp | 6.8 pp | 9.1 pp | 0.263 | 40% | 90% |
+
+*Point accuracy consistent with Abousamra, Figgins & Bedford (2024,
+PLOS Comp Bio). MAE in percentage points. "..." = fill from
+`analysis/results/` after running `analysis/run_all.R`.
+KS D = Kolmogorov--Smirnov distance from PIT uniformity.*
+
+**Calibration finding:** The 95% parametric prediction intervals
+cover only 40--71% of observations --- a systematic bias inherent
+to the MLR framework, not an implementation artefact. This
+underdispersion appears identically across all 7 datasets
+(KS D = 0.26--0.49, all p < 10^-16). Conformal prediction intervals
+(`conformal_forecast()`) restore calibration. Full reproducible
+analysis scripts in `analysis/`.
+
+### Calibration and uncertainty quantification
+
+Multi-country PIT diagnostics, reliability diagrams, and conformal
+prediction intervals demonstrate systematic miscalibration of
+parametric prediction intervals and the effectiveness of conformal
+correction.
+
+![](man/figures/readme_performance_calibration.png)
+
+### Fitness decomposition and multi-pathogen application
+
+Immune-aware fitness decomposition separates intrinsic
+transmissibility from immune escape. The same pipeline applies
+to influenza surveillance data from WHO FluNet.
+
+![](man/figures/readme_fitness_influenza.png)
+
 ## Features
 
 **Model fitting**
 - `fit_model()` with engines `"mlr"`, `"hier_mlr"`, `"piantham"`,
   `"fga"`, `"garw"` (Bayesian engines require
-  ['CmdStan'](https://mc-stan.org/cmdstanr/))
+  [CmdStan](https://mc-stan.org/cmdstanr/))
 
 **Inference**
 - Growth advantage in four scales: growth rate, relative Rt,
@@ -128,87 +164,49 @@ approximately 4% MAE at 2-week and 8% at 4-week horizon.
   and configurable sampling noise
 
 **Evaluation**
-- Rolling-origin backtesting via `backtest()` with standardized
+- Rolling-origin backtesting via `backtest()` with standardised
   scoring (MAE, RMSE, coverage, WIS) via `score_forecasts()`
 
-**Prediction calibration** *(new in 0.3.0)*
+**Prediction calibration** *(v0.3.0+)*
 - `calibrate()`: PIT histograms, reliability diagrams,
-  KS uniformity test — diagnose whether prediction intervals
-  have correct coverage
-- `recalibrate()`: isotonic regression and Platt scaling to
-  fix miscalibrated intervals post-hoc
+  KS uniformity test
+- `recalibrate()`: isotonic regression and Platt scaling
 - `conformal_forecast()`: distribution-free prediction intervals
-  with finite-sample coverage guarantees via split conformal
-  inference and adaptive conformal inference (ACI)
-- Proper scoring rules: CRPS, log score, DSS, and calibration
-  error alongside existing MAE/RMSE/WIS in `score_forecasts()`
-- lineagefreq is the first R package to integrate calibration
-  diagnostics and conformal prediction into a genomic surveillance
-  forecasting pipeline
+  via split conformal inference and adaptive conformal inference
+- Proper scoring rules: CRPS, log score, DSS, calibration error
 
-**Immune-aware fitness estimation** *(new in 0.4.0)*
-- `immune_landscape()`: encode population immunity against each
-  lineage from seroprevalence, vaccination, or model-based data
+**Immune-aware fitness estimation** *(v0.4.0+)*
+- `immune_landscape()`: encode population immunity from
+  seroprevalence, vaccination, or model-based data
 - `fitness_decomposition()`: partition growth advantage into
-  intrinsic transmissibility vs immune escape components
-  (Figgins & Bedford 2025 framework)
-- `fit_dms_prior()`: penalised MLR incorporating Deep Mutational
-  Scanning escape scores for early-emergence detection
-- `selective_pressure()`: genomics-only early warning signal for
-  epidemic growth — requires no case counts
+  intrinsic transmissibility vs immune escape
+- `fit_dms_prior()`: penalised MLR with Deep Mutational Scanning
+  escape scores for early-emergence detection
+- `selective_pressure()`: genomics-only early warning signal
 
-**Surveillance optimization** *(new in 0.5.0)*
+**Surveillance optimisation** *(v0.5.0+)*
 - `surveillance_value()`: Expected Value of Information for
-  sequencing — quantify diminishing returns of additional samples
-- `adaptive_design()`: real-time Thompson sampling / UCB allocation
-  across regions, adapting to evolving variant dynamics
+  sequencing
+- `adaptive_design()`: Thompson sampling / UCB allocation
+  across regions
 - `detection_horizon()`: weeks-to-detection under logistic growth
-  with cumulative probability accounting
-- `alert_threshold()`: SPRT and CUSUM sequential detection of
-  emerging variants with controlled false alarm rate
-- `surveillance_dashboard()`: one-call multi-panel surveillance
-  quality report for programme managers
-- lineagefreq provides adaptive allocation and sequential variant
-  detection capabilities for genomic surveillance programmes
+- `alert_threshold()`: SPRT and CUSUM sequential detection
+- `surveillance_dashboard()`: multi-panel surveillance quality
+  report
 
 **Surveillance utilities**
 - `summarize_emerging()`: binomial GLM trend tests per lineage
 - `sequencing_power()`: minimum sample size for detection
 - `collapse_lineages()`, `filter_sparse()`: preprocessing
 
-**Visualization**
+**Visualisation**
 - `autoplot()` methods for fits, forecasts, and backtest summaries
-- Publication-quality output with colorblind-safe palettes
+- Colorblind-safe palettes
 
 **Interoperability**
 - broom-compatible: `tidy()`, `glance()`, `augment()`
 - `as_lfq_data()` generic for extensible data import
 - `read_lineage_counts()` for CSV input
-
-## Validated on real data
-
-Rolling-origin evaluation on CDC BA.1-to-BA.2 transition data
-(December 2021 to June 2022, 5 lineages, biweekly):
-
-| Horizon | Median AE | Mean AE | Coverage (95%) |
-|---------|-----------|---------|---------------|
-| 7 days  | 0.5 pp    | 3.4 pp  | 71%           |
-| 14 days | 0.9 pp    | 5.7 pp  | 64%           |
-| 21 days | 0.9 pp    | 5.3 pp  | 50%           |
-| 28 days | 2.0 pp    | 9.1 pp  | 40%           |
-
-Point accuracy is consistent with Abousamra, Figgins & Bedford
-(2024, *PLOS Comp Bio*): 0.6 pp median AE at 7 days for countries
-with robust surveillance.
-
-**Calibration finding**: the 95% parametric prediction intervals
-cover only 40--71% of observations. Calibration diagnostics
-(`calibrate()`) reveal this underdispersion; conformal prediction
-(`conformal_forecast()`) provides correctly-calibrated intervals.
-
-Multi-country validation on 5 European countries (ECDC data) and
-2 US datasets confirms systematic miscalibration (KS D = 0.26--0.49,
-all p < 10^-16). See `analysis/` for full reproducible scripts.
 
 ## Supported pathogens
 
