@@ -16,3 +16,4 @@
 ^final\.R$
 ^[^/]*\.R$
 ^analysis$
+^submission$
