@@ -389,10 +389,20 @@ cat(sprintf("    Immunity range: %.1f%% to %.1f%% (total, Jan-Jun 2022)\n",
             min(total_immunity) * 100, max(total_immunity) * 100))
 
 # Create immune_landscape object
+# API: immune_landscape(data, date, lineage, immunity, type, cross_immunity)
+# Expects a long-format data frame with date, lineage, and immunity columns.
+# We create one row per date × variant with variant-specific effective immunity.
+immune_long <- bind_rows(
+  tibble(date = immunity_dates, lineage = "BA.2",  immunity = immunity_vs_ba2),
+  tibble(date = immunity_dates, lineage = "BA.4/5", immunity = immunity_vs_ba45)
+)
+
 tryCatch({
   immune_landscape_obj <- immune_landscape(
-    dates    = immunity_dates,
-    immunity = total_immunity
+    data     = immune_long,
+    date     = date,
+    lineage  = lineage,
+    immunity = immunity
   )
   cat("    Created immune_landscape object\n")
 },
@@ -421,49 +431,57 @@ tryCatch({
   flu_raw <- read_csv("analysis/data/who_flunet.csv", show_col_types = FALSE)
   cat(sprintf("    Raw FluNet: %d rows, %d columns\n", nrow(flu_raw), ncol(flu_raw)))
 
-  # Expected columns: Country, Year, Week, AH1N1, AH3, INF_B (or similar)
-  # If column names differ, try to detect influenza subtype columns
+  # FluNet columns: COUNTRY_AREA_TERRITORY, ISO_YEAR, ISO_WEEK,
+  # AH1N12009, AH3, INF_B, BVIC_2DEL, BYAM, etc.
   flu_cols <- names(flu_raw)
   cat(sprintf("    Columns: %s\n", paste(head(flu_cols, 15), collapse = ", ")))
 
+  # Print available countries for diagnostics
+  cat(sprintf("    Sample countries: %s\n",
+              paste(head(unique(flu_raw$COUNTRY_AREA_TERRITORY), 10), collapse = ", ")))
+
   # Target countries with good surveillance
-  flu_countries <- c("United States of America", "Australia", "United Kingdom")
+  flu_countries <- c("United States of America", "Australia",
+                     "United Kingdom of Great Britain and Northern Ireland")
 
   # Filter to available countries and recent seasons (2022-2024)
   flu_filtered <- flu_raw |>
     filter(
-      Country %in% flu_countries | COUNTRY_AREA_TERRITORY %in% flu_countries,
-      Year >= 2022 | YEAR >= 2022
+      COUNTRY_AREA_TERRITORY %in% flu_countries,
+      ISO_YEAR >= 2022
     )
 
   if (nrow(flu_filtered) == 0) {
-    # Try alternative column names
+    # Try partial match if exact names differ
     flu_filtered <- flu_raw |>
       filter(grepl("United States|Australia|United Kingdom",
-                   coalesce(Country, COUNTRY_AREA_TERRITORY, ""), ignore.case = TRUE))
+                   COUNTRY_AREA_TERRITORY, ignore.case = TRUE),
+             ISO_YEAR >= 2022)
   }
 
   if (nrow(flu_filtered) > 0) {
     cat(sprintf("    Filtered FluNet: %d rows\n", nrow(flu_filtered)))
 
-    # Extract subtype counts; column names vary across FluNet downloads
-    # Common patterns: AH1N2009, AH3, INF_B, BVIC, BYAM
-    subtype_cols <- flu_cols[grepl("AH1|AH3|INF_B|BVIC|BYAM|B_VICTORIA|B_YAMAGATA",
-                                   flu_cols, ignore.case = TRUE)]
+    # Extract subtype counts; actual FluNet columns:
+    # AH1N12009, AH3, INF_B, BVIC_2DEL, BVIC_3DEL, BYAM
+    # Use specific subtypes for cleaner analysis
+    subtype_cols <- intersect(
+      c("AH1N12009", "AH3", "BVIC_2DEL", "BYAM", "INF_B"),
+      flu_cols
+    )
+    cat(sprintf("    Subtype columns found: %s\n",
+                paste(subtype_cols, collapse = ", ")))
 
     if (length(subtype_cols) >= 2) {
-      for (cntry in unique(flu_filtered$Country %||%
-                            flu_filtered$COUNTRY_AREA_TERRITORY)) {
+      for (cntry in unique(flu_filtered$COUNTRY_AREA_TERRITORY)) {
         cntry_data <- flu_filtered |>
-          filter((Country == cntry) | (COUNTRY_AREA_TERRITORY == cntry))
+          filter(COUNTRY_AREA_TERRITORY == cntry)
 
-        # Construct date from Year + Week
+        # Construct date from ISO_YEAR + ISO_WEEK
         cntry_data <- cntry_data |>
           mutate(
-            yr = coalesce(Year, YEAR),
-            wk = coalesce(Week, SDATE_WEEKSTARTDATE),
             date = ISOweek::ISOweek2date(
-              sprintf("%04d-W%02d-1", as.integer(yr), as.integer(wk))
+              sprintf("%04d-W%02d-1", as.integer(ISO_YEAR), as.integer(ISO_WEEK))
             )
           )
 
