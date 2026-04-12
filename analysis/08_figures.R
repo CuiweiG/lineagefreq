@@ -713,19 +713,25 @@ fig3c <- tryCatch({
           axis.text.x = element_text(angle = 45, hjust = 1))
 
   # Right: EVOI curve
-  p_evoi <- if (!is.null(evoi) && nrow(evoi) > 0 && any(!is.na(evoi$evoi))) {
-    ggplot(evoi |> filter(!is.na(evoi)), aes(x = n_sequences, y = evoi)) +
+  # evoi_results.rds columns: n_additional, evoi, marginal_evoi
+  p_evoi <- if (!is.null(evoi) && nrow(evoi) > 0 && "evoi" %in% names(evoi) &&
+                any(!is.na(evoi$evoi))) {
+    ggplot(evoi |> filter(!is.na(evoi)), aes(x = n_additional, y = evoi)) +
       geom_line(linewidth = LW_DATA, colour = "#2166AC") +
       geom_point(size = 1.2, colour = "#2166AC") +
       labs(x = "Additional sequences", y = "EVOI") +
       theme_nature()
-  } else {
-    ggplot(evoi |> filter(!is.na(mae_expected)),
-           aes(x = n_sequences, y = mae_expected * 100)) +
+  } else if (!is.null(evoi) && nrow(evoi) > 0 && "marginal_evoi" %in% names(evoi) &&
+             any(!is.na(evoi$marginal_evoi))) {
+    ggplot(evoi |> filter(!is.na(marginal_evoi)),
+           aes(x = n_additional, y = marginal_evoi)) +
       geom_line(linewidth = LW_DATA, colour = "#2166AC") +
       geom_point(size = 1.2, colour = "#2166AC") +
-      labs(x = "Additional sequences", y = "Expected MAE (%)") +
+      labs(x = "Additional sequences", y = "Marginal EVOI") +
       theme_nature()
+  } else {
+    ggplot() + annotate("text", x = 0.5, y = 0.5, label = "EVOI data unavailable") +
+      theme_void()
   }
 
   (p_mae | p_delay | p_evoi) +
