@@ -42,6 +42,36 @@ reference:
       - summarize_emerging
       - sequencing_power
 
+  - title: "Calibration & Uncertainty"
+    desc: "Assess and correct prediction interval calibration"
+    contents:
+      - calibrate
+      - conformal_forecast
+      - recalibrate
+      - plot.calibration_report
+
+  - title: "Fitness & Immunity"
+    desc: "Decompose growth advantage into transmissibility and immune escape"
+    contents:
+      - fitness_decomposition
+      - immune_landscape
+      - fit_dms_prior
+      - selective_pressure
+      - plot.fitness_decomposition
+      - plot.immune_landscape
+      - tidy.fitness_decomposition
+
+  - title: "Surveillance Optimization"
+    desc: "Information-theoretic resource allocation and emergence detection"
+    contents:
+      - surveillance_value
+      - adaptive_design
+      - alert_threshold
+      - detection_horizon
+      - surveillance_dashboard
+      - plot.adaptive_allocation
+      - plot.evoi
+
   - title: "Backtesting"
     desc: "Evaluate forecast accuracy"
     contents:
@@ -89,3 +119,9 @@ articles:
     contents:
       - model-comparison
       - surveillance-workflow
+      - calibration-and-conformal
+      - immune-aware-fitness
+      - surveillance-optimization
+  - title: "Validation"
+    contents:
+      - validation-report
