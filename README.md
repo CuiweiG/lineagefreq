@@ -146,6 +146,17 @@ approximately 4% MAE at 2-week and 8% at 4-week horizon.
   EpiNow2, CDC Variant Nowcast Hub) provides integrated
   calibration diagnostics or conformal prediction
 
+**Immune-aware fitness estimation** *(new in 0.4.0)*
+- `immune_landscape()`: encode population immunity against each
+  lineage from seroprevalence, vaccination, or model-based data
+- `fitness_decomposition()`: partition growth advantage into
+  intrinsic transmissibility vs immune escape components
+  (Figgins & Bedford 2025 framework)
+- `fit_dms_prior()`: penalised MLR incorporating Deep Mutational
+  Scanning escape scores for early-emergence detection
+- `selective_pressure()`: genomics-only early warning signal for
+  epidemic growth — requires no case counts
+
 **Surveillance utilities**
 - `summarize_emerging()`: binomial GLM trend tests per lineage
 - `sequencing_power()`: minimum sample size for detection
