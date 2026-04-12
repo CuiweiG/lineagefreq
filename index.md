@@ -101,30 +101,27 @@ approximately 4% MAE at 2-week and 8% at 4-week horizon.
 Rolling-origin evaluation across 7 datasets in 6 countries (5 European
 countries via ECDC + 2 US datasets via CDC):
 
-| Dataset     | 7d MAE | 14d MAE | 28d MAE | KS D  | Avg 95% cov |
-|-------------|--------|---------|---------|-------|-------------|
-| Denmark     | 2.4 pp | 3.6 pp  | 3.8 pp  | 0.475 | 83%         |
-| France      | 3.1 pp | 3.4 pp  | 3.5 pp  | 0.478 | 65%         |
-| Germany     | 2.6 pp | 3.4 pp  | 3.9 pp  | 0.475 | 77%         |
-| Netherlands | 3.3 pp | 3.6 pp  | 3.7 pp  | 0.485 | 84%         |
-| Spain       | 3.3 pp | 3.3 pp  | 3.4 pp  | 0.487 | 68%         |
-| US (BA.2)   | 1.3 pp | 5.7 pp  | 7.9 pp  | 0.405 | 57%         |
-| US (JN.1)   | —      | 8.9 pp  | 9.9 pp  | 0.263 | 67%         |
+| Dataset     | 7d MAE | 14d MAE | 28d MAE |
+|-------------|--------|---------|---------|
+| Denmark     | 2.4 pp | 3.6 pp  | 3.8 pp  |
+| France      | 3.1 pp | 3.4 pp  | 3.5 pp  |
+| Germany     | 2.6 pp | 3.4 pp  | 3.9 pp  |
+| Netherlands | 3.3 pp | 3.6 pp  | 3.7 pp  |
+| Spain       | 3.3 pp | 3.3 pp  | 3.4 pp  |
+| US (BA.2)   | 1.3 pp | 5.7 pp  | 7.9 pp  |
+| US (JN.1)   | —      | 8.9 pp  | 9.9 pp  |
 
-*MAE in percentage points (pp). Avg 95% cov = observed coverage of
-nominal 95% parametric prediction intervals, averaged across horizons.
-KS D = Kolmogorov–Smirnov distance from PIT uniformity (all p \<
-10^-16). European data from ECDC (BA.2 period, Dec 2021 – Jun 2022). US
-data from CDC (public domain). Point accuracy consistent with Abousamra,
-Figgins & Bedford (2024, PLOS Comp Bio).*
+*MAE in percentage points (pp). European data from ECDC (BA.2 period).
+US data from CDC (public domain). Point accuracy consistent with
+Abousamra, Figgins & Bedford (2024, PLOS Comp Bio).*
 
-**Calibration finding:** The 95% parametric prediction intervals cover
-only 57–84% of observations — a systematic bias inherent to the MLR
-framework, not an implementation artefact. This underdispersion appears
-identically across all 7 datasets (KS D = 0.26–0.49, all p \< 10^-16).
-Conformal prediction intervals
-([`conformal_forecast()`](https://CuiweiG.github.io/lineagefreq/reference/conformal_forecast.md))
-restore calibration. Full reproducible analysis scripts in `analysis/`.
+Calibration diagnostics via
+[`calibrate()`](https://CuiweiG.github.io/lineagefreq/reference/calibrate.md)
+reveal that standard parametric prediction intervals are systematically
+underdispersed. Conformal prediction via
+[`conformal_forecast()`](https://CuiweiG.github.io/lineagefreq/reference/conformal_forecast.md)
+provides correctly calibrated intervals. See `analysis/` for
+reproducible validation scripts.
 
 ### Calibration and uncertainty quantification
 
