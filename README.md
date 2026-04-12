@@ -142,9 +142,9 @@ approximately 4% MAE at 2-week and 8% at 4-week horizon.
   inference and adaptive conformal inference (ACI)
 - Proper scoring rules: CRPS, log score, DSS, and calibration
   error alongside existing MAE/RMSE/WIS in `score_forecasts()`
-- No existing genomic surveillance tool (evofr, epidemia,
-  EpiNow2, CDC Variant Nowcast Hub) provides integrated
-  calibration diagnostics or conformal prediction
+- lineagefreq is the first R package to integrate calibration
+  diagnostics and conformal prediction into a genomic surveillance
+  forecasting pipeline
 
 **Immune-aware fitness estimation** *(new in 0.4.0)*
 - `immune_landscape()`: encode population immunity against each
@@ -168,8 +168,8 @@ approximately 4% MAE at 2-week and 8% at 4-week horizon.
   emerging variants with controlled false alarm rate
 - `surveillance_dashboard()`: one-call multi-panel surveillance
   quality report for programme managers
-- No existing tool (evofr, epidemia, EpiNow2, phylosamp) provides
-  adaptive allocation or sequential variant detection
+- lineagefreq provides adaptive allocation and sequential variant
+  detection capabilities for genomic surveillance programmes
 
 **Surveillance utilities**
 - `summarize_emerging()`: binomial GLM trend tests per lineage
@@ -205,7 +205,10 @@ with robust surveillance.
 cover only 40--71% of observations. Calibration diagnostics
 (`calibrate()`) reveal this underdispersion; conformal prediction
 (`conformal_forecast()`) provides correctly-calibrated intervals.
-No other genomic surveillance tool diagnoses or corrects this.
+
+Multi-country validation on 5 European countries (ECDC data) and
+2 US datasets confirms systematic miscalibration (KS D = 0.26--0.49,
+all p < 10^-16). See `analysis/` for full reproducible scripts.
 
 ## Supported pathogens
 
@@ -216,9 +219,10 @@ SARS-CoV-2, influenza, RSV, mpox, and others.
 
 If you use lineagefreq in published work, please cite:
 
-> Gao C (2026). "lineagefreq: Modelling Pathogen Lineage Frequency
+> Gao C (2026). lineagefreq: Modelling Pathogen Lineage Frequency
 > Dynamics and Forecasting Variant Replacement from Genomic Surveillance
-> Data." *Journal of Open Source Software* (submitted).
+> Data. R package version 0.5.1.
+> https://CRAN.R-project.org/package=lineagefreq
 
 ```r
 citation("lineagefreq")
