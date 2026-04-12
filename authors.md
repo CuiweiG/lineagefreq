@@ -9,14 +9,15 @@
 Source:
 [`inst/CITATION`](https://github.com/CuiweiG/lineagefreq/blob/main/inst/CITATION)
 
-Gao C (2026). *lineagefreq: Lineage Frequency Dynamics and
-Growth-Advantage Estimation*. R package version 0.2.0,
-<https://github.com/CuiweiG/lineagefreq>.
+Gao C (2026). *lineagefreq: Modelling Pathogen Lineage Frequency
+Dynamics and Forecasting Variant Replacement from Genomic Surveillance
+Data*. R package version 0.5.1,
+<https://CRAN.R-project.org/package=lineagefreq>.
 
     @Manual{,
-      title = {lineagefreq: Lineage Frequency Dynamics and Growth-Advantage Estimation},
+      title = {lineagefreq: Modelling Pathogen Lineage Frequency Dynamics and Forecasting Variant Replacement from Genomic Surveillance Data},
       author = {Cuiwei Gao},
       year = {2026},
-      note = {R package version 0.2.0},
-      url = {https://github.com/CuiweiG/lineagefreq},
+      note = {R package version 0.5.1},
+      url = {https://CRAN.R-project.org/package=lineagefreq},
     }

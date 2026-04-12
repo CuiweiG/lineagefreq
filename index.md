@@ -135,9 +135,9 @@ guarantees via split conformal inference and adaptive conformal
 inference (ACI) - Proper scoring rules: CRPS, log score, DSS, and
 calibration error alongside existing MAE/RMSE/WIS in
 [`score_forecasts()`](https://CuiweiG.github.io/lineagefreq/reference/score_forecasts.md) -
-No existing genomic surveillance tool (evofr, epidemia, EpiNow2, CDC
-Variant Nowcast Hub) provides integrated calibration diagnostics or
-conformal prediction
+lineagefreq is the first R package to integrate calibration diagnostics
+and conformal prediction into a genomic surveillance forecasting
+pipeline
 
 **Immune-aware fitness estimation** *(new in 0.4.0)* -
 [`immune_landscape()`](https://CuiweiG.github.io/lineagefreq/reference/immune_landscape.md):
@@ -168,8 +168,8 @@ SPRT and CUSUM sequential detection of emerging variants with controlled
 false alarm rate -
 [`surveillance_dashboard()`](https://CuiweiG.github.io/lineagefreq/reference/surveillance_dashboard.md):
 one-call multi-panel surveillance quality report for programme
-managers - No existing tool (evofr, epidemia, EpiNow2, phylosamp)
-provides adaptive allocation or sequential variant detection
+managers - lineagefreq provides adaptive allocation and sequential
+variant detection capabilities for genomic surveillance programmes
 
 **Surveillance utilities** -
 [`summarize_emerging()`](https://CuiweiG.github.io/lineagefreq/reference/summarize_emerging.md):
@@ -213,8 +213,11 @@ only 40–71% of observations. Calibration diagnostics
 ([`calibrate()`](https://CuiweiG.github.io/lineagefreq/reference/calibrate.md))
 reveal this underdispersion; conformal prediction
 ([`conformal_forecast()`](https://CuiweiG.github.io/lineagefreq/reference/conformal_forecast.md))
-provides correctly-calibrated intervals. No other genomic surveillance
-tool diagnoses or corrects this.
+provides correctly-calibrated intervals.
+
+Multi-country validation on 5 European countries (ECDC data) and 2 US
+datasets confirms systematic miscalibration (KS D = 0.26–0.49, all p \<
+10^-16). See `analysis/` for full reproducible scripts.
 
 ## Supported pathogens
 
@@ -225,9 +228,10 @@ SARS-CoV-2, influenza, RSV, mpox, and others.
 
 If you use lineagefreq in published work, please cite:
 
-> Gao C (2026). “lineagefreq: Modelling Pathogen Lineage Frequency
+> Gao C (2026). lineagefreq: Modelling Pathogen Lineage Frequency
 > Dynamics and Forecasting Variant Replacement from Genomic Surveillance
-> Data.” *Journal of Open Source Software* (submitted).
+> Data. R package version 0.5.1.
+> <https://CRAN.R-project.org/package=lineagefreq>
 
 ``` r
 citation("lineagefreq")
