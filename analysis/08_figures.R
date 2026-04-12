@@ -247,7 +247,7 @@ fig2a <- tryCatch({
       scale_y_continuous(labels = scales::percent_format(), limits = c(0, 1)) +
       scale_colour_manual(values = pal_n(n_lin)) +
       labs(x = "Date", y = "Frequency", colour = NULL,
-           title = expression(bold("a") ~ "  5-country BA.2 frequency dynamics")) +
+           title = expression(bold("a"))) +
       theme_nature() +
       theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 5),
             strip.text = element_text(size = 7),
@@ -341,7 +341,7 @@ fig2c <- tryCatch({
                colour = "#999999") +
     facet_wrap(~label, nrow = 2) +
     labs(x = "PIT value", y = "Density",
-         title = expression(bold("c") ~ "  PIT histograms (MLR)")) +
+         title = expression(bold("c"))) +
     theme_nature() +
     theme(strip.text = element_text(size = 6),
           plot.title = element_text(size = 9, hjust = 0))
@@ -353,7 +353,7 @@ fig2d <- tryCatch({
   rel_df <- calibration$reliability |>
     filter(engine == "mlr", !is.na(observed_coverage))
 
-  # Abbreviate dataset names for legible legend
+  # Abbreviate dataset names for legible legend; drop unused levels
   rel_df <- rel_df |>
     mutate(
       ds_short = case_when(
@@ -366,6 +366,7 @@ fig2d <- tryCatch({
         grepl("BA2|ba2", dataset)     ~ "US_BA2",
         TRUE                          ~ dataset
       ),
+      ds_short = factor(ds_short, levels = unique(ds_short)),
       ds_shape = ifelse(grepl("US", ds_short), "US", "Europe")
     )
 
@@ -378,17 +379,19 @@ fig2d <- tryCatch({
     geom_line(aes(colour = ds_short), linewidth = LW_DATA) +
     geom_point(aes(colour = ds_short), size = 1.2) +
     coord_equal(xlim = c(0, 1), ylim = c(0, 1)) +
-    scale_shape_manual(values = c(US = 15, Europe = 16)) +
-    scale_colour_grey(start = 0.15, end = 0.7) +
+    scale_shape_manual(values = c(US = 15, Europe = 16), drop = TRUE) +
+    scale_colour_grey(start = 0.15, end = 0.7, drop = TRUE) +
     labs(x = "Nominal coverage", y = "Observed coverage",
          colour = NULL, shape = NULL) +
     panel_label("d") +
     theme_nature() +
     theme(legend.position = "bottom",
+          legend.direction = "horizontal",
           legend.key.size = unit(3, "mm"),
           legend.text = element_text(size = 5.5),
           legend.margin = margin(0, 0, 0, 0),
-          legend.spacing.x = unit(1, "mm"))
+          legend.spacing.x = unit(1, "mm"),
+          plot.margin = margin(5, 15, 5, 5, "pt"))
 }, error = function(e) p_unavail(e$message))
 
 # ── Panel e: Winkler score comparison with paired lines ──────────────────────
@@ -411,7 +414,8 @@ fig2e <- tryCatch({
 
   p <- ggplot(winkler_data, aes(x = dataset, y = winkler, fill = method,
                                  alpha = bar_alpha)) +
-    geom_col(position = position_dodge(width = 0.6), width = 0.5) +
+    geom_col(position = position_dodge(width = 0.8), width = 0.7,
+             colour = NA, linetype = "solid") +
     scale_fill_manual(values = pal_methods) +
     scale_alpha_identity()
 
