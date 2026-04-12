@@ -6,6 +6,10 @@
 cat("[01_data_prep] Starting...\n")
 source("analysis/00_setup.R")
 
+if (packageVersion("lineagefreq") < "0.5.0") {
+  stop("Please install local dev version: devtools::install('C:/Users/cg223/Desktop/lineagefreq')")
+}
+
 ###############################################################################
 # Section A: ECDC multi-country data
 ###############################################################################
@@ -23,10 +27,13 @@ ecdc_filtered <- ecdc_raw |>
 
 cat(sprintf("    After country filter: %d rows\n", nrow(ecdc_filtered)))
 
-# Convert year_week (e.g. "2022-W03") to Date (Monday of ISO week)
+# Convert year_week to Date (Monday of ISO week)
+# ECDC format is "2022-01" (no W prefix), but ISOweek2date requires "2022-W01-1"
+cat(sprintf("    Sample year_week values: %s\n",
+            paste(head(ecdc_filtered$year_week, 3), collapse = ", ")))
 ecdc_filtered <- ecdc_filtered |>
   mutate(
-    date = ISOweek::ISOweek2date(paste0(year_week, "-1"))
+    date = ISOweek::ISOweek2date(paste0(sub("-", "-W", year_week), "-1"))
   )
 
 # Define analysis periods
