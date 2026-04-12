@@ -157,6 +157,20 @@ approximately 4% MAE at 2-week and 8% at 4-week horizon.
 - `selective_pressure()`: genomics-only early warning signal for
   epidemic growth — requires no case counts
 
+**Surveillance optimization** *(new in 0.5.0)*
+- `surveillance_value()`: Expected Value of Information for
+  sequencing — quantify diminishing returns of additional samples
+- `adaptive_design()`: real-time Thompson sampling / UCB allocation
+  across regions, adapting to evolving variant dynamics
+- `detection_horizon()`: weeks-to-detection under logistic growth
+  with cumulative probability accounting
+- `alert_threshold()`: SPRT and CUSUM sequential detection of
+  emerging variants with controlled false alarm rate
+- `surveillance_dashboard()`: one-call multi-panel surveillance
+  quality report for programme managers
+- No existing tool (evofr, epidemia, EpiNow2, phylosamp) provides
+  adaptive allocation or sequential variant detection
+
 **Surveillance utilities**
 - `summarize_emerging()`: binomial GLM trend tests per lineage
 - `sequencing_power()`: minimum sample size for detection
