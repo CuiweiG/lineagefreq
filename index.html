@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">lineagefreq</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -163,9 +163,53 @@
 <p><strong>Inference</strong> - Growth advantage in four scales: growth rate, relative Rt, selection coefficient, doubling time</p>
 <p><strong>Forecasting</strong> - Probabilistic frequency forecasts with parametric simulation and configurable sampling noise</p>
 <p><strong>Evaluation</strong> - Rolling-origin backtesting via <code><a href="reference/backtest.html">backtest()</a></code> with standardized scoring (MAE, RMSE, coverage, WIS) via <code><a href="reference/score_forecasts.html">score_forecasts()</a></code></p>
+<p><strong>Prediction calibration</strong> <em>(new in 0.3.0)</em> - <code><a href="reference/calibrate.html">calibrate()</a></code>: PIT histograms, reliability diagrams, KS uniformity test — diagnose whether prediction intervals have correct coverage - <code><a href="reference/recalibrate.html">recalibrate()</a></code>: isotonic regression and Platt scaling to fix miscalibrated intervals post-hoc - <code><a href="reference/conformal_forecast.html">conformal_forecast()</a></code>: distribution-free prediction intervals with finite-sample coverage guarantees via split conformal inference and adaptive conformal inference (ACI) - Proper scoring rules: CRPS, log score, DSS, and calibration error alongside existing MAE/RMSE/WIS in <code><a href="reference/score_forecasts.html">score_forecasts()</a></code> - No existing genomic surveillance tool (evofr, epidemia, EpiNow2, CDC Variant Nowcast Hub) provides integrated calibration diagnostics or conformal prediction</p>
+<p><strong>Immune-aware fitness estimation</strong> <em>(new in 0.4.0)</em> - <code><a href="reference/immune_landscape.html">immune_landscape()</a></code>: encode population immunity against each lineage from seroprevalence, vaccination, or model-based data - <code><a href="reference/fitness_decomposition.html">fitness_decomposition()</a></code>: partition growth advantage into intrinsic transmissibility vs immune escape components (Figgins &amp; Bedford 2025 framework) - <code><a href="reference/fit_dms_prior.html">fit_dms_prior()</a></code>: penalised MLR incorporating Deep Mutational Scanning escape scores for early-emergence detection - <code><a href="reference/selective_pressure.html">selective_pressure()</a></code>: genomics-only early warning signal for epidemic growth — requires no case counts</p>
+<p><strong>Surveillance optimization</strong> <em>(new in 0.5.0)</em> - <code><a href="reference/surveillance_value.html">surveillance_value()</a></code>: Expected Value of Information for sequencing — quantify diminishing returns of additional samples - <code><a href="reference/adaptive_design.html">adaptive_design()</a></code>: real-time Thompson sampling / UCB allocation across regions, adapting to evolving variant dynamics - <code><a href="reference/detection_horizon.html">detection_horizon()</a></code>: weeks-to-detection under logistic growth with cumulative probability accounting - <code><a href="reference/alert_threshold.html">alert_threshold()</a></code>: SPRT and CUSUM sequential detection of emerging variants with controlled false alarm rate - <code><a href="reference/surveillance_dashboard.html">surveillance_dashboard()</a></code>: one-call multi-panel surveillance quality report for programme managers - No existing tool (evofr, epidemia, EpiNow2, phylosamp) provides adaptive allocation or sequential variant detection</p>
 <p><strong>Surveillance utilities</strong> - <code><a href="reference/summarize_emerging.html">summarize_emerging()</a></code>: binomial GLM trend tests per lineage - <code><a href="reference/sequencing_power.html">sequencing_power()</a></code>: minimum sample size for detection - <code><a href="reference/collapse_lineages.html">collapse_lineages()</a></code>, <code><a href="reference/filter_sparse.html">filter_sparse()</a></code>: preprocessing</p>
 <p><strong>Visualization</strong> - <code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot()</a></code> methods for fits, forecasts, and backtest summaries - Publication-quality output with colorblind-safe palettes</p>
 <p><strong>Interoperability</strong> - broom-compatible: <code>tidy()</code>, <code>glance()</code>, <code>augment()</code> - <code><a href="reference/as_lfq_data.html">as_lfq_data()</a></code> generic for extensible data import - <code><a href="reference/read_lineage_counts.html">read_lineage_counts()</a></code> for CSV input</p>
+</div>
+<div class="section level2">
+<h2 id="validated-on-real-data">Validated on real data<a class="anchor" aria-label="anchor" href="#validated-on-real-data"></a>
+</h2>
+<p>Rolling-origin evaluation on CDC BA.1-to-BA.2 transition data (December 2021 to June 2022, 5 lineages, biweekly):</p>
+<table class="table">
+<thead><tr class="header">
+<th>Horizon</th>
+<th>Median AE</th>
+<th>Mean AE</th>
+<th>Coverage (95%)</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>7 days</td>
+<td>0.5 pp</td>
+<td>3.4 pp</td>
+<td>71%</td>
+</tr>
+<tr class="even">
+<td>14 days</td>
+<td>0.9 pp</td>
+<td>5.7 pp</td>
+<td>64%</td>
+</tr>
+<tr class="odd">
+<td>21 days</td>
+<td>0.9 pp</td>
+<td>5.3 pp</td>
+<td>50%</td>
+</tr>
+<tr class="even">
+<td>28 days</td>
+<td>2.0 pp</td>
+<td>9.1 pp</td>
+<td>40%</td>
+</tr>
+</tbody>
+</table>
+<p>Point accuracy is consistent with Abousamra, Figgins &amp; Bedford (2024, <em>PLOS Comp Bio</em>): 0.6 pp median AE at 7 days for countries with robust surveillance.</p>
+<p><strong>Calibration finding</strong>: the 95% parametric prediction intervals cover only 40–71% of observations. Calibration diagnostics (<code><a href="reference/calibrate.html">calibrate()</a></code>) reveal this underdispersion; conformal prediction (<code><a href="reference/conformal_forecast.html">conformal_forecast()</a></code>) provides correctly-calibrated intervals. No other genomic surveillance tool diagnoses or corrects this.</p>
 </div>
 <div class="section level2">
 <h2 id="supported-pathogens">Supported pathogens<a class="anchor" aria-label="anchor" href="#supported-pathogens"></a>

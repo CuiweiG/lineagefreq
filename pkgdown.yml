@@ -2,11 +2,15 @@ pandoc: 3.1.11
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
+  calibration-and-conformal: calibration-and-conformal.html
+  immune-aware-fitness: immune-aware-fitness.html
   introduction: introduction.html
   model-comparison: model-comparison.html
   real-data-analysis: real-data-analysis.html
+  surveillance-optimization: surveillance-optimization.html
   surveillance-workflow: surveillance-workflow.html
-last_built: 2026-04-12T13:39Z
+  validation-report: validation-report.html
+last_built: 2026-04-12T21:47Z
 urls:
   reference: https://CuiweiG.github.io/lineagefreq/reference
   article: https://CuiweiG.github.io/lineagefreq/articles

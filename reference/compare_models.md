@@ -35,9 +35,9 @@ bt <- backtest(sim, engines = "mlr",
   horizons = c(7, 14), min_train = 42)
 sc <- score_forecasts(bt)
 compare_models(sc)
-#> # A tibble: 1 × 5
-#>   engine     mae    rmse coverage     wis
-#>   <chr>    <dbl>   <dbl>    <dbl>   <dbl>
-#> 1 mlr    0.00701 0.00967        1 0.00214
+#> # A tibble: 1 × 9
+#>   engine     mae    rmse coverage     wis    crps log_score   dss calibration
+#>   <chr>    <dbl>   <dbl>    <dbl>   <dbl>   <dbl>     <dbl> <dbl>       <dbl>
+#> 1 mlr    0.00701 0.00967        1 0.00214 0.00645     -3.10 -8.04      0.0762
 # }
 ```

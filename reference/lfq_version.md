@@ -19,7 +19,7 @@ A list with components: `version`, `r_version`, `stan_available`,
 ``` r
 lfq_version()
 #> $version
-#> [1] "0.2.0"
+#> [1] "0.5.1"
 #> 
 #> $r_version
 #> [1] "4.5.3"

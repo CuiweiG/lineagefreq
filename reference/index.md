@@ -64,6 +64,57 @@ Extract growth advantages and forecasts
 - [`sequencing_power()`](https://CuiweiG.github.io/lineagefreq/reference/sequencing_power.md)
   : Sequencing power analysis
 
+## Calibration & Uncertainty
+
+Assess and correct prediction interval calibration
+
+- [`calibrate()`](https://CuiweiG.github.io/lineagefreq/reference/calibrate.md)
+  : Calibration diagnostics for lineage frequency forecasts
+- [`conformal_forecast()`](https://CuiweiG.github.io/lineagefreq/reference/conformal_forecast.md)
+  : Conformal prediction intervals for lineage frequencies
+- [`recalibrate()`](https://CuiweiG.github.io/lineagefreq/reference/recalibrate.md)
+  : Recalibrate prediction intervals
+- [`plot(`*`<calibration_report>`*`)`](https://CuiweiG.github.io/lineagefreq/reference/plot.calibration_report.md)
+  : Plot calibration diagnostics
+
+## Fitness & Immunity
+
+Decompose growth advantage into transmissibility and immune escape
+
+- [`fitness_decomposition()`](https://CuiweiG.github.io/lineagefreq/reference/fitness_decomposition.md)
+  : Decompose variant fitness into transmissibility and immune escape
+- [`immune_landscape()`](https://CuiweiG.github.io/lineagefreq/reference/immune_landscape.md)
+  : Construct a population immunity landscape
+- [`fit_dms_prior()`](https://CuiweiG.github.io/lineagefreq/reference/fit_dms_prior.md)
+  : Fit model with Deep Mutational Scanning priors
+- [`selective_pressure()`](https://CuiweiG.github.io/lineagefreq/reference/selective_pressure.md)
+  : Population-level selective pressure from variant dynamics
+- [`plot(`*`<fitness_decomposition>`*`)`](https://CuiweiG.github.io/lineagefreq/reference/plot.fitness_decomposition.md)
+  : Plot fitness decomposition
+- [`plot(`*`<immune_landscape>`*`)`](https://CuiweiG.github.io/lineagefreq/reference/plot.immune_landscape.md)
+  : Plot population immunity landscape
+- [`tidy.fitness_decomposition()`](https://CuiweiG.github.io/lineagefreq/reference/tidy.fitness_decomposition.md)
+  : Tidy a fitness decomposition
+
+## Surveillance Optimization
+
+Information-theoretic resource allocation and emergence detection
+
+- [`surveillance_value()`](https://CuiweiG.github.io/lineagefreq/reference/surveillance_value.md)
+  : Expected Value of Information for genomic surveillance
+- [`adaptive_design()`](https://CuiweiG.github.io/lineagefreq/reference/adaptive_design.md)
+  : Adaptive sequencing allocation via Thompson sampling
+- [`alert_threshold()`](https://CuiweiG.github.io/lineagefreq/reference/alert_threshold.md)
+  : Sequential detection of emerging variants
+- [`detection_horizon()`](https://CuiweiG.github.io/lineagefreq/reference/detection_horizon.md)
+  : Detection horizon for an emerging variant
+- [`surveillance_dashboard()`](https://CuiweiG.github.io/lineagefreq/reference/surveillance_dashboard.md)
+  : Comprehensive surveillance quality dashboard
+- [`plot(`*`<adaptive_allocation>`*`)`](https://CuiweiG.github.io/lineagefreq/reference/plot.adaptive_allocation.md)
+  : Plot adaptive allocation
+- [`plot(`*`<evoi>`*`)`](https://CuiweiG.github.io/lineagefreq/reference/plot.evoi.md)
+  : Plot EVOI curve
+
 ## Backtesting
 
 Evaluate forecast accuracy
