@@ -104,12 +104,22 @@ ann <- tibble(
   y = c(Inf, Inf)
 )
 
+# Uniform reference line: if PIT values were U(0,1), each of 10
+# bins would contain n/10 values. Compute per-dataset since
+# facets use free_y and n differs.
+n_ba2 <- length(cal$cal_ba2$pit_values)
+n_jn1 <- length(cal$cal_jn1$pit_values)
+ref_lines <- tibble(
+  dataset  = c("BA.2", "JN.1"),
+  yref     = c(n_ba2 / 10, n_jn1 / 10)
+)
+
 p3 <- ggplot(pit_all, aes(x = pit)) +
   geom_histogram(bins = 10, fill = "#6699CC", color = "white",
                  alpha = 0.85) +
-  geom_hline(aes(yintercept = after_stat(count / 10)),
-             stat = "count", linetype = "dashed",
-             color = "#333333", linewidth = 0.25) +
+  geom_hline(data = ref_lines, aes(yintercept = yref),
+             linetype = "dashed", color = "#333333",
+             linewidth = 0.25) +
   facet_wrap(~ dataset, scales = "free_y") +
   geom_text(data = ann, aes(x = x, y = y, label = label),
             vjust = 1.5, hjust = 0.5, size = 2.8,
