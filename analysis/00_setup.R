@@ -9,9 +9,12 @@ cat("[00_setup] Starting...\n")
 
 n_cores_available <- parallel::detectCores(logical = TRUE)
 n_cores_use       <- max(1L, floor(n_cores_available * 0.80))
-ram_gb            <- as.numeric(system("wmic OS get TotalVisibleMemorySize /value", intern = TRUE) |>
-                       grep("TotalVisibleMemorySize", x = _, value = TRUE) |>
-                       sub("TotalVisibleMemorySize=", "", x = _)) / 1024 / 1024
+ram_gb            <- tryCatch({
+  as.numeric(system("powershell -command \"[math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB)\"", intern = TRUE))
+}, error = function(e) {
+  message("Could not detect RAM, assuming 192 GB")
+  192
+})
 r_version         <- paste(R.version$major, R.version$minor, sep = ".")
 pkg_version       <- as.character(packageVersion("lineagefreq"))
 
