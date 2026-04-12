@@ -98,12 +98,12 @@ bt <- backtest(x,
   generation_time = 5
 )
 #> Backtesting ■■■■                               9% | ETA: 12s
-#> Backtesting ■■■■■■■■■                         28% | ETA: 10s
-#> Backtesting ■■■■■■■■■■■■■■■                   46% | ETA:  8s
-#> Backtesting ■■■■■■■■■■■■■■■■■■■               60% | ETA:  7s
-#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■           75% | ETA:  4s
-#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■■■       88% | ETA:  2s
-#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   99% | ETA:  0s
+#> Backtesting ■■■■■■■■■                         28% | ETA: 11s
+#> Backtesting ■■■■■■■■■■■■■■                    44% | ETA:  9s
+#> Backtesting ■■■■■■■■■■■■■■■■■■■               59% | ETA:  7s
+#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■           73% | ETA:  5s
+#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■■■       85% | ETA:  3s
+#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■    97% | ETA:  1s
 #> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100% | ETA:  0s
 bt
 #> 
