@@ -36,55 +36,78 @@
 
 <div id="summary" class="section level1">
 
-<p><code>lineagefreq</code> is an R package for analysing pathogen lineage frequency dynamics from genomic surveillance count data. It provides a unified interface for fitting multinomial logistic regression models to sequence counts, estimating growth advantages across multiple parameterisations, generating probabilistic short-term forecasts with honest uncertainty quantification, and evaluating forecast accuracy through rolling-origin backtesting. The package ships with real CDC surveillance data and supports five estimation engines — three frequentist and two Bayesian — behind a single <code><a href="reference/fit_model.html">fit_model()</a></code> interface.</p>
+<p><code>lineagefreq</code> is an R package for analysing the frequency dynamics of pathogen lineages from genomic surveillance count data. It provides a unified interface for fitting multinomial logistic regression models to sequence counts, estimating lineage-specific growth advantages in multiple parameterisations, generating probabilistic short-term frequency forecasts with honest uncertainty quantification, and evaluating forecast accuracy through rolling-origin backtesting. The package supports five estimation engines — three frequentist and two Bayesian — behind a single <code><a href="reference/fit_model.html">fit_model()</a></code> function, and ships with real U.S. CDC SARS-CoV-2 surveillance data for immediate reproducibility.</p>
 </div>
 <div class="section level1">
 <h1 id="statement-of-need">Statement of Need<a class="anchor" aria-label="anchor" href="#statement-of-need"></a></h1>
-<p>The COVID-19 pandemic demonstrated that tracking the frequency trajectories of pathogen lineages is central to public health decision-making. When a new variant emerges, decision-makers need rapid answers to three questions: how fast is it growing relative to established lineages, when will it become dominant, and are current sequencing volumes sufficient to detect it at relevant prevalence thresholds?</p>
-<p>These questions are answered by fitting frequency models to genomic surveillance counts, a task that several research groups have implemented in custom pipelines. The Nextstrain/Hubbard group developed <code>evofr</code> for Bayesian renewal models [@abousamra2024fitness]. CDC maintains internal multinomial logistic regression pipelines. Piantham, Linton, and Nishiura described a method for converting growth rate differences to relative reproduction numbers [@piantham2022predicting]. However, no single CRAN-distributed package has offered a unified, tested, and documented implementation covering model fitting, multiple parameterisations, forecasting with uncertainty, and rigorous out-of-sample evaluation.</p>
-<p><code>lineagefreq</code> addresses this gap. It is designed for surveillance teams, academic epidemiology laboratories, and public health analysts who need a self-contained, reproducible workflow with minimal setup overhead. The package is pathogen-agnostic and works with any variant-resolved surveillance count data.</p>
+<p>When a novel pathogen variant emerges, public health authorities require rapid answers to three operational questions: how fast is the new lineage growing relative to established variants, when will it become the dominant circulating strain, and are current sequencing volumes adequate to detect it at decision-relevant prevalence thresholds? These questions arise with every variant of concern — from SARS-CoV-2 Omicron sublineages to seasonal influenza clade replacements — and they are fundamentally questions about lineage frequency dynamics that can be addressed with well-characterised statistical models.</p>
+<p>The multinomial logistic regression (MLR) framework provides a natural model for this setting. Observed sequence counts at each surveillance time point are treated as draws from a multinomial distribution, with log-linear frequency trajectories parameterised by lineage-specific intercepts and growth rates. The growth rate difference between a focal lineage and a reference lineage can be converted to a relative effective reproduction number using the generation time [@piantham2022predicting]. This approach has been validated extensively during the COVID-19 pandemic, with several groups implementing custom pipelines for real-time variant tracking [@abousamra2024fitness].</p>
+<p>Despite the maturity of the underlying methodology, no CRAN-distributed R package has previously offered a unified, documented implementation covering model fitting across multiple engines, growth advantage estimation in multiple parameterisations, probabilistic forecasting with rigorous uncertainty propagation, and standardised out-of-sample evaluation. Existing tools are either embedded in specialised Bayesian frameworks requiring Stan infrastructure [@carpenter2017stan], maintained as internal pipelines within public health agencies, or implemented as single-purpose scripts that are difficult to reproduce across institutions.</p>
+<p><code>lineagefreq</code> fills this gap. It is designed for surveillance teams, academic epidemiology laboratories, and public health analysts who need a self-contained, tested, and documented solution with minimal setup requirements. The package is pathogen-agnostic and handles any variant-resolved surveillance count data.</p>
 </div>
 <div class="section level1">
-<h1 id="key-features">Key Features<a class="anchor" aria-label="anchor" href="#key-features"></a></h1>
+<h1 id="methodology">Methodology<a class="anchor" aria-label="anchor" href="#methodology"></a></h1>
 <div class="section level2">
-<h2 id="model-fitting">Model Fitting<a class="anchor" aria-label="anchor" href="#model-fitting"></a></h2>
-<p>The <code><a href="reference/fit_model.html">fit_model()</a></code> function provides a unified interface to five estimation engines:</p>
-<table class="table"><colgroup><col width="29%"><col width="22%"><col width="48%"></colgroup><thead><tr class="header"><th>Engine</th>
-<th>Type</th>
-<th>Key property</th>
-</tr></thead><tbody><tr class="odd"><td><code>mlr</code></td>
-<td>Frequentist</td>
-<td>Multinomial logistic regression via maximum likelihood</td>
-</tr><tr class="even"><td><code>hier_mlr</code></td>
-<td>Frequentist</td>
-<td>Hierarchical pooling across locations via DerSimonian–Laird random-effects meta-analysis</td>
-</tr><tr class="odd"><td><code>piantham</code></td>
-<td>Frequentist</td>
-<td>Growth rates converted to relative reproduction numbers</td>
-</tr><tr class="even"><td><code>fga</code></td>
-<td>Bayesian</td>
-<td>Full posterior via CmdStan</td>
-</tr><tr class="odd"><td><code>garw</code></td>
-<td>Bayesian</td>
-<td>Time-varying fitness via Gaussian autoregressive random walk</td>
-</tr></tbody></table><p>All engines accept the same data format produced by <code><a href="reference/lfq_data.html">lfq_data()</a></code>, which validates raw count data, computes per-timepoint frequencies, and flags unreliable periods with low sequencing volume.</p>
+<h2 id="model-specification">Model Specification<a class="anchor" aria-label="anchor" href="#model-specification"></a></h2>
+<p>The core model treats sequence counts <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mi>v</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">Y_v(t)</annotation></semantics></math> for lineage <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>v</mi><annotation encoding="application/x-tex">v</annotation></semantics></math> at time <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math> as multinomially distributed with frequency parameters:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>v</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>α</mi><mi>v</mi></msub><mo>+</mo><msub><mi>δ</mi><mi>v</mi></msub><mo>⋅</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><munder><mo>∑</mo><mi>k</mi></munder><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>α</mi><mi>k</mi></msub><mo>+</mo><msub><mi>δ</mi><mi>k</mi></msub><mo>⋅</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">p_v(t) = \frac{\exp(\alpha_v + \delta_v \cdot t)}{\sum_k \exp(\alpha_k + \delta_k \cdot t)}</annotation></semantics></math></p>
+<p>where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mi>v</mi></msub><annotation encoding="application/x-tex">\alpha_v</annotation></semantics></math> is an intercept governing initial frequency and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>δ</mi><mi>v</mi></msub><annotation encoding="application/x-tex">\delta_v</annotation></semantics></math> is the growth rate per unit time. A designated pivot lineage has <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mtext mathvariant="normal">pivot</mtext></msub><mo>=</mo><msub><mi>δ</mi><mtext mathvariant="normal">pivot</mtext></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\alpha_{\text{pivot}} = \delta_{\text{pivot}} = 0</annotation></semantics></math>, serving as the reference against which all growth advantages are measured. Parameters are estimated by maximum likelihood via BFGS optimisation, with confidence intervals derived from the Fisher information matrix.</p>
+</div>
+<div class="section level2">
+<h2 id="estimation-engines">Estimation Engines<a class="anchor" aria-label="anchor" href="#estimation-engines"></a></h2>
+<p>Five engines are available behind the <code><a href="reference/fit_model.html">fit_model()</a></code> interface:</p>
+<ul><li>
+<strong><code>mlr</code></strong>: Standard multinomial logistic regression via maximum likelihood. Suitable for single-location analyses with adequate sample sizes.</li>
+<li>
+<strong><code>hier_mlr</code></strong>: Hierarchical pooling across multiple locations using DerSimonian–Laird random-effects meta-analysis [@dersimonian1986meta]. Fits MLR independently per location, then shrinks location-specific growth rate estimates toward the pooled mean. Particularly valuable during early-phase surveillance when individual jurisdictions have few sequences.</li>
+<li>
+<strong><code>piantham</code></strong>: Wraps the MLR engine and converts growth rates to relative effective reproduction numbers following @piantham2022predicting, requiring specification of the generation time.</li>
+<li>
+<strong><code>fga</code></strong> and <strong><code>garw</code></strong>: Bayesian engines using Stan [@carpenter2017stan] via <code>cmdstanr</code>, providing full posterior distributions. The <code>garw</code> (Gaussian autoregressive random walk) engine additionally accommodates time-varying fitness, relaxing the constant-growth-rate assumption.</li>
+</ul><p>The engine registration system (<code><a href="reference/register_engine.html">register_engine()</a></code>, <code><a href="reference/unregister_engine.html">unregister_engine()</a></code>) permits third-party models to be integrated into the same <code><a href="reference/fit_model.html">fit_model()</a></code> interface, following the extensible design philosophy of <code>parsnip</code> [@kuhn2022tidymodels].</p>
 </div>
 <div class="section level2">
 <h2 id="growth-advantage-estimation">Growth Advantage Estimation<a class="anchor" aria-label="anchor" href="#growth-advantage-estimation"></a></h2>
-<p><code><a href="reference/growth_advantage.html">growth_advantage()</a></code> extracts fitness differences in four parameterisations: raw growth rates, relative effective reproduction numbers (following @piantham2022predicting), selection coefficients, and frequency doubling times. Confidence intervals are derived from the Fisher information matrix for frequentist engines and from posterior draws for Bayesian engines.</p>
+<p>The <code><a href="reference/growth_advantage.html">growth_advantage()</a></code> function extracts fitness differences in four parameterisations:</p>
+<ul><li>
+<strong>Growth rate</strong>: the raw <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>δ</mi><mi>v</mi></msub><annotation encoding="application/x-tex">\delta_v</annotation></semantics></math> per time-scale unit.</li>
+<li>
+<strong>Relative reproduction number</strong>: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>R</mi><mi>t</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>v</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>=</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>δ</mi><mi>v</mi></msub><mo>⋅</mo><mi>τ</mi><mi>/</mi><mi>T</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">R_t^{(v)} = \exp(\delta_v \cdot \tau / T)</annotation></semantics></math>, where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math> is the generation time and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>T</mi><annotation encoding="application/x-tex">T</annotation></semantics></math> is the time scale [@piantham2022predicting].</li>
+<li>
+<strong>Selection coefficient</strong>: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>R</mi><mi>t</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>v</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">R_t^{(v)} - 1</annotation></semantics></math>, expressing the fitness advantage as a proportion.</li>
+<li>
+<strong>Doubling time</strong>: the number of days for the frequency ratio relative to the pivot to double.</li>
+</ul><p>Confidence intervals use the delta method applied to the variance-covariance matrix from maximum likelihood estimation, computed in log-space for ratio quantities to improve accuracy.</p>
 </div>
 <div class="section level2">
-<h2 id="forecasting-with-uncertainty">Forecasting with Uncertainty<a class="anchor" aria-label="anchor" href="#forecasting-with-uncertainty"></a></h2>
-<p><code><a href="reference/forecast.html">forecast()</a></code> generates probabilistic predictions by propagating two sources of uncertainty: parameter estimation error (via multivariate normal sampling from the Fisher information matrix) and multinomial sampling variability at a user-specified effective weekly sequencing volume. The output is a set of prediction intervals, not point forecasts, reflecting the fundamental uncertainty in frequency trajectory projection.</p>
+<h2 id="forecasting">Forecasting<a class="anchor" aria-label="anchor" href="#forecasting"></a></h2>
+<p>The <code><a href="reference/forecast.html">forecast()</a></code> function generates probabilistic predictions by propagating two sources of uncertainty. Parameter estimation error is captured by drawing from a multivariate normal distribution centred on the maximum likelihood estimates with covariance given by the inverse Fisher information. Multinomial sampling variability is optionally added at a user-specified effective weekly sequencing volume. The result is a set of prediction intervals computed from quantiles across simulation draws — not point forecasts.</p>
 </div>
 <div class="section level2">
 <h2 id="backtesting">Backtesting<a class="anchor" aria-label="anchor" href="#backtesting"></a></h2>
-<p><code><a href="reference/backtest.html">backtest()</a></code> implements rolling-origin out-of-sample evaluation following the framework described by @abousamra2024fitness. The model is repeatedly fit on expanding historical windows, forecasts are generated at multiple horizons, and predictions are compared to held-out observations. <code><a href="reference/score_forecasts.html">score_forecasts()</a></code> computes standardised accuracy metrics (MAE, RMSE, coverage, weighted interval score following @bracher2021evaluating), and <code><a href="reference/compare_models.html">compare_models()</a></code> ranks engines by predictive performance.</p>
+<p>The <code><a href="reference/backtest.html">backtest()</a></code> function implements rolling-origin out-of-sample evaluation following the framework described by @abousamra2024fitness. At each origin date, the model is fit on historical data and forecasts are generated at multiple horizons (default: 7, 14, 21, and 28 days). Predictions are compared to held-out observations using <code><a href="reference/score_forecasts.html">score_forecasts()</a></code>, which computes standardised accuracy metrics: mean absolute error, root mean squared error, prediction interval coverage, and weighted interval score [@bracher2021evaluating]. The <code><a href="reference/compare_models.html">compare_models()</a></code> function ranks engines by predictive performance.</p>
 </div>
-<div class="section level2">
-<h2 id="surveillance-utilities">Surveillance Utilities<a class="anchor" aria-label="anchor" href="#surveillance-utilities"></a></h2>
-<p><code><a href="reference/sequencing_power.html">sequencing_power()</a></code> computes the sample size required to detect a variant at a given prevalence with a specified confidence level. <code><a href="reference/summarize_emerging.html">summarize_emerging()</a></code> scans all lineages for statistically significant growth trends using binomial GLMs with trend tests. <code><a href="reference/collapse_lineages.html">collapse_lineages()</a></code> aggregates rare lineages below a frequency or count threshold.</p>
 </div>
+<div class="section level1">
+<h1 id="surveillance-utilities">Surveillance Utilities<a class="anchor" aria-label="anchor" href="#surveillance-utilities"></a></h1>
+<p>Two additional functions address practical surveillance operations. <code><a href="reference/sequencing_power.html">sequencing_power()</a></code> computes the sample size required to detect a lineage at a specified prevalence with a given confidence level, answering the recurring question of whether a jurisdiction’s sequencing volume is adequate. <code><a href="reference/summarize_emerging.html">summarize_emerging()</a></code> scans all lineages for statistically significant growth trends using binomial GLMs with time-trend coefficients, flagging those exceeding a user-specified frequency threshold. Preprocessing functions <code><a href="reference/collapse_lineages.html">collapse_lineages()</a></code> and <code><a href="reference/filter_sparse.html">filter_sparse()</a></code> handle low-frequency lineage aggregation and removal of time points with insufficient sequencing depth.</p>
+</div>
+<div class="section level1">
+<h1 id="included-datasets">Included Datasets<a class="anchor" aria-label="anchor" href="#included-datasets"></a></h1>
+<p>The package ships with four datasets enabling immediate, reproducible analysis:</p>
+<ul><li>
+<strong><code>cdc_sarscov2_jn1</code></strong>: Real CDC biweekly surveillance data covering the JN.1 emergence (October 2023 to June 2024), with 10 lineages including JN.1, XBB.1.5, and EG.5.1. Source: CDC COVID Data Tracker, public domain.</li>
+<li>
+<strong><code>cdc_ba2_transition</code></strong>: Real CDC data covering the well-characterised BA.1 to BA.2 replacement (December 2021 to June 2022), providing an independent validation dataset with published growth advantage estimates for comparison.</li>
+<li>
+<strong><code>sarscov2_us_2022</code></strong>: Simulated weekly U.S. data representing four sequential variant sweeps (BA.1, BA.2, BA.4/5, BQ.1).</li>
+<li>
+<strong><code>influenza_h3n2</code></strong>: Simulated seasonal influenza H3N2 clade data based on Nextstrain dynamics.</li>
+</ul></div>
+<div class="section level1">
+<h1 id="validation">Validation<a class="anchor" aria-label="anchor" href="#validation"></a></h1>
+<p>The package has been validated against published epidemiological estimates. On CDC data covering the BA.1 to BA.2 transition, the model recovers a relative reproduction number of approximately 1.34, consistent with household transmission estimates of 1.3–1.5 from Denmark [@lyngse2022household]. On the JN.1 emergence dataset, the model reproduces the observed frequency trajectory from below 1% to over 80%.</p>
+<p>Forecast accuracy, assessed through rolling-origin backtesting on the BA.2 transition data, yields approximately 4 percentage points MAE at a 2-week horizon and 8 percentage points at 4 weeks. The 95% prediction interval coverage is maintained across forecast horizons, indicating well-calibrated uncertainty quantification.</p>
 </div>
 <div class="section level1">
 <h1 id="example-usage">Example Usage<a class="anchor" aria-label="anchor" href="#example-usage"></a></h1>
@@ -94,8 +117,9 @@
 <span><span class="co"># Load real CDC surveillance data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cdc_sarscov2_jn1</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Prepare data</span></span>
-<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lfq_data.html">lfq_data</a></span><span class="op">(</span><span class="va">cdc_sarscov2_jn1</span>, lineage <span class="op">=</span> <span class="va">lineage</span>, date <span class="op">=</span> <span class="va">date</span>, count <span class="op">=</span> <span class="va">count</span><span class="op">)</span></span>
+<span><span class="co"># Prepare and validate count data</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lfq_data.html">lfq_data</a></span><span class="op">(</span><span class="va">cdc_sarscov2_jn1</span>, lineage <span class="op">=</span> <span class="va">lineage</span>,</span>
+<span>              date <span class="op">=</span> <span class="va">date</span>, count <span class="op">=</span> <span class="va">count</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Fit multinomial logistic regression</span></span>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fit_model.html">fit_model</a></span><span class="op">(</span><span class="va">x</span>, engine <span class="op">=</span> <span class="st">"mlr"</span><span class="op">)</span></span>
@@ -107,28 +131,20 @@
 <span><span class="va">fc</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/forecast.html">forecast</a></span><span class="op">(</span><span class="va">fit</span>, horizon <span class="op">=</span> <span class="fl">28</span>, n_sim <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="va">fc</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Rolling-origin backtesting</span></span>
+<span><span class="co"># Rolling-origin backtesting with standardised scoring</span></span>
 <span><span class="va">bt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/backtest.html">backtest</a></span><span class="op">(</span><span class="va">x</span>, engines <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mlr"</span>, <span class="st">"piantham"</span><span class="op">)</span>,</span>
 <span>               horizons <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">14</span>, <span class="fl">21</span>, <span class="fl">28</span><span class="op">)</span>, min_train <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span>
 <span><span class="va">sc</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/score_forecasts.html">score_forecasts</a></span><span class="op">(</span><span class="va">bt</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/compare_models.html">compare_models</a></span><span class="op">(</span><span class="va">sc</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level1">
-<h1 id="validation">Validation<a class="anchor" aria-label="anchor" href="#validation"></a></h1>
-<p>The package has been validated against published epidemiological estimates. On CDC data covering the BA.1 to BA.2 transition, the model recovers a relative reproduction number of approximately 1.34, consistent with household transmission estimates from Denmark [@lyngse2022household]. On the JN.1 emergence dataset, the model reproduces the observed trajectory from below 1% to over 80% frequency.</p>
-<p>Forecast accuracy, assessed via rolling-origin backtesting on the BA.2 transition data, yields approximately 4 percentage points MAE at a 2-week horizon and 8 percentage points at 4 weeks, with 95% prediction interval coverage maintained across horizons.</p>
+<h1 id="software-design">Software Design<a class="anchor" aria-label="anchor" href="#software-design"></a></h1>
+<p><code>lineagefreq</code> follows tidyverse conventions throughout. Broom methods (<code>tidy()</code>, <code>glance()</code>, <code>augment()</code>) ensure that model outputs integrate into standard analytical pipelines. All plotting uses <code>ggplot2</code> with <code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot()</a></code> methods for fitted models, forecasts, and backtest summaries. The package uses tibble subclassing for data containers and rlang for tidy evaluation.</p>
+<p>The package is available on CRAN at <a href="https://CRAN.R-project.org/package=lineagefreq" class="external-link uri">https://CRAN.R-project.org/package=lineagefreq</a> and on GitHub at <a href="https://github.com/CuiweiG/lineagefreq" class="external-link uri">https://github.com/CuiweiG/lineagefreq</a>. Four vignettes cover the core workflow, real-data case studies, model comparison, and end-to-end surveillance pipelines. The test suite comprises 251 unit tests.</p>
 </div>
 <div class="section level1">
-<h1 id="datasets">Datasets<a class="anchor" aria-label="anchor" href="#datasets"></a></h1>
-<p>The package includes four datasets: <code>sarscov2_us_2022</code> (simulated US variant dynamics), <code>influenza_h3n2</code> (simulated H3N2 clades), <code>cdc_sarscov2_jn1</code> (real CDC biweekly data covering the JN.1 emergence, October 2023 to June 2024), and <code>cdc_ba2_transition</code> (real CDC data covering the BA.1 to BA.2 replacement, December 2021 to June 2022). The real datasets enable immediate, reproducible benchmarking against published estimates.</p>
-</div>
-<div class="section level1">
-<h1 id="design-philosophy">Design Philosophy<a class="anchor" aria-label="anchor" href="#design-philosophy"></a></h1>
-<p><code>lineagefreq</code> follows tidyverse conventions throughout. Broom methods (<code>tidy()</code>, <code>glance()</code>, <code>augment()</code>) ensure integration with standard analytical workflows. The engine registration system (<code><a href="reference/register_engine.html">register_engine()</a></code>) allows third-party models to be plugged into the <code><a href="reference/fit_model.html">fit_model()</a></code> interface, following the design philosophy of <code>parsnip</code> [@kuhn2022tidymodels]. All plotting uses <code>ggplot2</code> with <code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot()</a></code> methods for fitted models, forecasts, and backtest results.</p>
-</div>
-<div class="section level1">
-<h1 id="availability">Availability<a class="anchor" aria-label="anchor" href="#availability"></a></h1>
-<p><code>lineagefreq</code> is available on CRAN at <a href="https://CRAN.R-project.org/package=lineagefreq" class="external-link uri">https://CRAN.R-project.org/package=lineagefreq</a> and on GitHub at <a href="https://github.com/CuiweiG/lineagefreq" class="external-link uri">https://github.com/CuiweiG/lineagefreq</a>. Four vignettes cover the core workflow, real-data case studies, model comparison, and end-to-end surveillance pipelines.</p>
+<h1 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a></h1>
+<p>The methodological foundation draws on work by Abousamra, Figgins, and Bedford on fitness model evaluation, and by Piantham, Linton, and Nishiura on relative reproduction number approximation. The CDC COVID Data Tracker provided the real surveillance data included in the package.</p>
 </div>
 <div class="section level1">
 <h1 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h1>
