@@ -402,12 +402,6 @@ fig2e <- tryCatch({
   }) |>
     filter(!is.na(winkler), method %in% c("Parametric", "Conformal"))
 
-  # Compute improvement
-  winkler_wide <- winkler_data |>
-    select(dataset, method, winkler) |>
-    pivot_wider(names_from = method, values_from = winkler) |>
-    mutate(improvement = (Parametric - Conformal) / Parametric * 100)
-
   # Alpha difference for grayscale redundancy: Parametric=1.0, Conformal=0.6
   winkler_data <- winkler_data |>
     mutate(bar_alpha = ifelse(method == "Parametric", 1.0, 0.6))
@@ -415,21 +409,10 @@ fig2e <- tryCatch({
   p <- ggplot(winkler_data, aes(x = dataset, y = winkler, fill = method,
                                  alpha = bar_alpha)) +
     geom_col(position = position_dodge(width = 0.8), width = 0.7,
-             colour = NA, linetype = "solid") +
-    scale_fill_manual(values = pal_methods) +
-    scale_alpha_identity()
-
-  # Paired difference lines
-  if (nrow(winkler_wide) > 0) {
-    for (i in seq_len(nrow(winkler_wide))) {
-      p <- p + annotate("segment",
-        x = i - 0.15, xend = i + 0.15,
-        y = winkler_wide$Parametric[i], yend = winkler_wide$Conformal[i],
-        colour = "grey40", linewidth = LW_REF, linetype = "dotted")
-    }
-  }
-
-  p + labs(x = NULL, y = "Winkler score (lower = better)", fill = NULL) +
+             colour = "white", linetype = 0, linewidth = 0) +
+    scale_fill_manual(values = pal_methods, guide = guide_legend(override.aes = list(alpha = 1))) +
+    scale_alpha_identity() +
+    labs(x = NULL, y = "Winkler score (lower = better)", fill = NULL) +
     panel_label("e") +
     theme_nature() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 5),
