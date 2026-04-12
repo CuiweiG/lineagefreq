@@ -9,8 +9,14 @@
 #'   * `"coverage"`: Proportion within prediction intervals.
 #'   * `"wis"`: Simplified weighted interval score for the single
 #'     prediction interval stored in the backtest (typically 95%).
-#'     For the full multi-quantile WIS per Bracher et al. (2021),
-#'     use dedicated scoring packages such as 'scoringutils'.
+#'   * `"crps"`: Continuous Ranked Probability Score, assuming
+#'     Gaussian forecast distribution (Gneiting and Raftery, 2007).
+#'   * `"log_score"`: Logarithmic scoring rule evaluated at the
+#'     observed value under the Gaussian forecast density.
+#'   * `"dss"`: Dawid-Sebastiani Score, a proper scoring rule based
+#'     on the predictive mean and variance.
+#'   * `"calibration"`: Mean squared calibration error across
+#'     nominal coverage levels 10\%--90\%.
 #'
 #' @return A tibble with columns: `engine`, `horizon`, `metric`,
 #'   `value`.
@@ -20,6 +26,11 @@
 #' epidemic forecasts in an interval format. \emph{PLoS
 #' Computational Biology}, 17(2):e1008618.
 #' \doi{10.1371/journal.pcbi.1008618}
+#'
+#' Gneiting T, Raftery AE (2007). Strictly proper scoring rules,
+#' prediction, and estimation. \emph{Journal of the American
+#' Statistical Association}, 102(477), 359--378.
+#' \doi{10.1198/016214506000001437}
 #'
 #' @seealso [compare_models()] to rank engines based on scores.
 #'
@@ -36,7 +47,8 @@
 #' @export
 score_forecasts <- function(bt,
                             metrics = c("mae", "rmse", "coverage",
-                                        "wis")) {
+                                        "wis", "crps", "log_score",
+                                        "dss", "calibration")) {
 
   if (!inherits(bt, "lfq_backtest")) {
     cli::cli_abort("{.arg bt} must be an {.cls lfq_backtest} object.")
@@ -61,11 +73,15 @@ score_forecasts <- function(bt,
 
       for (m in metrics) {
         val <- switch(m,
-          mae      = mean(abs(sub$predicted - sub$observed)),
-          rmse     = sqrt(mean((sub$predicted - sub$observed)^2)),
-          coverage = mean(sub$observed >= sub$lower &
-                            sub$observed <= sub$upper, na.rm = TRUE),
-          wis      = .compute_wis(sub)
+          mae         = mean(abs(sub$predicted - sub$observed)),
+          rmse        = sqrt(mean((sub$predicted - sub$observed)^2)),
+          coverage    = mean(sub$observed >= sub$lower &
+                               sub$observed <= sub$upper, na.rm = TRUE),
+          wis         = .compute_wis(sub),
+          crps        = .compute_crps(sub),
+          log_score   = .compute_log_score(sub),
+          dss         = .compute_dss(sub),
+          calibration = .compute_calibration_score(sub)
         )
         score_rows <- c(score_rows, list(tibble::tibble(
           engine  = eng,
@@ -95,6 +111,75 @@ score_forecasts <- function(bt,
   width      <- df$upper - df$lower
   wis        <- (alpha / 2) * width + overshoot + undershoot
   mean(wis, na.rm = TRUE)
+}
+
+
+#' Gaussian CRPS (internal)
+#'
+#' Continuous Ranked Probability Score under a Gaussian forecast
+#' distribution with mean = predicted and sigma derived from the
+#' prediction interval width. Closed-form: Gneiting & Raftery 2007.
+#' @noRd
+.compute_crps <- function(df) {
+  sigma <- .implied_sigma(df)
+  z <- (df$observed - df$predicted) / sigma
+  # CRPS = sigma * (z * (2*Phi(z) - 1) + 2*phi(z) - 1/sqrt(pi))
+  crps <- sigma * (z * (2 * stats::pnorm(z) - 1) +
+                     2 * stats::dnorm(z) - 1 / sqrt(pi))
+  mean(crps, na.rm = TRUE)
+}
+
+
+#' Gaussian log score (internal)
+#'
+#' Negative log-likelihood of the observation under a Gaussian
+#' forecast distribution. Lower is better.
+#' @noRd
+.compute_log_score <- function(df) {
+  sigma <- .implied_sigma(df)
+  # -log(dnorm(observed, predicted, sigma))
+  nll <- 0.5 * log(2 * pi) + log(sigma) +
+    0.5 * ((df$observed - df$predicted) / sigma)^2
+  mean(nll, na.rm = TRUE)
+}
+
+
+#' Dawid-Sebastiani Score (internal)
+#'
+#' DSS = log(sigma^2) + ((y - mu) / sigma)^2. A proper scoring
+#' rule that depends only on the first two moments of the forecast
+#' distribution.
+#' @noRd
+.compute_dss <- function(df) {
+  sigma <- .implied_sigma(df)
+  dss <- log(sigma^2) + ((df$observed - df$predicted) / sigma)^2
+  mean(dss, na.rm = TRUE)
+}
+
+
+#' Mean squared calibration error (internal)
+#'
+#' Computes coverage at nominal levels 10%-90% and returns the
+#' mean squared difference from nominal.
+#' @noRd
+.compute_calibration_score <- function(df) {
+  sigma <- .implied_sigma(df)
+  z <- (df$observed - df$predicted) / sigma
+  nominal <- seq(0.1, 0.9, by = 0.1)
+  msce <- mean(vapply(nominal, function(level) {
+    z_crit <- stats::qnorm(1 - (1 - level) / 2)
+    obs_cov <- mean(abs(z) <= z_crit, na.rm = TRUE)
+    (obs_cov - level)^2
+  }, numeric(1L)))
+  msce
+}
+
+
+#' Implied sigma from prediction interval (internal)
+#' @noRd
+.implied_sigma <- function(df) {
+  width <- df$upper - df$lower
+  pmax(width / (2 * stats::qnorm(0.975)), 1e-10)
 }
 
 
