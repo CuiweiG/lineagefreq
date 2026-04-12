@@ -26,30 +26,36 @@ pit_results <- list()
 
 for (nm in names(benchmark$backtest_results)) {
   bt <- benchmark$backtest_results[[nm]]
+  # backtest() returns an lfq_backtest tibble directly (no $forecasts)
+  bt_tibble <- bt$result
+
+  cat(sprintf("    Calibrating %s/%s...\n", bt$dataset, bt$engine))
+
+  # Check if backtest has non-NA lower/upper values needed for calibration
+  has_intervals <- all(c("lower", "upper") %in% names(bt_tibble)) &&
+    any(!is.na(bt_tibble$lower)) && any(!is.na(bt_tibble$upper))
+
+  if (!has_intervals) {
+    cat(sprintf("      %s engine does not produce prediction intervals; calibration skipped\n",
+                bt$engine))
+    next
+  }
 
   tryCatch({
-    cat(sprintf("    Calibrating %s/%s...\n", bt$dataset, bt$engine))
-
-    cal <- calibrate(bt$result)
-
-    # Extract PIT values
-    pit_values <- cal$pit_values
-
-    # KS test for uniformity
-    ks_result <- ks.test(pit_values, "punif")
+    cal <- calibrate(bt_tibble)
 
     pit_results[[nm]] <- list(
       dataset    = bt$dataset,
       engine     = bt$engine,
-      pit_values = pit_values,
-      ks_D       = ks_result$statistic,
-      ks_p       = ks_result$p.value,
-      n_pit      = length(pit_values),
+      pit_values = cal$pit_values,
+      ks_D       = cal$ks_test$statistic,
+      ks_p       = cal$ks_test$p_value,
+      n_pit      = cal$n,
       calibration_obj = cal
     )
 
     cat(sprintf("      KS D = %.3f, p = %.3g (n = %d)\n",
-                ks_result$statistic, ks_result$p.value, length(pit_values)))
+                cal$ks_test$statistic, cal$ks_test$p_value, cal$n))
   },
   error = function(e) {
     cat(sprintf("    WARNING: calibrate() failed for %s: %s\n", nm, e$message))
@@ -65,32 +71,31 @@ cat(sprintf("    PIT diagnostics completed for %d configurations\n",
 
 cat("  [B] Reliability diagram...\n")
 
+# calibrate() already computes reliability (nominal vs observed coverage).
+# Extract from calibration reports, plus compute for additional nominal levels.
+
 nominal_levels <- c(0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 0.95)
 
 reliability_data <- list()
 
-for (nm in names(benchmark$backtest_results)) {
-  bt <- benchmark$backtest_results[[nm]]
+for (nm in names(pit_results)) {
+  pr <- pit_results[[nm]]
+  cal <- pr$calibration_obj
 
   tryCatch({
-    forecasts <- bt$result$forecasts
+    # calibrate() returns reliability at 0.1-0.9 by 0.1
+    # We also need 0.95; compute from PIT values
+    pit <- pr$pit_values
 
     obs_coverage <- sapply(nominal_levels, function(level) {
-      col_lo <- paste0("lower_", level * 100)
-      col_hi <- paste0("upper_", level * 100)
-
-      if (all(c(col_lo, col_hi) %in% names(forecasts))) {
-        mean(forecasts$observed >= forecasts[[col_lo]] &
-             forecasts$observed <= forecasts[[col_hi]], na.rm = TRUE)
-      } else {
-        NA_real_
-      }
+      alpha <- (1 - level) / 2
+      mean(pit >= alpha & pit <= 1 - alpha, na.rm = TRUE)
     })
 
     reliability_data[[nm]] <- tibble(
-      dataset          = bt$dataset,
-      engine           = bt$engine,
-      nominal_coverage = nominal_levels,
+      dataset           = pr$dataset,
+      engine            = pr$engine,
+      nominal_coverage  = nominal_levels,
       observed_coverage = obs_coverage
     )
   },
@@ -116,98 +121,151 @@ cat("  [C] Conformal vs Parametric vs Recalibrated...\n")
 # In finite samples with strong distribution shift (variant transitions), coverage
 # may deviate from nominal. This is a known limitation.
 
-all_datasets <- c(
-  benchmark$backtest_results |>
-    Filter(function(x) x$engine == "mlr", x = _)
-)
+# conformal_forecast() and recalibrate() require lfq_forecast/lfq_fit objects,
+# not backtest tibbles. Instead, we compute conformal intervals from backtest
+# residuals directly using split conformal prediction:
+#   1. Split backtest origins into calibration (first 60%) and test (last 40%)
+#   2. Compute absolute residuals on calibration set
+#   3. Use the (1-α)(1+1/n_cal) quantile of absolute residuals as conformal radius
+#   4. Apply to test set predictions: [predicted ± radius]
+# This is valid split conformal prediction (Lei et al. 2018, JRSS-B).
+
+# Filter to MLR engine (piantham lacks intervals)
+mlr_backtests <- Filter(function(x) x$engine == "mlr", benchmark$backtest_results)
 
 calibration_comparison <- list()
 
-for (nm in names(all_datasets)) {
-  bt <- all_datasets[[nm]]
+for (nm in names(mlr_backtests)) {
+  bt <- mlr_backtests[[nm]]
+  bt_tibble <- bt$result
 
   cat(sprintf("    Comparing methods for %s...\n", bt$dataset))
 
   tryCatch({
-    data_obj <- bt$result
+    # Split by origin_date: first 60% calibration, last 40% test
+    origin_dates <- sort(unique(bt_tibble$origin_date))
+    n_origins    <- length(origin_dates)
+    n_cal        <- floor(n_origins * 0.6)
 
-    # 1. Parametric forecast (default from backtest)
-    parametric <- data_obj$forecasts |>
-      mutate(method = "Parametric")
-
-    # 2. Conformal forecast
-    conformal_result <- tryCatch({
-      conformal_forecast(data_obj)
-    }, error = function(e) {
-      cat(sprintf("      WARNING: conformal_forecast() failed: %s\n", e$message))
-      NULL
-    })
-
-    # 3. Recalibrated forecast (isotonic regression)
-    recalibrated_result <- tryCatch({
-      recalibrate(data_obj)
-    }, error = function(e) {
-      cat(sprintf("      WARNING: recalibrate() failed: %s\n", e$message))
-      NULL
-    })
-
-    # Compute metrics for each method
-    compute_method_metrics <- function(fcast, method_name) {
-      if (is.null(fcast)) return(NULL)
-
-      fcast_df <- if (is.data.frame(fcast)) fcast else fcast$forecasts
-
-      # 95% coverage
-      cov95 <- tryCatch({
-        mean(fcast_df$observed >= fcast_df$lower_95 &
-             fcast_df$observed <= fcast_df$upper_95, na.rm = TRUE)
-      }, error = function(e) NA_real_)
-
-      # Average interval width at 95%
-      avg_width <- tryCatch({
-        mean(fcast_df$upper_95 - fcast_df$lower_95, na.rm = TRUE)
-      }, error = function(e) NA_real_)
-
-      # Winkler score (interval score) at 95%
-      # Winkler (1972): S = width + (2/α)(lower - obs) if obs < lower
-      #                         + (2/α)(obs - upper) if obs > upper
-      alpha <- 0.05
-      winkler <- tryCatch({
-        width  <- fcast_df$upper_95 - fcast_df$lower_95
-        below  <- pmax(0, fcast_df$lower_95 - fcast_df$observed)
-        above  <- pmax(0, fcast_df$observed - fcast_df$upper_95)
-        mean(width + (2 / alpha) * (below + above), na.rm = TRUE)
-      }, error = function(e) NA_real_)
-
-      tibble(
-        dataset  = bt$dataset,
-        method   = method_name,
-        coverage_95 = cov95,
-        avg_width   = avg_width,
-        winkler     = winkler
-      )
+    if (n_cal < 3 || n_origins - n_cal < 3) {
+      cat("      WARNING: Too few origins for split conformal; skipping\n")
+      next
     }
 
-    m_para   <- compute_method_metrics(parametric, "Parametric")
-    m_conf   <- compute_method_metrics(conformal_result, "Conformal")
-    m_recal  <- compute_method_metrics(recalibrated_result, "Recalibrated")
+    cal_origins  <- origin_dates[1:n_cal]
+    test_origins <- origin_dates[(n_cal + 1):n_origins]
+
+    cal_set  <- bt_tibble |> filter(origin_date %in% cal_origins)
+    test_set <- bt_tibble |> filter(origin_date %in% test_origins)
+
+    # ── 1. Parametric (existing lower/upper from backtest) ────────────────
+    parametric_test <- test_set |>
+      mutate(method = "Parametric")
+
+    para_cov95  <- mean(test_set$observed >= test_set$lower &
+                         test_set$observed <= test_set$upper, na.rm = TRUE)
+    para_width  <- mean(test_set$upper - test_set$lower, na.rm = TRUE)
+
+    # Winkler score (interval score) at 95%
+    # Winkler (1972): S = width + (2/α)(lower - obs)[obs<lower]
+    #                            + (2/α)(obs - upper)[obs>upper]
+    alpha <- 0.05
+    para_winkler <- mean(
+      (test_set$upper - test_set$lower) +
+        (2 / alpha) * pmax(0, test_set$lower - test_set$observed) +
+        (2 / alpha) * pmax(0, test_set$observed - test_set$upper),
+      na.rm = TRUE
+    )
+
+    # ── 2. Conformal (split conformal from residuals) ─────────────────────
+    cal_residuals <- abs(cal_set$predicted - cal_set$observed)
+    # Conformal quantile: (1 - α)(1 + 1/n_cal) quantile
+    # (Lei et al. 2018; guarantees marginal coverage for exchangeable data)
+    conf_level   <- (1 - alpha) * (1 + 1 / length(cal_residuals))
+    conf_level   <- min(conf_level, 1)  # clip to [0, 1]
+    conf_radius  <- quantile(cal_residuals, probs = conf_level, na.rm = TRUE)
+
+    conformal_test <- test_set |>
+      mutate(
+        method       = "Conformal",
+        conf_lower   = predicted - conf_radius,
+        conf_upper   = predicted + conf_radius
+      )
+
+    conf_cov95   <- mean(test_set$observed >= conformal_test$conf_lower &
+                          test_set$observed <= conformal_test$conf_upper,
+                         na.rm = TRUE)
+    conf_width   <- 2 * conf_radius
+    conf_winkler <- mean(
+      conf_width +
+        (2 / alpha) * pmax(0, conformal_test$conf_lower - test_set$observed) +
+        (2 / alpha) * pmax(0, test_set$observed - conformal_test$conf_upper),
+      na.rm = TRUE
+    )
+
+    # ── 3. Recalibrated (scale parametric intervals by calibration ratio) ─
+    # Estimate the needed scaling factor from calibration set
+    cal_covered <- cal_set$observed >= cal_set$lower &
+                   cal_set$observed <= cal_set$upper
+    cal_coverage_obs <- mean(cal_covered, na.rm = TRUE)
+
+    # If parametric intervals undercover, widen by a factor
+    # Find scaling factor s such that coverage of [pred ± s*halfwidth] ≈ 95%
+    cal_halfwidth <- (cal_set$upper - cal_set$lower) / 2
+    cal_z_scores  <- abs(cal_set$predicted - cal_set$observed) /
+                     pmax(cal_halfwidth, 1e-10)
+
+    # The 95th percentile of |z| gives the needed scaling factor
+    recal_factor <- quantile(cal_z_scores, probs = 0.95, na.rm = TRUE)
+    recal_factor <- max(recal_factor, 1)  # never shrink intervals
+
+    test_halfwidth <- (test_set$upper - test_set$lower) / 2
+    recalibrated_test <- test_set |>
+      mutate(
+        method       = "Recalibrated",
+        recal_lower  = predicted - recal_factor * test_halfwidth,
+        recal_upper  = predicted + recal_factor * test_halfwidth
+      )
+
+    recal_cov95  <- mean(test_set$observed >= recalibrated_test$recal_lower &
+                          test_set$observed <= recalibrated_test$recal_upper,
+                         na.rm = TRUE)
+    recal_width  <- mean(recalibrated_test$recal_upper -
+                          recalibrated_test$recal_lower, na.rm = TRUE)
+    recal_winkler <- mean(
+      recal_width +
+        (2 / alpha) * pmax(0, recalibrated_test$recal_lower - test_set$observed) +
+        (2 / alpha) * pmax(0, test_set$observed - recalibrated_test$recal_upper),
+      na.rm = TRUE
+    )
+
+    # ── Collect metrics ───────────────────────────────────────────────────
+    metrics <- tibble(
+      dataset     = bt$dataset,
+      method      = c("Parametric", "Conformal", "Recalibrated"),
+      coverage_95 = c(para_cov95, conf_cov95, recal_cov95),
+      avg_width   = c(para_width, conf_width, recal_width),
+      winkler     = c(para_winkler, conf_winkler, recal_winkler)
+    )
 
     calibration_comparison[[nm]] <- list(
       dataset      = bt$dataset,
-      metrics      = bind_rows(m_para, m_conf, m_recal),
-      parametric   = parametric,
-      conformal    = conformal_result,
-      recalibrated = recalibrated_result
+      metrics      = metrics,
+      parametric   = parametric_test,
+      conformal    = conformal_test,
+      recalibrated = recalibrated_test,
+      conf_radius  = conf_radius,
+      recal_factor = recal_factor,
+      n_cal        = n_cal,
+      n_test       = n_origins - n_cal
     )
 
-    cat(sprintf("      Parametric  95%% cov: %.1f%%, width: %.4f\n",
-                m_para$coverage_95 * 100, m_para$avg_width))
-    if (!is.null(m_conf))
-      cat(sprintf("      Conformal   95%% cov: %.1f%%, width: %.4f\n",
-                  m_conf$coverage_95 * 100, m_conf$avg_width))
-    if (!is.null(m_recal))
-      cat(sprintf("      Recalibrated 95%% cov: %.1f%%, width: %.4f\n",
-                  m_recal$coverage_95 * 100, m_recal$avg_width))
+    cat(sprintf("      Parametric   95%% cov: %.1f%%, width: %.4f, Winkler: %.4f\n",
+                para_cov95 * 100, para_width, para_winkler))
+    cat(sprintf("      Conformal    95%% cov: %.1f%%, width: %.4f, Winkler: %.4f\n",
+                conf_cov95 * 100, conf_width, conf_winkler))
+    cat(sprintf("      Recalibrated 95%% cov: %.1f%%, width: %.4f, Winkler: %.4f\n",
+                recal_cov95 * 100, recal_width, recal_winkler))
   },
   error = function(e) {
     cat(sprintf("    WARNING: Comparison failed for %s: %s\n", nm, e$message))
@@ -221,7 +279,7 @@ for (nm in names(all_datasets)) {
 cat("  [D] Variance decomposition...\n")
 
 # For each country, estimate V_captured / V_total
-# V_captured: predicted variance from model's Fisher information
+# V_captured: predicted variance from model's prediction interval width
 # V_total: observed MSE from backtest residuals
 # If ratio < 1: confirms underdispersion (model underestimates true variance)
 
@@ -229,24 +287,34 @@ variance_decomp <- list()
 
 for (nm in names(benchmark$backtest_results)) {
   bt <- benchmark$backtest_results[[nm]]
+  bt_tibble <- bt$result
+
+  # Skip engines without prediction intervals
+  has_intervals <- all(c("lower", "upper") %in% names(bt_tibble)) &&
+    any(!is.na(bt_tibble$lower)) && any(!is.na(bt_tibble$upper))
+
+  if (!has_intervals) {
+    cat(sprintf("    %s/%s: no prediction intervals; skipping\n",
+                bt$dataset, bt$engine))
+    next
+  }
 
   tryCatch({
-    fcast <- bt$result$forecasts
-
     # Observed MSE per horizon
-    mse_by_horizon <- fcast |>
+    mse_by_horizon <- bt_tibble |>
+      filter(!is.na(lower), !is.na(upper), !is.na(predicted), !is.na(observed)) |>
       group_by(horizon) |>
       summarise(
-        observed_mse   = mean((predicted - observed)^2, na.rm = TRUE),
-        # Predicted variance: average of (upper_95 - lower_95)/(2*1.96))^2
+        observed_mse  = mean((predicted - observed)^2, na.rm = TRUE),
+        # Predicted variance: implied from 95% CI width
         # Under normality, 95% CI width = 2 * 1.96 * sigma
-        predicted_var  = mean(((upper_95 - lower_95) / (2 * 1.96))^2, na.rm = TRUE),
-        variance_ratio = predicted_var / observed_mse,
+        predicted_var = mean(((upper - lower) / (2 * 1.96))^2, na.rm = TRUE),
         .groups = "drop"
       ) |>
       mutate(
-        dataset = bt$dataset,
-        engine  = bt$engine,
+        variance_ratio = predicted_var / observed_mse,
+        dataset        = bt$dataset,
+        engine         = bt$engine,
         # ratio < 1 indicates underdispersion
         underdispersed = variance_ratio < 1
       )
