@@ -59,6 +59,8 @@ run_single_backtest <- function(dataset_name, engine_name, datasets_list) {
                horizons = horizons, min_train = min_train)
     },
     error = function(e) {
+      # Return a plain list with $error on failure; successful backtest()
+      # returns an lfq_backtest tibble (no $error field).
       list(error = conditionMessage(e))
     })
   })
@@ -88,8 +90,11 @@ names(backtest_results) <- paste(backtest_configs$dataset,
                                   backtest_configs$engine, sep = "__")
 
 # Separate successful from failed
-successful <- Filter(function(x) is.null(x$result$error), backtest_results)
-failed     <- Filter(function(x) !is.null(x$result$error), backtest_results)
+# backtest() returns an lfq_backtest tibble on success (inherits "lfq_backtest")
+# and a plain list with $error on failure
+is_failed <- function(x) is.list(x$result) && !is.null(x$result$error)
+successful <- Filter(function(x) !is_failed(x), backtest_results)
+failed     <- Filter(is_failed, backtest_results)
 
 cat(sprintf("    Completed: %d successful, %d failed\n",
             length(successful), length(failed)))
@@ -98,62 +103,76 @@ for (f in failed) {
   cat(sprintf("    FAILED: %s/%s — %s\n", f$dataset, f$engine, f$result$error))
 }
 
+# Diagnostic: print structure of first successful result
+if (length(successful) > 0) {
+  first_bt <- successful[[1]]$result
+  cat(sprintf("    Backtest result class: %s\n",
+              paste(class(first_bt), collapse = ", ")))
+  cat(sprintf("    Backtest result columns: %s\n",
+              paste(names(first_bt), collapse = ", ")))
+  cat(sprintf("    Backtest result rows: %d\n", nrow(first_bt)))
+}
+
 ###############################################################################
 # Compute accuracy metrics per dataset-engine
 ###############################################################################
 
 cat("  Computing accuracy metrics...\n")
 
+# Use score_forecasts() if available; otherwise compute manually.
+# score_forecasts() returns a tibble with columns: engine, horizon, metric, value
 compute_metrics <- function(bt_result) {
-  # Extract forecast vs observed from backtest result
   tryCatch({
+    # backtest() returns an lfq_backtest tibble directly (no $forecasts slot)
     bt <- bt_result$result
 
-    # Compute per-horizon metrics
-    metrics_list <- lapply(horizons, function(h) {
-      # Filter to this horizon
-      horizon_data <- bt$forecasts |>
-        filter(horizon == h)
+    # Try score_forecasts() first — it computes MAE, CRPS, coverage, etc.
+    scores <- tryCatch({
+      score_forecasts(bt)
+    }, error = function(e) NULL)
 
+    if (!is.null(scores)) {
+      # score_forecasts() returns long format: engine, horizon, metric, value
+      # Pivot to wide for our metrics table
+      scores_wide <- scores |>
+        select(horizon, metric, value) |>
+        pivot_wider(names_from = metric, values_from = value)
+
+      # Add median AE manually (score_forecasts may not include it)
+      median_ae_by_h <- bt |>
+        group_by(horizon) |>
+        summarise(median_ae = median(abs(predicted - observed), na.rm = TRUE),
+                  n_origins = n_distinct(origin_date),
+                  .groups = "drop")
+
+      result <- scores_wide |>
+        left_join(median_ae_by_h, by = "horizon")
+
+      return(result)
+    }
+
+    # Fallback: compute metrics manually
+    metrics_list <- lapply(horizons, function(h) {
+      horizon_data <- bt |> filter(horizon == h)
       if (nrow(horizon_data) == 0) return(NULL)
 
-      # MAE: mean absolute error of point forecast vs observed proportion
-      mae <- mean(abs(horizon_data$predicted - horizon_data$observed), na.rm = TRUE)
-
-      # Median AE
+      mae       <- mean(abs(horizon_data$predicted - horizon_data$observed), na.rm = TRUE)
       median_ae <- median(abs(horizon_data$predicted - horizon_data$observed), na.rm = TRUE)
 
-      # CRPS (if available)
-      crps <- tryCatch(mean(horizon_data$crps, na.rm = TRUE), error = function(e) NA_real_)
-
-      # Log score (if available)
-      log_score <- tryCatch(mean(horizon_data$log_score, na.rm = TRUE), error = function(e) NA_real_)
-
-      # DSS: Dawid-Sebastiani Score (if available)
-      dss <- tryCatch(mean(horizon_data$dss, na.rm = TRUE), error = function(e) NA_real_)
-
-      # Coverage at multiple nominal levels
-      coverage <- sapply(c(0.50, 0.80, 0.90, 0.95), function(level) {
-        col_lo <- paste0("lower_", level * 100)
-        col_hi <- paste0("upper_", level * 100)
-        if (all(c(col_lo, col_hi) %in% names(horizon_data))) {
-          mean(horizon_data$observed >= horizon_data[[col_lo]] &
-               horizon_data$observed <= horizon_data[[col_hi]], na.rm = TRUE)
-        } else {
-          NA_real_
-        }
-      })
-      names(coverage) <- paste0("coverage_", c(50, 80, 90, 95))
+      # Coverage at 95%: backtest returns 'lower' and 'upper' columns (95% CI)
+      coverage_95 <- if (all(c("lower", "upper") %in% names(horizon_data))) {
+        mean(horizon_data$observed >= horizon_data$lower &
+             horizon_data$observed <= horizon_data$upper, na.rm = TRUE)
+      } else {
+        NA_real_
+      }
 
       tibble(
-        horizon   = h,
-        mae       = mae,
-        median_ae = median_ae,
-        crps      = crps,
-        log_score = log_score,
-        dss       = dss,
-        !!!coverage,
-        n_origins = nrow(horizon_data)
+        horizon     = h,
+        mae         = mae,
+        median_ae   = median_ae,
+        coverage_95 = coverage_95,
+        n_origins   = n_distinct(horizon_data$origin_date)
       )
     })
 
@@ -170,11 +189,11 @@ compute_metrics <- function(bt_result) {
 # Reference: Künsch 1989, Annals of Statistics
 compute_bootstrap_ci <- function(bt_result, n_boot = 1000, block_size = 3) {
   tryCatch({
+    # backtest() returns the tibble directly
     bt <- bt_result$result
 
     ci_list <- lapply(horizons, function(h) {
-      horizon_data <- bt$forecasts |>
-        filter(horizon == h)
+      horizon_data <- bt |> filter(horizon == h)
 
       if (nrow(horizon_data) < block_size * 2) {
         return(tibble(horizon = h, mae_lower = NA, mae_upper = NA))
@@ -273,10 +292,17 @@ runtime_df <- tibble(
   cores_used = sapply(successful, `[[`, "cores")
 ) |>
   mutate(
+    # backtest() stores n_origins as an attribute, not a column
     n_origins = sapply(names(successful), function(nm) {
       tryCatch(
-        max(successful[[nm]]$result$forecasts$origin_idx, na.rm = TRUE),
-        error = function(e) NA_integer_
+        attr(successful[[nm]]$result, "n_origins"),
+        error = function(e) {
+          # Fallback: count distinct origin_date
+          tryCatch(
+            n_distinct(successful[[nm]]$result$origin_date),
+            error = function(e2) NA_integer_
+          )
+        }
       )
     })
   )
