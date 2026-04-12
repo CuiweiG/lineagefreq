@@ -82,22 +82,17 @@ create_lfq_objects <- function(df, period_label) {
     cntry_data <- df |> filter(country == cntry)
 
     tryCatch({
-      # Aggregate by date and lineage; create lfq_data object
+      # Aggregate by date and lineage; keep long format for lfq_data()
       agg <- cntry_data |>
         group_by(date, lineage) |>
-        summarise(count = sum(count, na.rm = TRUE), .groups = "drop") |>
-        # Pivot to wide format: rows = dates, columns = lineages
-        pivot_wider(names_from = lineage, values_from = count, values_fill = 0)
+        summarise(count = sum(count, na.rm = TRUE), .groups = "drop")
 
-      dates    <- agg$date
-      counts   <- as.matrix(agg |> select(-date))
-
-      obj <- lfq_data(counts = counts, dates = dates)
+      obj <- lfq_data(agg, lineage = lineage, date = date, count = count)
 
       key <- paste0(cntry, "_", period_label)
       result[[key]] <- obj
       cat(sprintf("    Created lfq_data: %s (%d dates, %d lineages)\n",
-                  key, length(dates), ncol(counts)))
+                  key, n_distinct(agg$date), n_distinct(agg$lineage)))
     },
     error = function(e) {
       cat(sprintf("    WARNING: Failed to create lfq_data for %s_%s: %s\n",
@@ -169,23 +164,21 @@ for (region in 1:10) {
   }
 
   tryCatch({
-    # Pivot proportions to wide format
-    wide <- region_data |>
-      select(week_ending, variant, share) |>
-      pivot_wider(names_from = variant, values_from = share, values_fill = 0)
+    # Reconstruct counts from proportions in long format
+    region_long <- region_data |>
+      select(date = week_ending, lineage = variant, share) |>
+      mutate(
+        share = replace_na(share, 0),
+        count = as.integer(round(share * ASSUMED_SEQS_PER_BIWEEK))
+      ) |>
+      select(date, lineage, count)
 
-    dates  <- wide$week_ending
-    props  <- as.matrix(wide |> select(-week_ending))
-
-    # Reconstruct counts: round(proportion × assumed total)
-    counts <- round(props * ASSUMED_SEQS_PER_BIWEEK)
-    storage.mode(counts) <- "integer"
-
-    obj <- lfq_data(counts = counts, dates = dates)
+    obj <- lfq_data(region_long, lineage = lineage, date = date, count = count)
     key <- paste0("Region_", region)
     cdc_regional[[key]] <- obj
     cat(sprintf("    Region %d: %d dates, %d lineages\n",
-                region, length(dates), ncol(counts)))
+                region, n_distinct(region_long$date),
+                n_distinct(region_long$lineage)))
   },
   error = function(e) {
     cat(sprintf("    WARNING: Failed for Region %d: %s\n",
@@ -209,18 +202,36 @@ sero_raw <- read_csv("analysis/data/cdc_seroprevalence.csv",
 cat(sprintf("    Seroprevalence: %d rows\n", nrow(sero_raw)))
 
 # Extract national Anti-N All Ages seroprevalence by round/date
-# Column names may vary; adapt as needed
+# Actual CSV columns include:
+#   Site, Date Range of Specimen Collection, Round,
+#   "Rate (%) [Anti-N, All Ages Cumulative Prevalence, Rounds 1-30 only]"
+# There is no age_group column — the age group is encoded in column names.
+
+# Identify the Anti-N All Ages rate column
+anti_n_all_ages_col <- grep(
+  "Rate.*Anti-N.*All Ages", names(sero_raw), value = TRUE
+)
+if (length(anti_n_all_ages_col) == 0) {
+  # Fallback: try any Anti-N rate column
+
+  anti_n_all_ages_col <- grep("Rate.*Anti-N", names(sero_raw), value = TRUE)
+}
+cat(sprintf("    Using sero column: %s\n", anti_n_all_ages_col[1]))
+
+# Parse the date range: extract the end date from "Mon DD - Mon DD, YYYY"
+# e.g. "Aug 6 - Aug 11, 2020" → "Aug 11, 2020"
 sero_national <- sero_raw |>
-  filter(
-    grepl("All Ages|Overall", age_group, ignore.case = TRUE),
-    grepl("National|United States|US", site, ignore.case = TRUE)
-  ) |>
-  select(date = round_end_date, seroprevalence_pct = rate) |>
+  filter(grepl("Nationwide", Site, ignore.case = TRUE) |
+         grepl("National", Site, ignore.case = TRUE)) |>
   mutate(
-    date = as.Date(date),
+    # Extract end date from the date range string
+    date_str = sub("^.*-\\s*", "", `Date Range of Specimen Collection`),
+    date = as.Date(date_str, format = "%b %d, %Y"),
+    seroprevalence_pct = as.numeric(.data[[anti_n_all_ages_col[1]]]),
     natural_infection_rate = seroprevalence_pct / 100
   ) |>
-  filter(!is.na(date)) |>
+  filter(!is.na(date), !is.na(natural_infection_rate)) |>
+  select(date, seroprevalence_pct, natural_infection_rate) |>
   arrange(date)
 
 cat(sprintf("    National sero rounds: %d (%.1f%% to %.1f%%)\n",
@@ -416,17 +427,21 @@ tryCatch({
             )
           )
 
-        counts <- cntry_data |>
-          select(all_of(subtype_cols)) |>
-          mutate(across(everything(), ~ replace_na(as.numeric(.), 0))) |>
-          as.matrix()
+        # Pivot subtype counts to long format for lfq_data()
+        flu_long <- cntry_data |>
+          select(date, all_of(subtype_cols)) |>
+          pivot_longer(cols = all_of(subtype_cols),
+                       names_to = "lineage", values_to = "count") |>
+          mutate(count = replace_na(as.integer(as.numeric(count)), 0L)) |>
+          filter(count >= 0)
 
         tryCatch({
-          obj <- lfq_data(counts = counts, dates = cntry_data$date)
+          obj <- lfq_data(flu_long, lineage = lineage, date = date, count = count)
           cntry_clean <- gsub(" ", "_", sub(" of America", "", cntry))
           flunet_prepared[[paste0("flu_", cntry_clean)]] <- obj
           cat(sprintf("    Created flu lfq_data: %s (%d weeks, %d subtypes)\n",
-                      cntry_clean, nrow(counts), ncol(counts)))
+                      cntry_clean, n_distinct(flu_long$date),
+                      n_distinct(flu_long$lineage)))
         },
         error = function(e) {
           cat(sprintf("    WARNING: lfq_data failed for %s: %s\n",
