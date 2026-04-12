@@ -4,7 +4,11 @@
 \alias{score_forecasts}
 \title{Score backtest forecast accuracy}
 \usage{
-score_forecasts(bt, metrics = c("mae", "rmse", "coverage", "wis"))
+score_forecasts(
+  bt,
+  metrics = c("mae", "rmse", "coverage", "wis", "crps", "log_score", "dss",
+    "calibration")
+)
 }
 \arguments{
 \item{bt}{An \code{lfq_backtest} object from \code{\link[=backtest]{backtest()}}.}
@@ -16,8 +20,14 @@ score_forecasts(bt, metrics = c("mae", "rmse", "coverage", "wis"))
 \item \code{"coverage"}: Proportion within prediction intervals.
 \item \code{"wis"}: Simplified weighted interval score for the single
 prediction interval stored in the backtest (typically 95\%).
-For the full multi-quantile WIS per Bracher et al. (2021),
-use dedicated scoring packages such as 'scoringutils'.
+\item \code{"crps"}: Continuous Ranked Probability Score, assuming
+Gaussian forecast distribution (Gneiting and Raftery, 2007).
+\item \code{"log_score"}: Logarithmic scoring rule evaluated at the
+observed value under the Gaussian forecast density.
+\item \code{"dss"}: Dawid-Sebastiani Score, a proper scoring rule based
+on the predictive mean and variance.
+\item \code{"calibration"}: Mean squared calibration error across
+nominal coverage levels 10\\%--90\\%.
 }}
 }
 \value{
@@ -43,6 +53,11 @@ Bracher J, Ray EL, Gneiting T, Reich NG (2021). Evaluating
 epidemic forecasts in an interval format. \emph{PLoS
 Computational Biology}, 17(2):e1008618.
 \doi{10.1371/journal.pcbi.1008618}
+
+Gneiting T, Raftery AE (2007). Strictly proper scoring rules,
+prediction, and estimation. \emph{Journal of the American
+Statistical Association}, 102(477), 359--378.
+\doi{10.1198/016214506000001437}
 }
 \seealso{
 \code{\link[=compare_models]{compare_models()}} to rank engines based on scores.

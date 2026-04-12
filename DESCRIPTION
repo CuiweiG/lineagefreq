@@ -1,6 +1,6 @@
 Package: lineagefreq
 Title: Lineage Frequency Dynamics from Genomic Surveillance Counts
-Version: 0.2.0
+Version: 0.3.0
 Authors@R:
     person("Cuiwei", "Gao", , "48gaocuiwei@gmail.com",
     role = c("aut", "cre", "cph"))
@@ -37,6 +37,7 @@ Suggests:
     knitr,
     posterior,
     rmarkdown,
+    scales,
     testthat (>= 3.0.0),
     withr
 Additional_repositories: https://stan-dev.r-universe.dev

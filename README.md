@@ -131,6 +131,21 @@ approximately 4% MAE at 2-week and 8% at 4-week horizon.
 - Rolling-origin backtesting via `backtest()` with standardized
   scoring (MAE, RMSE, coverage, WIS) via `score_forecasts()`
 
+**Prediction calibration** *(new in 0.3.0)*
+- `calibrate()`: PIT histograms, reliability diagrams,
+  KS uniformity test — diagnose whether prediction intervals
+  have correct coverage
+- `recalibrate()`: isotonic regression and Platt scaling to
+  fix miscalibrated intervals post-hoc
+- `conformal_forecast()`: distribution-free prediction intervals
+  with finite-sample coverage guarantees via split conformal
+  inference and adaptive conformal inference (ACI)
+- Proper scoring rules: CRPS, log score, DSS, and calibration
+  error alongside existing MAE/RMSE/WIS in `score_forecasts()`
+- No existing genomic surveillance tool (evofr, epidemia,
+  EpiNow2, CDC Variant Nowcast Hub) provides integrated
+  calibration diagnostics or conformal prediction
+
 **Surveillance utilities**
 - `summarize_emerging()`: binomial GLM trend tests per lineage
 - `sequencing_power()`: minimum sample size for detection
