@@ -168,6 +168,7 @@ for (region in 1:10) {
     region_long <- region_data |>
       select(date = week_ending, lineage = variant, share) |>
       mutate(
+        date  = as.Date(date),
         share = replace_na(share, 0),
         count = as.integer(round(share * ASSUMED_SEQS_PER_BIWEEK))
       ) |>
@@ -220,22 +221,31 @@ cat(sprintf("    Using sero column: %s\n", anti_n_all_ages_col[1]))
 
 # Parse the date range: extract the end date from "Mon DD - Mon DD, YYYY"
 # e.g. "Aug 6 - Aug 11, 2020" → "Aug 11, 2020"
+# Site column uses state abbreviations + "US" for national
+cat(sprintf("    Unique Site values: %s\n",
+            paste(head(unique(sero_raw$Site), 10), collapse = ", ")))
+
 sero_national <- sero_raw |>
-  filter(grepl("Nationwide", Site, ignore.case = TRUE) |
-         grepl("National", Site, ignore.case = TRUE)) |>
+  filter(Site == "US") |>
   mutate(
     # Extract end date from the date range string
+    # e.g. "Aug 6 - Aug 11, 2020" → "Aug 11, 2020"
     date_str = sub("^.*-\\s*", "", `Date Range of Specimen Collection`),
     date = as.Date(date_str, format = "%b %d, %Y"),
-    seroprevalence_pct = as.numeric(.data[[anti_n_all_ages_col[1]]]),
+    # Rate column may contain non-numeric characters; use parse_number()
+    seroprevalence_pct = readr::parse_number(
+      as.character(.data[[anti_n_all_ages_col[1]]])
+    ),
     natural_infection_rate = seroprevalence_pct / 100
   ) |>
   filter(!is.na(date), !is.na(natural_infection_rate)) |>
   select(date, seroprevalence_pct, natural_infection_rate) |>
   arrange(date)
 
-cat(sprintf("    National sero rounds: %d (%.1f%% to %.1f%%)\n",
+cat(sprintf("    National sero rounds: %d rows, date range: %s to %s\n",
             nrow(sero_national),
+            min(sero_national$date), max(sero_national$date)))
+cat(sprintf("    Seroprevalence range: %.1f%% to %.1f%%\n",
             min(sero_national$natural_infection_rate, na.rm = TRUE) * 100,
             max(sero_national$natural_infection_rate, na.rm = TRUE) * 100))
 
