@@ -84,12 +84,14 @@ if (nrow(mi) > 0 && ".lower_marginal" %in% names(mi)) {
                 lower = mean(lower, na.rm = TRUE),
                 upper = mean(upper, na.rm = TRUE), .groups = "drop")
 
-    fig_a <- ggplot(bar_df, aes(x = .lineage, fill = method)) +
+    fig_a <- ggplot(bar_df, aes(x = .lineage, colour = method, fill = method)) +
       geom_errorbar(aes(ymin = lower, ymax = upper),
-                    position = position_dodge(width = 0.6), width = 0.3) +
+                    position = position_dodge(width = 0.6), width = 0.3,
+                    linewidth = 0.6) +
       geom_point(aes(y = .median), position = position_dodge(width = 0.6),
-                 size = 1.5, colour = "black") +
+                 size = 2) +
       scale_fill_manual(values = pal) +
+      scale_colour_manual(values = pal) +
       scale_y_continuous(labels = scales::percent_format()) +
       labs(x = "Lineage", y = "Frequency", fill = NULL, tag = "a") +
       theme_classic(base_size = 8) +
@@ -110,7 +112,7 @@ if (nrow(mi) > 0 && ".lower_marginal" %in% names(mi)) {
       geom_point(aes(y = .median), size = 0.8, colour = "black") +
       facet_wrap(~.lineage, nrow = 1, scales = "free_y") +
       scale_fill_manual(values = pal) +
-      scale_x_date(date_labels = "%b %Y", date_breaks = "1 month") +
+      scale_x_date(date_breaks = "1 week", date_labels = "%d %b") +
       scale_y_continuous(labels = scales::percent_format()) +
       labs(x = "Date", y = "Frequency", fill = NULL, tag = "a") +
     theme_classic(base_size = 8) +

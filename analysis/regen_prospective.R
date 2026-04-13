@@ -8,13 +8,15 @@
 #   Rscript analysis/regen_prospective.R
 ###############################################################################
 
-Sys.setlocale("LC_TIME", "C")
+tryCatch(Sys.setlocale("LC_TIME", "English"), error = function(e)
+  Sys.setlocale("LC_TIME", "C"))
 
-devtools::load_all(quiet = TRUE)
+library(lineagefreq)
 library(ggplot2)
 library(patchwork)
 
-Sys.setlocale("LC_TIME", "C")
+tryCatch(Sys.setlocale("LC_TIME", "English"), error = function(e)
+  Sys.setlocale("LC_TIME", "C"))
 
 dir.create("submission/figures", showWarnings = FALSE, recursive = TRUE)
 
@@ -42,8 +44,11 @@ p2 <- plot(result, type = "radius") +
         axis.text.x = element_text(size = 7))
 
 p3 <- plot(result, type = "comparison") +
+  scale_x_discrete(labels = c("ACI" = "ACI", "Parametric" = "Param",
+                                "Static conformal" = "Static CF")) +
   labs(tag = "c") +
-  theme(plot.tag = element_text(size = 10, face = "bold"))
+  theme(plot.tag = element_text(size = 10, face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 7))
 
 fig <- p1 / (p2 | p3)
 
