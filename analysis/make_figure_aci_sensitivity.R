@@ -11,7 +11,13 @@
 ###############################################################################
 
 Sys.setlocale("LC_TIME", "C")
-devtools::load_all(".")
+pkg_root <- normalizePath(file.path(dirname(sys.frame(1)$ofile %||% "."), ".."),
+                          winslash = "/", mustWork = FALSE)
+if (!file.exists(file.path(pkg_root, "DESCRIPTION"))) {
+  pkg_root <- "C:/Users/cg223/Desktop/lineagefreq"
+}
+setwd(pkg_root)
+devtools::load_all(pkg_root)
 library(ggplot2)
 library(dplyr)
 library(future)
