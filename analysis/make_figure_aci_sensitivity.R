@@ -6,32 +6,26 @@
 #
 # Run from package root:
 #   Rscript analysis/make_figure_aci_sensitivity.R
+# Or in RStudio:
+#   source("analysis/make_figure_aci_sensitivity.R")
 #
-# Expected runtime: ~5-10 minutes (5 gamma values x 23 origins)
+# Expected runtime: ~5-10 minutes (5 gamma values, sequential)
+# Requires: lineagefreq >= 0.6.0 installed locally
+#   Install with: devtools::install("C:/Users/cg223/Desktop/lineagefreq")
 ###############################################################################
 
 Sys.setlocale("LC_TIME", "C")
-pkg_root <- normalizePath(file.path(dirname(sys.frame(1)$ofile %||% "."), ".."),
-                          winslash = "/", mustWork = FALSE)
-if (!file.exists(file.path(pkg_root, "DESCRIPTION"))) {
-  pkg_root <- "C:/Users/cg223/Desktop/lineagefreq"
-}
-setwd(pkg_root)
-devtools::load_all(pkg_root)
+library(lineagefreq)
 library(ggplot2)
 library(dplyr)
-library(future)
-library(furrr)
 
 Sys.setlocale("LC_TIME", "C")
 
+pkg_root <- "C:/Users/cg223/Desktop/lineagefreq"
+setwd(pkg_root)
 dir.create("submission/figures", showWarnings = FALSE, recursive = TRUE)
 
-# ── Set up parallel backend ──────────────────────────────────────────────────
-
-n_cores <- min(parallel::detectCores(logical = TRUE), 120L)
-plan(multisession, workers = n_cores)
-cat(sprintf("Using %d workers\n", n_cores))
+cat("lineagefreq version:", as.character(packageVersion("lineagefreq")), "\n")
 
 # ── Load and prepare data ────────────────────────────────────────────────────
 
@@ -41,13 +35,17 @@ lfq <- collapse_lineages(lfq, min_freq = 0.05)
 cat(sprintf("US BA.2: %d dates, %d lineages\n",
             length(unique(lfq$.date)), length(attr(lfq, "lineages"))))
 
-# ── Run evaluate_prospective with different gamma values ─────────────────────
+# ── Run evaluate_prospective with different gamma values (sequential) ────────
 
 gammas <- c(0.01, 0.02, 0.05, 0.10, 0.20)
+results <- list()
 
-run_one_gamma <- function(g, data) {
+for (i in seq_along(gammas)) {
+  g <- gammas[i]
+  cat(sprintf("[%d/%d] gamma = %.2f ...\n", i, length(gammas), g))
+
   ep <- evaluate_prospective(
-    data,
+    lfq,
     engine    = "mlr",
     horizons  = 14L,
     min_train = 42L,
@@ -56,35 +54,27 @@ run_one_gamma <- function(g, data) {
     gamma     = g
   )
 
-  tibble(
-    gamma          = g,
-    coverage_param = ep$summary$coverage[ep$summary$method == "Parametric"],
+  results[[i]] <- tibble(
+    gamma           = g,
+    coverage_param  = ep$summary$coverage[ep$summary$method == "Parametric"],
     coverage_static = ep$summary$coverage[ep$summary$method == "Static conformal"],
-    coverage_aci   = ep$summary$coverage[ep$summary$method == "ACI"],
-    width_static   = ep$summary$mean_width[ep$summary$method == "Static conformal"],
-    width_aci      = ep$summary$mean_width[ep$summary$method == "ACI"],
-    winkler_static = ep$summary$winkler_score[ep$summary$method == "Static conformal"],
-    winkler_aci    = ep$summary$winkler_score[ep$summary$method == "ACI"]
+    coverage_aci    = ep$summary$coverage[ep$summary$method == "ACI"],
+    width_static    = ep$summary$mean_width[ep$summary$method == "Static conformal"],
+    width_aci       = ep$summary$mean_width[ep$summary$method == "ACI"],
+    winkler_static  = ep$summary$winkler_score[ep$summary$method == "Static conformal"],
+    winkler_aci     = ep$summary$winkler_score[ep$summary$method == "ACI"]
   )
 }
 
-cat("Running ACI sensitivity analysis across gamma values...\n")
-
-# Run in parallel across gamma values
-results <- future_map_dfr(gammas, run_one_gamma, data = lfq,
-                           .options = furrr_options(seed = TRUE),
-                           .progress = TRUE)
-
-plan(sequential)
-
-cat("Results:\n")
-print(results)
+results_df <- bind_rows(results)
+cat("\nResults:\n")
+print(results_df)
 
 # ── Panel a: Coverage vs gamma ───────────────────────────────────────────────
 
 pal <- c("Static conformal" = "#0072B2", "ACI" = "#009E73")
 
-cov_long <- results |>
+cov_long <- results_df |>
   select(gamma, `Static conformal` = coverage_static,
          ACI = coverage_aci) |>
   tidyr::pivot_longer(cols = c(`Static conformal`, ACI),
@@ -118,7 +108,7 @@ fig_a <- ggplot(cov_long, aes(x = gamma, y = coverage, colour = method,
 
 # ── Panel b: Mean width vs gamma ────────────────────────────────────────────
 
-width_long <- results |>
+width_long <- results_df |>
   select(gamma, `Static conformal` = width_static,
          ACI = width_aci) |>
   tidyr::pivot_longer(cols = c(`Static conformal`, ACI),
@@ -145,12 +135,13 @@ fig_b <- ggplot(width_long, aes(x = gamma, y = width, colour = method,
     plot.tag     = element_text(size = 10, face = "bold")
   )
 
-# ── Assemble ─────────────────────────────────────────────────────────────────
+# ── Assemble and save ────────────────────────────────────────────────────────
 
 figure <- fig_a | fig_b
 
 w <- 180 / 25.4
 h <- 80 / 25.4
+
 cairo_pdf("submission/figures/figS_aci_sensitivity.pdf", width = w, height = h)
 print(figure)
 dev.off()
@@ -160,8 +151,9 @@ png("submission/figures/figS_aci_sensitivity.png",
 print(figure)
 dev.off()
 
-# Also save results for reference
-saveRDS(results, "inst/extdata/engine_comparison/aci_sensitivity_results.rds")
+# Save results for reference
+dir.create("inst/extdata/engine_comparison", showWarnings = FALSE, recursive = TRUE)
+saveRDS(results_df, "inst/extdata/engine_comparison/aci_sensitivity_results.rds")
 
 cat("Saved submission/figures/figS_aci_sensitivity.pdf\n")
 cat("Saved submission/figures/figS_aci_sensitivity.png\n")
