@@ -27,6 +27,7 @@ growth_advantage(fit, generation_time = 5)
 Useful links:
 \itemize{
   \item \url{https://github.com/CuiweiG/lineagefreq}
+  \item \url{https://CuiweiG.github.io/lineagefreq}
   \item Report bugs at \url{https://github.com/CuiweiG/lineagefreq/issues}
 }
 
