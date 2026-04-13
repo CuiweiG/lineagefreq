@@ -109,7 +109,7 @@ cal
 #> 
 #> ── Calibration report 
 #> 75 forecast-observation pairs
-#> KS test for PIT uniformity: D = 0.2464, p = 0.000222
+#> KS test for PIT uniformity: D = 0.2542, p = 0.000123
 #> Mean absolute calibration error: 0.263
 # }
 ```

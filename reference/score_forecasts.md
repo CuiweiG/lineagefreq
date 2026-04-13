@@ -78,21 +78,21 @@ score_forecasts(bt)
 #> # A tibble: 16 × 4
 #>    engine horizon metric         value
 #>    <chr>    <int> <chr>          <dbl>
-#>  1 mlr          7 mae          0.00736
-#>  2 mlr          7 rmse         0.00985
+#>  1 mlr          7 mae          0.00690
+#>  2 mlr          7 rmse         0.00932
 #>  3 mlr          7 coverage     1      
 #>  4 mlr          7 wis          0.00215
-#>  5 mlr          7 crps         0.00651
-#>  6 mlr          7 log_score   -3.09   
-#>  7 mlr          7 dss         -8.01   
-#>  8 mlr          7 calibration  0.0744 
-#>  9 mlr         14 mae          0.00667
-#> 10 mlr         14 rmse         0.00950
+#>  5 mlr          7 crps         0.00645
+#>  6 mlr          7 log_score   -3.10   
+#>  7 mlr          7 dss         -8.03   
+#>  8 mlr          7 calibration  0.0719 
+#>  9 mlr         14 mae          0.00619
+#> 10 mlr         14 rmse         0.00805
 #> 11 mlr         14 coverage     1      
-#> 12 mlr         14 wis          0.00214
-#> 13 mlr         14 crps         0.00639
-#> 14 mlr         14 log_score   -3.12   
-#> 15 mlr         14 dss         -8.07   
-#> 16 mlr         14 calibration  0.0779 
+#> 12 mlr         14 wis          0.00213
+#> 13 mlr         14 crps         0.00611
+#> 14 mlr         14 log_score   -3.13   
+#> 15 mlr         14 dss         -8.09   
+#> 16 mlr         14 calibration  0.0814 
 # }
 ```
