@@ -1,7 +1,7 @@
 ###############################################################################
 # make_figure_joint.R — Joint vs marginal conformal prediction visualisation
 #
-# Produces: submission/figures/figure_joint.pdf
+# Produces: submission/figures/fig06_joint_conformal.pdf/.png
 # Input:    inst/extdata/engine_comparison/denmark_ba2_collapsed.rds
 #
 # Run from package root:
@@ -9,7 +9,7 @@
 ###############################################################################
 
 Sys.setlocale("LC_TIME", "C")
-devtools::load_all(quiet = TRUE)
+devtools::load_all(".")
 library(ggplot2)
 library(dplyr)
 library(tidyr)
@@ -147,8 +147,14 @@ figure <- fig_a / (fig_b | fig_c) +
 
 w <- 180 / 25.4
 h <- 130 / 25.4
-cairo_pdf("submission/figures/figure_joint.pdf", width = w, height = h)
+cairo_pdf("submission/figures/fig06_joint_conformal.pdf", width = w, height = h)
 print(figure)
 dev.off()
 
-cat("Saved submission/figures/figure_joint.pdf\n")
+png("submission/figures/fig06_joint_conformal.png",
+    width = w, height = h, units = "in", res = 300, type = "cairo")
+print(figure)
+dev.off()
+
+cat("Saved submission/figures/fig06_joint_conformal.pdf\n")
+cat("Saved submission/figures/fig06_joint_conformal.png\n")

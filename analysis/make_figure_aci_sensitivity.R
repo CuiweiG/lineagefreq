@@ -1,7 +1,7 @@
 ###############################################################################
 # make_figure_aci_sensitivity.R — ACI learning rate sensitivity analysis
 #
-# Produces: submission/figures/figure_ext_aci.pdf
+# Produces: submission/figures/figS_aci_sensitivity.pdf/.png
 # Input:    cdc_ba2_transition (built-in dataset)
 #
 # Run from package root:
@@ -11,7 +11,7 @@
 ###############################################################################
 
 Sys.setlocale("LC_TIME", "C")
-devtools::load_all(quiet = TRUE)
+devtools::load_all(".")
 library(ggplot2)
 library(dplyr)
 library(future)
@@ -145,12 +145,18 @@ figure <- fig_a | fig_b
 
 w <- 180 / 25.4
 h <- 80 / 25.4
-cairo_pdf("submission/figures/figure_ext_aci.pdf", width = w, height = h)
+cairo_pdf("submission/figures/figS_aci_sensitivity.pdf", width = w, height = h)
+print(figure)
+dev.off()
+
+png("submission/figures/figS_aci_sensitivity.png",
+    width = w, height = h, units = "in", res = 300, type = "cairo")
 print(figure)
 dev.off()
 
 # Also save results for reference
 saveRDS(results, "inst/extdata/engine_comparison/aci_sensitivity_results.rds")
 
-cat("Saved submission/figures/figure_ext_aci.pdf\n")
+cat("Saved submission/figures/figS_aci_sensitivity.pdf\n")
+cat("Saved submission/figures/figS_aci_sensitivity.png\n")
 cat("Saved inst/extdata/engine_comparison/aci_sensitivity_results.rds\n")
