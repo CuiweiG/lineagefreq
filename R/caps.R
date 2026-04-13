@@ -120,8 +120,19 @@ caps_forecast <- function(fit,
     q_base  <- as.numeric(stats::quantile(abs(resids), probs = q_level,
                                            na.rm = TRUE))
 
-    # Variance-ratio correction: widen when R < 1
-    r_base_h <- q_base * sqrt(max(1, 1 / Rh))
+    # Adaptive strategy based on residual distribution shape
+    skew_ratio <- mean(abs(resids)) / stats::median(abs(resids))
+
+    if (skew_ratio > 2) {
+      # Heavy-tailed residuals (e.g., influenza): variance-ratio correction
+      # would over-inflate. Use pure quantile instead.
+      r_base_h <- q_base
+      strategy <- "quantile"
+    } else {
+      # Approximately symmetric residuals: apply variance-ratio correction
+      r_base_h <- q_base * sqrt(max(1, 1 / Rh))
+      strategy <- "variance-ratio"
+    }
 
     # Horizon-specific learning rate
     gamma_h <- if (method == "caps_static") 0 else gamma_0 * max(0, 1 - Rh)
@@ -129,7 +140,8 @@ caps_forecast <- function(fit,
     caps_params[[h_key]] <- list(
       horizon = h, R_hat = Rh, r_base = r_base_h,
       gamma_h = gamma_h, alpha_t = alpha,
-      n_cal = n_cal, q_base = q_base
+      n_cal = n_cal, q_base = q_base,
+      skew_ratio = skew_ratio, strategy = strategy
     )
   }
 
@@ -303,7 +315,7 @@ print.caps_forecast <- function(x, ...) {
   for (h_key in names(x$params)) {
     p <- x$params[[h_key]]
     if (!is.na(p$R_hat)) {
-      cli::cli_text("  h={h_key}d: R_hat={round(p$R_hat, 3)}, r_base={round(p$r_base, 4)}, gamma={round(p$gamma_h, 4)}, n_cal={p$n_cal}")
+      cli::cli_text("  h={h_key}d: R_hat={round(p$R_hat, 3)}, r_base={round(p$r_base, 4)}, gamma={round(p$gamma_h, 4)}, strategy={p$strategy %||% 'unknown'}, n_cal={p$n_cal}")
     }
   }
   if (nrow(x$forecasts) > 0) {
