@@ -36,9 +36,10 @@ p1 <- plot(result, type = "coverage") +
   theme(plot.tag = element_text(size = 10, face = "bold"))
 
 p2 <- plot(result, type = "radius") +
-  scale_x_date(date_labels = "%b %Y") +
+  scale_x_date(date_labels = "%b %Y", date_breaks = "2 months") +
   labs(tag = "b") +
-  theme(plot.tag = element_text(size = 10, face = "bold"))
+  theme(plot.tag = element_text(size = 10, face = "bold"),
+        axis.text.x = element_text(size = 7))
 
 p3 <- plot(result, type = "comparison") +
   labs(tag = "c") +

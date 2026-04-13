@@ -73,15 +73,46 @@ if (nrow(mi) > 0 && ".lower_marginal" %in% names(mi)) {
 
   pal <- c(Marginal = "#0072B2", Joint = "#D55E00")
 
-  fig_a <- ggplot(plot_df, aes(x = .date)) +
-    geom_ribbon(aes(ymin = lower, ymax = upper, fill = method),
-                alpha = 0.25) +
-    geom_point(aes(y = .median), size = 0.8, colour = "black") +
-    facet_wrap(~.lineage, nrow = 1, scales = "free_y") +
-    scale_fill_manual(values = pal) +
-    scale_x_date(date_labels = "%b %Y") +
-    scale_y_continuous(labels = scales::percent_format()) +
-    labs(x = "Date", y = "Frequency", fill = NULL, tag = "a") +
+  # If only 1-2 forecast dates, use lineage as x-axis instead
+  n_dates <- length(unique(plot_df$.date))
+
+  if (n_dates <= 2) {
+    # Collapse across dates — show one bar per lineage x method
+    bar_df <- plot_df |>
+      group_by(.lineage, method) |>
+      summarise(.median = mean(.median, na.rm = TRUE),
+                lower = mean(lower, na.rm = TRUE),
+                upper = mean(upper, na.rm = TRUE), .groups = "drop")
+
+    fig_a <- ggplot(bar_df, aes(x = .lineage, fill = method)) +
+      geom_errorbar(aes(ymin = lower, ymax = upper),
+                    position = position_dodge(width = 0.6), width = 0.3) +
+      geom_point(aes(y = .median), position = position_dodge(width = 0.6),
+                 size = 1.5, colour = "black") +
+      scale_fill_manual(values = pal) +
+      scale_y_continuous(labels = scales::percent_format()) +
+      labs(x = "Lineage", y = "Frequency", fill = NULL, tag = "a") +
+      theme_classic(base_size = 8) +
+      theme(
+        axis.text     = element_text(size = 7, colour = "black"),
+        axis.title    = element_text(size = 8),
+        panel.border  = element_rect(colour = "black", fill = NA, linewidth = 0.5),
+        axis.line     = element_blank(),
+        legend.position = "bottom",
+        legend.key.size = unit(3, "mm"),
+        plot.tag      = element_text(size = 10, face = "bold"),
+        axis.text.x   = element_text(angle = 45, hjust = 1, size = 6)
+      )
+  } else {
+    fig_a <- ggplot(plot_df, aes(x = .date)) +
+      geom_ribbon(aes(ymin = lower, ymax = upper, fill = method),
+                  alpha = 0.25) +
+      geom_point(aes(y = .median), size = 0.8, colour = "black") +
+      facet_wrap(~.lineage, nrow = 1, scales = "free_y") +
+      scale_fill_manual(values = pal) +
+      scale_x_date(date_labels = "%b %Y", date_breaks = "1 month") +
+      scale_y_continuous(labels = scales::percent_format()) +
+      labs(x = "Date", y = "Frequency", fill = NULL, tag = "a") +
     theme_classic(base_size = 8) +
     theme(
       axis.text     = element_text(size = 7, colour = "black"),
