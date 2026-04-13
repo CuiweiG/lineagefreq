@@ -9,9 +9,11 @@ Description: Models pathogen lineage frequency dynamics from genomic
     multinomial logistic regression, hierarchical partial-pooling
     models, and the Piantham approximation for relative reproduction
     number estimation. Features include rolling-origin backtesting,
-    standardized forecast scoring, lineage collapsing, emergence
-    detection, and sequencing power analysis. Designed for real-time
-    public health surveillance of any variant-resolved pathogen.
+    standardized forecast scoring, Compositional Adaptive Prediction
+    Sets (CAPS) for horizon-aware calibrated forecasting, lineage
+    collapsing, emergence detection, and sequencing power analysis.
+    Designed for real-time public health surveillance of any
+    variant-resolved pathogen.
     Methods described in Abousamra, Figgins, and Bedford (2024)
     <doi:10.1371/journal.pcbi.1012443>.
 License: MIT + file LICENSE
