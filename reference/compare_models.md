@@ -38,6 +38,6 @@ compare_models(sc)
 #> # A tibble: 1 × 9
 #>   engine     mae    rmse coverage     wis    crps log_score   dss calibration
 #>   <chr>    <dbl>   <dbl>    <dbl>   <dbl>   <dbl>     <dbl> <dbl>       <dbl>
-#> 1 mlr    0.00701 0.00967        1 0.00214 0.00645     -3.10 -8.04      0.0762
+#> 1 mlr    0.00655 0.00868        1 0.00214 0.00628     -3.11 -8.06      0.0766
 # }
 ```
