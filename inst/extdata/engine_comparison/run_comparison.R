@@ -29,7 +29,7 @@ dk_raw <- ecdc[["Denmark_BA2"]]
 if (is.null(dk_raw)) stop("Denmark_BA2 not found in ecdc_prepared.rds")
 
 # Collapse rare lineages: keep those with >5% peak frequency
-dk <- collapse_lineages(dk_raw, threshold = 0.05)
+dk <- collapse_lineages(dk_raw, min_freq = 0.05)
 
 cat(sprintf("Denmark BA.2: %d dates, %d lineages after collapsing\n",
             length(unique(dk$.date)),
