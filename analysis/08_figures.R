@@ -8,8 +8,7 @@ cat("[08_figures] Starting...\n")
 source("analysis/00_setup.R")
 
 # English locale for month abbreviations in date axes
-tryCatch(Sys.setlocale("LC_TIME", "English"), error = function(e)
-  tryCatch(Sys.setlocale("LC_TIME", "en_US.UTF-8"), error = function(e2) NULL))
+Sys.setlocale("LC_TIME", "C")
 
 # ─── Load all results ────────────────────────────────────────────────────────
 
