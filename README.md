@@ -4,6 +4,7 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/CuiweiG/lineagefreq/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/CuiweiG/lineagefreq/actions/workflows/R-CMD-check.yaml)
+[![codecov](https://codecov.io/gh/CuiweiG/lineagefreq/graph/badge.svg)](https://codecov.io/gh/CuiweiG/lineagefreq)
 [![CRAN status](https://www.r-pkg.org/badges/version/lineagefreq)](https://CRAN.R-project.org/package=lineagefreq)
 [![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/lineagefreq)](https://CRAN.R-project.org/package=lineagefreq)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
