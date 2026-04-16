@@ -17,3 +17,6 @@
 ^[^/]*\.R$
 ^analysis$
 ^submission$
+^CONTRIBUTING\.md$
+^CODE_OF_CONDUCT\.md$
+^codemeta\.json$
