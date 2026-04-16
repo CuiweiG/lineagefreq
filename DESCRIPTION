@@ -18,7 +18,7 @@ Description: Models pathogen lineage frequency dynamics from genomic
     <doi:10.1371/journal.pcbi.1012443>.
 License: MIT + file LICENSE
 URL: https://github.com/CuiweiG/lineagefreq,
-    https://CuiweiG.github.io/lineagefreq
+    https://cuiweig.github.io/lineagefreq
 BugReports: https://github.com/CuiweiG/lineagefreq/issues
 Depends:
     R (>= 4.1.0)
