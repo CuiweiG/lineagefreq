@@ -13,7 +13,7 @@ plot_backtest(scores)
 - scores:
 
   Output of
-  [`score_forecasts()`](https://CuiweiG.github.io/lineagefreq/reference/score_forecasts.md).
+  [`score_forecasts()`](https://cuiweig.github.io/lineagefreq/reference/score_forecasts.md).
 
 ## Value
 

@@ -16,7 +16,7 @@ surveillance_dashboard(fit, data, bt = NULL, target_prevalence = 0.01)
 - fit:
 
   An `lfq_fit` object from
-  [`fit_model`](https://CuiweiG.github.io/lineagefreq/reference/fit_model.md).
+  [`fit_model`](https://cuiweig.github.io/lineagefreq/reference/fit_model.md).
 
 - data:
 
@@ -44,9 +44,9 @@ and (4) calibration reliability diagram (if backtest data are provided).
 
 ## See also
 
-[`surveillance_value`](https://CuiweiG.github.io/lineagefreq/reference/surveillance_value.md)
+[`surveillance_value`](https://cuiweig.github.io/lineagefreq/reference/surveillance_value.md)
 for EVOI analysis,
-[`alert_threshold`](https://CuiweiG.github.io/lineagefreq/reference/alert_threshold.md)
+[`alert_threshold`](https://cuiweig.github.io/lineagefreq/reference/alert_threshold.md)
 for sequential detection.
 
 ## Examples

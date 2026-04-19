@@ -22,7 +22,7 @@ backtest(
 - data:
 
   An
-  [lfq_data](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md)
+  [lfq_data](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md)
   object.
 
 - engines:
@@ -53,7 +53,7 @@ backtest(
 - ...:
 
   Additional arguments passed to
-  [`fit_model()`](https://CuiweiG.github.io/lineagefreq/reference/fit_model.md)
+  [`fit_model()`](https://cuiweig.github.io/lineagefreq/reference/fit_model.md)
   (e.g., `generation_time` for the Piantham engine).
 
 ## Value
@@ -113,9 +113,9 @@ Computational Biology*, 20(9):e1012443.
 
 ## See also
 
-[`score_forecasts()`](https://CuiweiG.github.io/lineagefreq/reference/score_forecasts.md)
+[`score_forecasts()`](https://cuiweig.github.io/lineagefreq/reference/score_forecasts.md)
 to compute accuracy metrics,
-[`compare_models()`](https://CuiweiG.github.io/lineagefreq/reference/compare_models.md)
+[`compare_models()`](https://cuiweig.github.io/lineagefreq/reference/compare_models.md)
 to rank engines.
 
 ## Examples
@@ -137,16 +137,16 @@ bt
 #> # A tibble: 75 × 9
 #>    origin_date target_date horizon engine lineage predicted lower upper observed
 #>  * <date>      <date>        <int> <chr>  <chr>       <dbl> <dbl> <dbl>    <dbl>
-#>  1 2026-05-25  2026-06-01        7 mlr    A            0.73  0.64  0.82    0.76 
-#>  2 2026-05-25  2026-06-01        7 mlr    B            0.04  0.01  0.09    0.026
-#>  3 2026-05-25  2026-06-01        7 mlr    ref          0.23  0.14  0.32    0.214
-#>  4 2026-05-25  2026-06-08       14 mlr    A            0.76  0.68  0.85    0.78 
-#>  5 2026-05-25  2026-06-08       14 mlr    B            0.03  0     0.07    0.034
-#>  6 2026-05-25  2026-06-08       14 mlr    ref          0.21  0.13  0.29    0.186
-#>  7 2026-06-01  2026-06-08        7 mlr    A            0.78  0.68  0.85    0.78 
-#>  8 2026-06-01  2026-06-08        7 mlr    B            0.02  0     0.06    0.034
-#>  9 2026-06-01  2026-06-08        7 mlr    ref          0.2   0.12  0.29    0.186
-#> 10 2026-06-01  2026-06-15       14 mlr    A            0.81  0.72  0.89    0.82 
+#>  1 2026-05-31  2026-06-07        7 mlr    A            0.73  0.64  0.82    0.76 
+#>  2 2026-05-31  2026-06-07        7 mlr    B            0.04  0.01  0.09    0.026
+#>  3 2026-05-31  2026-06-07        7 mlr    ref          0.23  0.14  0.32    0.214
+#>  4 2026-05-31  2026-06-14       14 mlr    A            0.76  0.68  0.85    0.78 
+#>  5 2026-05-31  2026-06-14       14 mlr    B            0.03  0     0.07    0.034
+#>  6 2026-05-31  2026-06-14       14 mlr    ref          0.21  0.13  0.29    0.186
+#>  7 2026-06-07  2026-06-14        7 mlr    A            0.78  0.68  0.85    0.78 
+#>  8 2026-06-07  2026-06-14        7 mlr    B            0.02  0     0.06    0.034
+#>  9 2026-06-07  2026-06-14        7 mlr    ref          0.2   0.12  0.29    0.186
+#> 10 2026-06-07  2026-06-21       14 mlr    A            0.81  0.72  0.89    0.82 
 #> # ℹ 65 more rows
 # }
 ```

@@ -2,12 +2,12 @@
 
 Models pathogen lineage frequency dynamics from genomic surveillance
 count data. Provides a unified
-[`fit_model()`](https://CuiweiG.github.io/lineagefreq/reference/fit_model.md)
+[`fit_model()`](https://cuiweig.github.io/lineagefreq/reference/fit_model.md)
 interface with multiple engines (MLR, hierarchical MLR, Piantham),
 rolling-origin backtesting via
-[`backtest()`](https://CuiweiG.github.io/lineagefreq/reference/backtest.md),
+[`backtest()`](https://cuiweig.github.io/lineagefreq/reference/backtest.md),
 standardized scoring via
-[`score_forecasts()`](https://CuiweiG.github.io/lineagefreq/reference/score_forecasts.md),
+[`score_forecasts()`](https://cuiweig.github.io/lineagefreq/reference/score_forecasts.md),
 emergence detection, and sequencing power analysis.
 
 ## Quick start
@@ -21,6 +21,8 @@ emergence detection, and sequencing power analysis.
 Useful links:
 
 - <https://github.com/CuiweiG/lineagefreq>
+
+- <https://CuiweiG.github.io/lineagefreq>
 
 - Report bugs at <https://github.com/CuiweiG/lineagefreq/issues>
 

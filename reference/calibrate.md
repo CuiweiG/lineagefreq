@@ -23,9 +23,9 @@ calibrate(x, observed = NULL, n_bins = 10L)
 - x:
 
   An `lfq_backtest` object from
-  [`backtest`](https://CuiweiG.github.io/lineagefreq/reference/backtest.md),
+  [`backtest`](https://cuiweig.github.io/lineagefreq/reference/backtest.md),
   or an `lfq_forecast` object from
-  [`forecast`](https://CuiweiG.github.io/lineagefreq/reference/forecast.md)
+  [`forecast`](https://cuiweig.github.io/lineagefreq/reference/forecast.md)
   together with observed data.
 
 - observed:
@@ -70,7 +70,7 @@ The PIT value for a single forecast-observation pair is defined as the
 quantile of the observation within the forecast distribution. Under the
 assumption of Gaussian prediction intervals (which the parametric
 simulation in
-[`forecast`](https://CuiweiG.github.io/lineagefreq/reference/forecast.md)
+[`forecast`](https://cuiweig.github.io/lineagefreq/reference/forecast.md)
 approximates), the PIT is computed as \\\Phi((y - \hat{y}) /
 \hat{\sigma})\\ where \\\hat{y}\\ is the predicted median,
 \\\hat{\sigma}\\ is derived from the prediction interval width, and
@@ -89,9 +89,9 @@ Series B*, 69(2), 243–268.
 
 ## See also
 
-[`recalibrate`](https://CuiweiG.github.io/lineagefreq/reference/recalibrate.md)
+[`recalibrate`](https://cuiweig.github.io/lineagefreq/reference/recalibrate.md)
 for post-hoc recalibration,
-[`score_forecasts`](https://CuiweiG.github.io/lineagefreq/reference/score_forecasts.md)
+[`score_forecasts`](https://cuiweig.github.io/lineagefreq/reference/score_forecasts.md)
 for proper scoring rules.
 
 ## Examples

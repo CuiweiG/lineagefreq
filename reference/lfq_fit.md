@@ -14,7 +14,7 @@ lfq_fit(data, engine = "mlr", ...)
 - data:
 
   An
-  [lfq_data](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md)
+  [lfq_data](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md)
   object.
 
 - engine:
@@ -24,7 +24,7 @@ lfq_fit(data, engine = "mlr", ...)
 - ...:
 
   Passed to
-  [`fit_model()`](https://CuiweiG.github.io/lineagefreq/reference/fit_model.md).
+  [`fit_model()`](https://cuiweig.github.io/lineagefreq/reference/fit_model.md).
 
 ## Value
 

@@ -3,7 +3,7 @@
 ## Overview
 
 lineagefreq provides multiple modeling engines through the unified
-[`fit_model()`](https://CuiweiG.github.io/lineagefreq/reference/fit_model.md)
+[`fit_model()`](https://cuiweig.github.io/lineagefreq/reference/fit_model.md)
 interface. This vignette shows how to compare them using the built-in
 backtesting framework.
 
@@ -85,7 +85,7 @@ dplyr::bind_rows(
 ## Backtesting
 
 The
-[`backtest()`](https://CuiweiG.github.io/lineagefreq/reference/backtest.md)
+[`backtest()`](https://cuiweig.github.io/lineagefreq/reference/backtest.md)
 function implements rolling-origin evaluation. At each origin date, the
 model is fit on past data and forecasts are compared to held-out future
 observations.
@@ -97,13 +97,13 @@ bt <- backtest(x,
   min_train = 56,
   generation_time = 5
 )
-#> Backtesting ■■■                                8% | ETA: 12s
+#> Backtesting ■■■                                7% | ETA: 14s
 #> Backtesting ■■■■■■■■■                         26% | ETA: 11s
-#> Backtesting ■■■■■■■■■■■■■■                    42% | ETA:  9s
-#> Backtesting ■■■■■■■■■■■■■■■■■■                57% | ETA:  8s
-#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■            72% | ETA:  5s
-#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■■        83% | ETA:  3s
-#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■    95% | ETA:  1s
+#> Backtesting ■■■■■■■■■■■■■■                    42% | ETA: 10s
+#> Backtesting ■■■■■■■■■■■■■■■■■■                55% | ETA:  8s
+#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■            70% | ETA:  6s
+#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■         81% | ETA:  4s
+#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■     92% | ETA:  2s
 #> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100% | ETA:  0s
 bt
 #> 
@@ -131,7 +131,7 @@ bt
 
 ## Scoring
 
-[`score_forecasts()`](https://CuiweiG.github.io/lineagefreq/reference/score_forecasts.md)
+[`score_forecasts()`](https://cuiweig.github.io/lineagefreq/reference/score_forecasts.md)
 computes standardized accuracy metrics.
 
 ``` r
@@ -157,7 +157,7 @@ sc
 
 ## Model ranking
 
-[`compare_models()`](https://CuiweiG.github.io/lineagefreq/reference/compare_models.md)
+[`compare_models()`](https://cuiweig.github.io/lineagefreq/reference/compare_models.md)
 summarizes scores per engine, sorted by MAE.
 
 ``` r
@@ -198,5 +198,5 @@ This stabilizes estimates for low-data locations.
 
 A demonstration requires multi-location data, which the built-in
 single-location dataset does not provide. See
-[`?fit_model`](https://CuiweiG.github.io/lineagefreq/reference/fit_model.md)
+[`?fit_model`](https://cuiweig.github.io/lineagefreq/reference/fit_model.md)
 for an example with simulated multi-location data.

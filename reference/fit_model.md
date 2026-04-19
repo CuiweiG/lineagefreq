@@ -21,7 +21,7 @@ fit_model(
 - data:
 
   An
-  [lfq_data](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md)
+  [lfq_data](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md)
   object.
 
 - engine:
@@ -39,7 +39,7 @@ fit_model(
 
   - `"fga"`: Fixed growth advantage model (Bayesian via CmdStan).
     Requires 'CmdStan'; check with
-    [`lfq_stan_available()`](https://CuiweiG.github.io/lineagefreq/reference/lfq_stan_available.md).
+    [`lfq_stan_available()`](https://cuiweig.github.io/lineagefreq/reference/lfq_stan_available.md).
 
   - `"garw"`: Growth advantage random walk model (Bayesian via CmdStan).
     Allows fitness to change over time.
@@ -53,7 +53,7 @@ fit_model(
 - horizon:
 
   Forecast horizon in days (stored for later use by
-  [`forecast()`](https://CuiweiG.github.io/lineagefreq/reference/forecast.md)).
+  [`forecast()`](https://cuiweig.github.io/lineagefreq/reference/forecast.md)).
   Default 28.
 
 - ci_level:
@@ -150,11 +150,11 @@ replacements of SARS-CoV-2 variants using relative reproduction numbers.
 
 ## See also
 
-[`growth_advantage()`](https://CuiweiG.github.io/lineagefreq/reference/growth_advantage.md)
+[`growth_advantage()`](https://cuiweig.github.io/lineagefreq/reference/growth_advantage.md)
 to extract fitness estimates,
-[`forecast()`](https://CuiweiG.github.io/lineagefreq/reference/forecast.md)
+[`forecast()`](https://cuiweig.github.io/lineagefreq/reference/forecast.md)
 for frequency prediction,
-[`backtest()`](https://CuiweiG.github.io/lineagefreq/reference/backtest.md)
+[`backtest()`](https://cuiweig.github.io/lineagefreq/reference/backtest.md)
 for rolling-origin evaluation.
 
 ## Examples
@@ -169,7 +169,7 @@ fit <- fit_model(sim, engine = "mlr")
 fit
 #> Lineage frequency model (mlr)
 #> 3 lineages, 15 time points
-#> Date range: 2026-04-13 to 2026-07-20
+#> Date range: 2026-04-19 to 2026-07-26
 #> Pivot: "KP.3"
 #> 
 #> Growth rates (per 7-day unit):

@@ -66,9 +66,9 @@ F\_{\text{Binom}}(k-1; n, p)\\. Cumulative detection is \\1 -
 
 ## See also
 
-[`sequencing_power`](https://CuiweiG.github.io/lineagefreq/reference/sequencing_power.md)
+[`sequencing_power`](https://cuiweig.github.io/lineagefreq/reference/sequencing_power.md)
 for static sample size calculations,
-[`alert_threshold`](https://CuiweiG.github.io/lineagefreq/reference/alert_threshold.md)
+[`alert_threshold`](https://cuiweig.github.io/lineagefreq/reference/alert_threshold.md)
 for sequential detection.
 
 ## Examples

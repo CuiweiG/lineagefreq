@@ -19,7 +19,7 @@ lfq_score(
 - data:
 
   An
-  [lfq_data](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md)
+  [lfq_data](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md)
   object.
 
 - engines:
@@ -37,7 +37,7 @@ lfq_score(
 - ...:
 
   Passed to
-  [`backtest()`](https://CuiweiG.github.io/lineagefreq/reference/backtest.md).
+  [`backtest()`](https://cuiweig.github.io/lineagefreq/reference/backtest.md).
 
 ## Value
 

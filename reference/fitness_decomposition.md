@@ -20,12 +20,12 @@ fitness_decomposition(fit, landscape, generation_time)
 - fit:
 
   An `lfq_fit` object from
-  [`fit_model`](https://CuiweiG.github.io/lineagefreq/reference/fit_model.md).
+  [`fit_model`](https://cuiweig.github.io/lineagefreq/reference/fit_model.md).
 
 - landscape:
 
   An `immune_landscape` object from
-  [`immune_landscape`](https://CuiweiG.github.io/lineagefreq/reference/immune_landscape.md).
+  [`immune_landscape`](https://cuiweig.github.io/lineagefreq/reference/immune_landscape.md).
 
 - generation_time:
 
@@ -80,9 +80,9 @@ case counts to estimate relative variant severity. *medRxiv*.
 
 ## See also
 
-[`immune_landscape`](https://CuiweiG.github.io/lineagefreq/reference/immune_landscape.md)
+[`immune_landscape`](https://cuiweig.github.io/lineagefreq/reference/immune_landscape.md)
 for constructing the immunity input,
-[`selective_pressure`](https://CuiweiG.github.io/lineagefreq/reference/selective_pressure.md)
+[`selective_pressure`](https://cuiweig.github.io/lineagefreq/reference/selective_pressure.md)
 for population-level early warning signals.
 
 ## Examples

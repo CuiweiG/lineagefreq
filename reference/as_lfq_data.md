@@ -1,7 +1,7 @@
 # Coerce to lfq_data
 
 Generic function to convert various data formats into
-[lfq_data](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md)
+[lfq_data](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md)
 objects. Methods can be defined for specific input classes to enable
 seamless interoperability with other genomic surveillance packages.
 
@@ -27,25 +27,25 @@ as_lfq_data(x, ...)
 
   Additional arguments passed to methods. For the `data.frame` method,
   these are passed to
-  [`lfq_data()`](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md).
+  [`lfq_data()`](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md).
 
 ## Value
 
 An
-[lfq_data](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md)
+[lfq_data](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md)
 object.
 
 An
-[lfq_data](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md)
+[lfq_data](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md)
 object.
 
 An
-[lfq_data](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md)
+[lfq_data](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md)
 object.
 
 ## See also
 
-[`lfq_data()`](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md)
+[`lfq_data()`](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md)
 for the primary constructor.
 
 ## Examples

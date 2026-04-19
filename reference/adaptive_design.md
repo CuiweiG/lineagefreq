@@ -91,7 +91,7 @@ is the round, and \\c\\ is the exploration parameter.
 
 ## See also
 
-[`surveillance_value`](https://CuiweiG.github.io/lineagefreq/reference/surveillance_value.md)
+[`surveillance_value`](https://cuiweig.github.io/lineagefreq/reference/surveillance_value.md)
 for EVOI analysis.
 
 ## Examples

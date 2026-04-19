@@ -14,7 +14,7 @@ as.data.frame(x, ...)
 - x:
 
   An
-  [lfq_data](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md)
+  [lfq_data](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md)
   object.
 
 - ...:

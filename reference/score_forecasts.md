@@ -17,7 +17,7 @@ score_forecasts(
 - bt:
 
   An `lfq_backtest` object from
-  [`backtest()`](https://CuiweiG.github.io/lineagefreq/reference/backtest.md).
+  [`backtest()`](https://cuiweig.github.io/lineagefreq/reference/backtest.md).
 
 - metrics:
 
@@ -62,7 +62,7 @@ Association*, 102(477), 359–378.
 
 ## See also
 
-[`compare_models()`](https://CuiweiG.github.io/lineagefreq/reference/compare_models.md)
+[`compare_models()`](https://cuiweig.github.io/lineagefreq/reference/compare_models.md)
 to rank engines based on scores.
 
 ## Examples

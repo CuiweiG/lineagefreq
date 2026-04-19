@@ -1,7 +1,7 @@
 # Register a custom modeling engine
 
 Allows third-party packages to register custom engines with
-[`fit_model()`](https://CuiweiG.github.io/lineagefreq/reference/fit_model.md).
+[`fit_model()`](https://cuiweig.github.io/lineagefreq/reference/fit_model.md).
 This enables an extensible plugin architecture similar to 'parsnip'
 engine registration.
 

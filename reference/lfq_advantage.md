@@ -25,7 +25,7 @@ lfq_advantage(fit, type = "relative_Rt", generation_time = NULL, ...)
 - ...:
 
   Passed to
-  [`growth_advantage()`](https://CuiweiG.github.io/lineagefreq/reference/growth_advantage.md).
+  [`growth_advantage()`](https://cuiweig.github.io/lineagefreq/reference/growth_advantage.md).
 
 ## Value
 

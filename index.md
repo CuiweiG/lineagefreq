@@ -3,6 +3,10 @@
 *Lineage Frequency Dynamics and Growth-Advantage Estimation from Genomic
 Surveillance Counts*
 
+![Observed vs MLR-estimated trajectories of SARS-CoV-2 JN.1 lineage
+replacement in U.S. CDC surveillance, October 2023 to March
+2024](reference/figures/jn1_dynamics.png)
+
 lineagefreq provides a unified pipeline for modelling pathogen lineage
 frequencies from genomic surveillance counts. The package implements
 multinomial logistic regression and alternative estimation engines,
@@ -116,10 +120,10 @@ US data from CDC (public domain). Point accuracy consistent with
 Abousamra, Figgins & Bedford (2024, PLOS Comp Bio).*
 
 Calibration diagnostics via
-[`calibrate()`](https://CuiweiG.github.io/lineagefreq/reference/calibrate.md)
+[`calibrate()`](https://cuiweig.github.io/lineagefreq/reference/calibrate.md)
 reveal that standard parametric prediction intervals are systematically
 underdispersed. Conformal prediction via
-[`conformal_forecast()`](https://CuiweiG.github.io/lineagefreq/reference/conformal_forecast.md)
+[`conformal_forecast()`](https://cuiweig.github.io/lineagefreq/reference/conformal_forecast.md)
 provides correctly calibrated intervals. See `analysis/` for
 reproducible validation scripts.
 
@@ -142,7 +146,7 @@ data from WHO FluNet.
 ## Features
 
 **Model fitting** -
-[`fit_model()`](https://CuiweiG.github.io/lineagefreq/reference/fit_model.md)
+[`fit_model()`](https://cuiweig.github.io/lineagefreq/reference/fit_model.md)
 with engines `"mlr"`, `"hier_mlr"`, `"piantham"`, `"fga"`, `"garw"`
 (Bayesian engines require [CmdStan](https://mc-stan.org/cmdstanr/))
 
@@ -153,52 +157,52 @@ Rt, selection coefficient, doubling time
 simulation and configurable sampling noise
 
 **Evaluation** - Rolling-origin backtesting via
-[`backtest()`](https://CuiweiG.github.io/lineagefreq/reference/backtest.md)
+[`backtest()`](https://cuiweig.github.io/lineagefreq/reference/backtest.md)
 with standardised scoring (MAE, RMSE, coverage, WIS) via
-[`score_forecasts()`](https://CuiweiG.github.io/lineagefreq/reference/score_forecasts.md)
+[`score_forecasts()`](https://cuiweig.github.io/lineagefreq/reference/score_forecasts.md)
 
 **Prediction calibration** *(v0.3.0+)* -
-[`calibrate()`](https://CuiweiG.github.io/lineagefreq/reference/calibrate.md):
+[`calibrate()`](https://cuiweig.github.io/lineagefreq/reference/calibrate.md):
 PIT histograms, reliability diagrams, KS uniformity test -
-[`recalibrate()`](https://CuiweiG.github.io/lineagefreq/reference/recalibrate.md):
+[`recalibrate()`](https://cuiweig.github.io/lineagefreq/reference/recalibrate.md):
 isotonic regression and Platt scaling -
-[`conformal_forecast()`](https://CuiweiG.github.io/lineagefreq/reference/conformal_forecast.md):
+[`conformal_forecast()`](https://cuiweig.github.io/lineagefreq/reference/conformal_forecast.md):
 distribution-free prediction intervals via split conformal inference and
 adaptive conformal inference - Proper scoring rules: CRPS, log score,
 DSS, calibration error
 
 **Immune-aware fitness estimation** *(v0.4.0+)* -
-[`immune_landscape()`](https://CuiweiG.github.io/lineagefreq/reference/immune_landscape.md):
+[`immune_landscape()`](https://cuiweig.github.io/lineagefreq/reference/immune_landscape.md):
 encode population immunity from seroprevalence, vaccination, or
 model-based data -
-[`fitness_decomposition()`](https://CuiweiG.github.io/lineagefreq/reference/fitness_decomposition.md):
+[`fitness_decomposition()`](https://cuiweig.github.io/lineagefreq/reference/fitness_decomposition.md):
 partition growth advantage into intrinsic transmissibility vs immune
 escape -
-[`fit_dms_prior()`](https://CuiweiG.github.io/lineagefreq/reference/fit_dms_prior.md):
+[`fit_dms_prior()`](https://cuiweig.github.io/lineagefreq/reference/fit_dms_prior.md):
 penalised MLR with Deep Mutational Scanning escape scores for
 early-emergence detection -
-[`selective_pressure()`](https://CuiweiG.github.io/lineagefreq/reference/selective_pressure.md):
+[`selective_pressure()`](https://cuiweig.github.io/lineagefreq/reference/selective_pressure.md):
 genomics-only early warning signal
 
 **Surveillance optimisation** *(v0.5.0+)* -
-[`surveillance_value()`](https://CuiweiG.github.io/lineagefreq/reference/surveillance_value.md):
+[`surveillance_value()`](https://cuiweig.github.io/lineagefreq/reference/surveillance_value.md):
 Expected Value of Information for sequencing -
-[`adaptive_design()`](https://CuiweiG.github.io/lineagefreq/reference/adaptive_design.md):
+[`adaptive_design()`](https://cuiweig.github.io/lineagefreq/reference/adaptive_design.md):
 Thompson sampling / UCB allocation across regions -
-[`detection_horizon()`](https://CuiweiG.github.io/lineagefreq/reference/detection_horizon.md):
+[`detection_horizon()`](https://cuiweig.github.io/lineagefreq/reference/detection_horizon.md):
 weeks-to-detection under logistic growth -
-[`alert_threshold()`](https://CuiweiG.github.io/lineagefreq/reference/alert_threshold.md):
+[`alert_threshold()`](https://cuiweig.github.io/lineagefreq/reference/alert_threshold.md):
 SPRT and CUSUM sequential detection -
-[`surveillance_dashboard()`](https://CuiweiG.github.io/lineagefreq/reference/surveillance_dashboard.md):
+[`surveillance_dashboard()`](https://cuiweig.github.io/lineagefreq/reference/surveillance_dashboard.md):
 multi-panel surveillance quality report
 
 **Surveillance utilities** -
-[`summarize_emerging()`](https://CuiweiG.github.io/lineagefreq/reference/summarize_emerging.md):
+[`summarize_emerging()`](https://cuiweig.github.io/lineagefreq/reference/summarize_emerging.md):
 binomial GLM trend tests per lineage -
-[`sequencing_power()`](https://CuiweiG.github.io/lineagefreq/reference/sequencing_power.md):
+[`sequencing_power()`](https://cuiweig.github.io/lineagefreq/reference/sequencing_power.md):
 minimum sample size for detection -
-[`collapse_lineages()`](https://CuiweiG.github.io/lineagefreq/reference/collapse_lineages.md),
-[`filter_sparse()`](https://CuiweiG.github.io/lineagefreq/reference/filter_sparse.md):
+[`collapse_lineages()`](https://cuiweig.github.io/lineagefreq/reference/collapse_lineages.md),
+[`filter_sparse()`](https://cuiweig.github.io/lineagefreq/reference/filter_sparse.md):
 preprocessing
 
 **Visualisation** -
@@ -208,9 +212,9 @@ palettes
 
 **Interoperability** - broom-compatible: `tidy()`, `glance()`,
 `augment()` -
-[`as_lfq_data()`](https://CuiweiG.github.io/lineagefreq/reference/as_lfq_data.md)
+[`as_lfq_data()`](https://cuiweig.github.io/lineagefreq/reference/as_lfq_data.md)
 generic for extensible data import -
-[`read_lineage_counts()`](https://CuiweiG.github.io/lineagefreq/reference/read_lineage_counts.md)
+[`read_lineage_counts()`](https://cuiweig.github.io/lineagefreq/reference/read_lineage_counts.md)
 for CSV input
 
 ## Supported pathogens

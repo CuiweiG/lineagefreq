@@ -21,7 +21,7 @@ lfq_forecast(fit, horizon = 28L, ...)
 - ...:
 
   Passed to
-  [`forecast()`](https://CuiweiG.github.io/lineagefreq/reference/forecast.md).
+  [`forecast()`](https://cuiweig.github.io/lineagefreq/reference/forecast.md).
 
 ## Value
 

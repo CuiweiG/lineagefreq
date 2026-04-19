@@ -14,7 +14,7 @@ surveillance data.
 ## Preparing data
 
 The entry point is
-[`lfq_data()`](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md),
+[`lfq_data()`](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md),
 which validates and standardizes a count table. The minimum input is a
 data frame with columns for date, lineage name, and sequence count.
 
@@ -66,7 +66,7 @@ returns a validated `lfq_data` object.
 
 ## Fitting a model
 
-[`fit_model()`](https://CuiweiG.github.io/lineagefreq/reference/fit_model.md)
+[`fit_model()`](https://cuiweig.github.io/lineagefreq/reference/fit_model.md)
 provides a unified interface. The default engine is multinomial logistic
 regression (MLR).
 
@@ -93,7 +93,7 @@ prevalent lineage early in the time series.
 
 ## Extracting growth advantages
 
-[`growth_advantage()`](https://CuiweiG.github.io/lineagefreq/reference/growth_advantage.md)
+[`growth_advantage()`](https://cuiweig.github.io/lineagefreq/reference/growth_advantage.md)
 converts growth rates into interpretable metrics. Four output types are
 available.
 
@@ -135,7 +135,7 @@ autoplot(fit, type = "advantage", generation_time = 5)
 
 ## Forecasting
 
-[`forecast()`](https://CuiweiG.github.io/lineagefreq/reference/forecast.md)
+[`forecast()`](https://cuiweig.github.io/lineagefreq/reference/forecast.md)
 projects frequencies forward with uncertainty quantified by parametric
 simulation.
 
@@ -150,7 +150,7 @@ autoplot(fc)
 
 ## Detecting emerging lineages
 
-[`summarize_emerging()`](https://CuiweiG.github.io/lineagefreq/reference/summarize_emerging.md)
+[`summarize_emerging()`](https://cuiweig.github.io/lineagefreq/reference/summarize_emerging.md)
 tests each lineage for statistically significant frequency increases.
 
 ``` r
@@ -168,8 +168,8 @@ summarize_emerging(x)
 ## Next steps
 
 - Compare multiple engines with
-  [`backtest()`](https://CuiweiG.github.io/lineagefreq/reference/backtest.md)
+  [`backtest()`](https://cuiweig.github.io/lineagefreq/reference/backtest.md)
   — see
-  [`vignette("model-comparison")`](https://CuiweiG.github.io/lineagefreq/articles/model-comparison.md).
+  [`vignette("model-comparison")`](https://cuiweig.github.io/lineagefreq/articles/model-comparison.md).
 - Run a full surveillance workflow — see
-  [`vignette("surveillance-workflow")`](https://CuiweiG.github.io/lineagefreq/articles/surveillance-workflow.md).
+  [`vignette("surveillance-workflow")`](https://cuiweig.github.io/lineagefreq/articles/surveillance-workflow.md).

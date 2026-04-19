@@ -11,8 +11,8 @@
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Lineage Frequency Dynamics from Genomic Surveillance Counts">
-<meta name="description" content="Models pathogen lineage frequency dynamics from genomic surveillance count data. Provides a unified interface for multinomial logistic regression, hierarchical partial-pooling models, and the Piantham approximation for relative reproduction number estimation. Features include rolling-origin backtesting, standardized forecast scoring, lineage collapsing, emergence detection, and sequencing power analysis. Designed for real-time public health surveillance of any variant-resolved pathogen. Methods described in Abousamra, Figgins, and Bedford (2024) &lt;doi:10.1371/journal.pcbi.1012443&gt;.">
-<meta property="og:description" content="Models pathogen lineage frequency dynamics from genomic surveillance count data. Provides a unified interface for multinomial logistic regression, hierarchical partial-pooling models, and the Piantham approximation for relative reproduction number estimation. Features include rolling-origin backtesting, standardized forecast scoring, lineage collapsing, emergence detection, and sequencing power analysis. Designed for real-time public health surveillance of any variant-resolved pathogen. Methods described in Abousamra, Figgins, and Bedford (2024) &lt;doi:10.1371/journal.pcbi.1012443&gt;.">
+<meta name="description" content="Models pathogen lineage frequency dynamics from genomic surveillance count data. Provides a unified interface for multinomial logistic regression, hierarchical partial-pooling models, and the Piantham approximation for relative reproduction number estimation. Features include rolling-origin backtesting, standardized forecast scoring, Compositional Adaptive Prediction Sets (CAPS) for horizon-aware calibrated forecasting, lineage collapsing, emergence detection, and sequencing power analysis. Designed for real-time public health surveillance of any variant-resolved pathogen. Methods described in Abousamra, Figgins, and Bedford (2024) &lt;doi:10.1371/journal.pcbi.1012443&gt;.">
+<meta property="og:description" content="Models pathogen lineage frequency dynamics from genomic surveillance count data. Provides a unified interface for multinomial logistic regression, hierarchical partial-pooling models, and the Piantham approximation for relative reproduction number estimation. Features include rolling-origin backtesting, standardized forecast scoring, Compositional Adaptive Prediction Sets (CAPS) for horizon-aware calibrated forecasting, lineage collapsing, emergence detection, and sequencing power analysis. Designed for real-time public health surveillance of any variant-resolved pathogen. Methods described in Abousamra, Figgins, and Bedford (2024) &lt;doi:10.1371/journal.pcbi.1012443&gt;.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -53,6 +53,8 @@
 <p><em>Lineage Frequency Dynamics and Growth-Advantage Estimation from Genomic Surveillance Counts</em></p>
 <!-- badges: start -->
 
+<p align="center">
+<img src="reference/figures/jn1_dynamics.png" width="70%" alt="Observed vs MLR-estimated trajectories of SARS-CoV-2 JN.1 lineage replacement in U.S. CDC surveillance, October 2023 to March 2024"></p>
 <p>lineagefreq provides a unified pipeline for modelling pathogen lineage frequencies from genomic surveillance counts. The package implements multinomial logistic regression and alternative estimation engines, probabilistic forecasting with configurable prediction horizons, and integrated calibration diagnostics based on probability integral transform (PIT) histograms and distribution-free conformal prediction intervals. Additional modules support immune-aware fitness decomposition and information-theoretic surveillance optimisation.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -239,6 +241,13 @@
 </ul>
 </div>
 
+<div class="community">
+<h2 data-toc-skip>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
+<li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
+</ul>
+</div>
 
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
@@ -258,6 +267,7 @@
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://github.com/CuiweiG/lineagefreq/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/CuiweiG/lineagefreq/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://codecov.io/gh/CuiweiG/lineagefreq" class="external-link"><img src="https://codecov.io/gh/CuiweiG/lineagefreq/graph/badge.svg" alt="codecov"></a></li>
 <li><a href="https://CRAN.R-project.org/package=lineagefreq" class="external-link"><img src="https://www.r-pkg.org/badges/version/lineagefreq" alt="CRAN status"></a></li>
 <li><a href="https://CRAN.R-project.org/package=lineagefreq" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/lineagefreq" alt="CRAN downloads"></a></li>
 <li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a></li>

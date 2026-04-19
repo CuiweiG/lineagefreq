@@ -22,7 +22,7 @@ x <- lfq_data(sarscov2_us_2022,
 ## Step 2: Collapse rare lineages
 
 Real surveillance data often contains dozens of low-frequency lineages.
-[`collapse_lineages()`](https://CuiweiG.github.io/lineagefreq/reference/collapse_lineages.md)
+[`collapse_lineages()`](https://cuiweig.github.io/lineagefreq/reference/collapse_lineages.md)
 merges those below a threshold into an “Other” category.
 
 ``` r
@@ -152,15 +152,15 @@ glance.lfq_fit(fit)
 
 A typical weekly workflow:
 
-1.  [`lfq_data()`](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md)
+1.  [`lfq_data()`](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md)
     — ingest new counts
-2.  [`collapse_lineages()`](https://CuiweiG.github.io/lineagefreq/reference/collapse_lineages.md)
+2.  [`collapse_lineages()`](https://cuiweig.github.io/lineagefreq/reference/collapse_lineages.md)
     — clean up rare lineages
-3.  [`fit_model()`](https://CuiweiG.github.io/lineagefreq/reference/fit_model.md)
+3.  [`fit_model()`](https://cuiweig.github.io/lineagefreq/reference/fit_model.md)
     — estimate dynamics
-4.  [`summarize_emerging()`](https://CuiweiG.github.io/lineagefreq/reference/summarize_emerging.md)
+4.  [`summarize_emerging()`](https://cuiweig.github.io/lineagefreq/reference/summarize_emerging.md)
     — flag growing lineages
-5.  [`forecast()`](https://CuiweiG.github.io/lineagefreq/reference/forecast.md)
+5.  [`forecast()`](https://cuiweig.github.io/lineagefreq/reference/forecast.md)
     — project forward 4 weeks
 6.  [`autoplot()`](https://ggplot2.tidyverse.org/reference/autoplot.html)
     — generate report figures

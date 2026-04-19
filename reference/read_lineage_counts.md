@@ -2,7 +2,7 @@
 
 A convenience wrapper for reading surveillance count data from CSV files
 into
-[lfq_data](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md)
+[lfq_data](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md)
 format. Expects a file with at least columns for date, lineage, and
 count.
 
@@ -39,12 +39,12 @@ read_lineage_counts(
 - ...:
 
   Additional arguments passed to
-  [`lfq_data()`](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md).
+  [`lfq_data()`](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md).
 
 ## Value
 
 An
-[lfq_data](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md)
+[lfq_data](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md)
 object.
 
 ## Examples

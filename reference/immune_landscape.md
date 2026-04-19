@@ -3,7 +3,7 @@
 Assembles time-varying population immunity estimates against each
 circulating lineage from seroprevalence surveys, vaccination records, or
 infection history data. The resulting object serves as input to
-[`fitness_decomposition`](https://CuiweiG.github.io/lineagefreq/reference/fitness_decomposition.md)
+[`fitness_decomposition`](https://cuiweig.github.io/lineagefreq/reference/fitness_decomposition.md)
 for disentangling intrinsic transmissibility from immune escape.
 
 ## Usage
@@ -89,7 +89,7 @@ each lineage at each time point.
 
 ## See also
 
-[`fitness_decomposition`](https://CuiweiG.github.io/lineagefreq/reference/fitness_decomposition.md)
+[`fitness_decomposition`](https://cuiweig.github.io/lineagefreq/reference/fitness_decomposition.md)
 for downstream analysis.
 
 ## Examples

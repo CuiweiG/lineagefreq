@@ -15,7 +15,7 @@ from an information-theoretic and decision-theoretic perspective.
 
 ## Expected Value of Information
 
-[`surveillance_value()`](https://CuiweiG.github.io/lineagefreq/reference/surveillance_value.md)
+[`surveillance_value()`](https://cuiweig.github.io/lineagefreq/reference/surveillance_value.md)
 quantifies the marginal decision value of sequencing additional samples,
 given the current posterior uncertainty of variant frequency estimates:
 
@@ -38,7 +38,7 @@ estimates, and resources are better directed elsewhere.
 
 ## Adaptive allocation via Thompson sampling
 
-[`adaptive_design()`](https://CuiweiG.github.io/lineagefreq/reference/adaptive_design.md)
+[`adaptive_design()`](https://cuiweig.github.io/lineagefreq/reference/adaptive_design.md)
 goes beyond static allocation by reallocating resources across regions
 at each surveillance round, directing effort toward strata where
 uncertainty reduction has the highest decision value:
@@ -62,7 +62,7 @@ suited to multi-round surveillance campaigns.
 
 ## Detection horizon
 
-[`detection_horizon()`](https://CuiweiG.github.io/lineagefreq/reference/detection_horizon.md)
+[`detection_horizon()`](https://cuiweig.github.io/lineagefreq/reference/detection_horizon.md)
 answers the prospective question: given current sequencing capacity and
 a hypothetical new variant at initial prevalence $p_{0}$ growing at rate
 $r$, how many weeks until reliable detection?
@@ -77,13 +77,13 @@ wtd <- attr(dh, "weeks_to_detection")
 The function accounts for multinomial sampling under logistic growth and
 computes cumulative detection probability across surveillance periods.
 This extends
-[`sequencing_power()`](https://CuiweiG.github.io/lineagefreq/reference/sequencing_power.md),
+[`sequencing_power()`](https://cuiweig.github.io/lineagefreq/reference/sequencing_power.md),
 which answers the static question (how many sequences for a single
 period), by adding the temporal dimension.
 
 ## Sequential detection with controlled false alarms
 
-[`alert_threshold()`](https://CuiweiG.github.io/lineagefreq/reference/alert_threshold.md)
+[`alert_threshold()`](https://cuiweig.github.io/lineagefreq/reference/alert_threshold.md)
 implements sequential testing for emerging variants, controlling the
 false alarm rate while minimising detection delay:
 
@@ -111,7 +111,7 @@ concern).
 
 ## Surveillance dashboard
 
-[`surveillance_dashboard()`](https://CuiweiG.github.io/lineagefreq/reference/surveillance_dashboard.md)
+[`surveillance_dashboard()`](https://cuiweig.github.io/lineagefreq/reference/surveillance_dashboard.md)
 combines current landscape, growth advantages, detection power, and
 calibration diagnostics into a single multi-panel display for weekly
 reporting:

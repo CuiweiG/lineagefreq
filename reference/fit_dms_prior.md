@@ -73,7 +73,7 @@ proteins. *Virus Evolution*, 9(2), vead055.
 
 ## See also
 
-[`fit_model`](https://CuiweiG.github.io/lineagefreq/reference/fit_model.md)
+[`fit_model`](https://cuiweig.github.io/lineagefreq/reference/fit_model.md)
 for the standard MLR engine.
 
 ## Examples

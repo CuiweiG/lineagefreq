@@ -123,7 +123,7 @@ frequent surveillance data would provide more observations per unit time
 and improve detection sensitivity. The SPRT is best suited to
 high-frequency monitoring; for biweekly or monthly data, the
 non-sequential
-[`summarize_emerging()`](https://CuiweiG.github.io/lineagefreq/reference/summarize_emerging.md)
+[`summarize_emerging()`](https://cuiweig.github.io/lineagefreq/reference/summarize_emerging.md)
 function using binomial trend tests is more appropriate.
 
 ## 4. Fitness decomposition
@@ -145,7 +145,7 @@ The decomposition is mathematically exact (intrinsic + escape = observed
 advantage). However, the decomposition requires external immunity data —
 frequency dynamics alone cannot identify the two components. This
 identifiability constraint is enforced in the software:
-[`fitness_decomposition()`](https://CuiweiG.github.io/lineagefreq/reference/fitness_decomposition.md)
+[`fitness_decomposition()`](https://cuiweig.github.io/lineagefreq/reference/fitness_decomposition.md)
 requires an `immune_landscape` object as input and will error without
 one.
 

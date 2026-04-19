@@ -14,7 +14,7 @@ filter_sparse(x, min_total = 10L, min_timepoints = 3L)
 - x:
 
   An
-  [lfq_data](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md)
+  [lfq_data](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md)
   object.
 
 - min_total:
@@ -29,7 +29,7 @@ filter_sparse(x, min_total = 10L, min_timepoints = 3L)
 ## Value
 
 An
-[lfq_data](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md)
+[lfq_data](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md)
 object with sparse entries removed.
 
 ## Examples

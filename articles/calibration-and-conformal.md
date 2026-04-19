@@ -16,11 +16,11 @@ surveillance forecasting tools assess this systematically.
 `lineagefreq` provides three capabilities for forecast calibration that,
 to our knowledge, no other genomic surveillance package offers:
 calibration diagnostics
-([`calibrate()`](https://CuiweiG.github.io/lineagefreq/reference/calibrate.md)),
+([`calibrate()`](https://cuiweig.github.io/lineagefreq/reference/calibrate.md)),
 post-hoc recalibration
-([`recalibrate()`](https://CuiweiG.github.io/lineagefreq/reference/recalibrate.md)),
+([`recalibrate()`](https://cuiweig.github.io/lineagefreq/reference/recalibrate.md)),
 and distribution-free conformal prediction intervals
-([`conformal_forecast()`](https://CuiweiG.github.io/lineagefreq/reference/conformal_forecast.md)).
+([`conformal_forecast()`](https://cuiweig.github.io/lineagefreq/reference/conformal_forecast.md)).
 
 ## PIT diagnostics on real CDC data
 
@@ -58,7 +58,7 @@ narrower intervals than warranted); points below indicate conservatism.
 ## Recalibration
 
 When the PIT diagnostic reveals miscalibration,
-[`recalibrate()`](https://CuiweiG.github.io/lineagefreq/reference/recalibrate.md)
+[`recalibrate()`](https://cuiweig.github.io/lineagefreq/reference/recalibrate.md)
 adjusts prediction intervals to improve coverage. Two methods are
 available:
 
@@ -82,7 +82,7 @@ autoplot(fc_recal)
 ## Conformal prediction intervals
 
 Parametric prediction intervals from
-[`forecast()`](https://CuiweiG.github.io/lineagefreq/reference/forecast.md)
+[`forecast()`](https://cuiweig.github.io/lineagefreq/reference/forecast.md)
 assume that the multinomial logistic model is correctly specified and
 that the parameter estimation uncertainty is well captured by the Fisher
 information matrix. When these assumptions are violated — as they may be
@@ -122,7 +122,7 @@ distribution shifts more aggressively but increase interval variability.
 
 ## Proper scoring rules
 
-[`score_forecasts()`](https://CuiweiG.github.io/lineagefreq/reference/score_forecasts.md)
+[`score_forecasts()`](https://cuiweig.github.io/lineagefreq/reference/score_forecasts.md)
 now supports four additional proper scoring rules alongside the original
 MAE, RMSE, coverage, and WIS:
 

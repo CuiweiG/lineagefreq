@@ -51,7 +51,7 @@ decomposition substantially over ignoring immunity entirely.
 ## Fitness decomposition
 
 Given a fitted frequency model and an immunity landscape,
-[`fitness_decomposition()`](https://CuiweiG.github.io/lineagefreq/reference/fitness_decomposition.md)
+[`fitness_decomposition()`](https://cuiweig.github.io/lineagefreq/reference/fitness_decomposition.md)
 partitions each lineage’s growth advantage into intrinsic and escape
 components:
 
@@ -79,7 +79,7 @@ When a new variant is first detected, sequence counts are too sparse for
 reliable growth rate estimation. Deep Mutational Scanning (DMS) data —
 laboratory measurements of how individual mutations affect receptor
 binding and antibody escape — can serve as an informative prior.
-[`fit_dms_prior()`](https://CuiweiG.github.io/lineagefreq/reference/fit_dms_prior.md)
+[`fit_dms_prior()`](https://cuiweig.github.io/lineagefreq/reference/fit_dms_prior.md)
 implements penalised multinomial logistic regression that shrinks growth
 rate estimates toward DMS-derived priors:
 
@@ -101,7 +101,7 @@ by cross-validation or the calibration tools from the previous vignette.
 ## Selective pressure as an early warning signal
 
 The
-[`selective_pressure()`](https://CuiweiG.github.io/lineagefreq/reference/selective_pressure.md)
+[`selective_pressure()`](https://cuiweig.github.io/lineagefreq/reference/selective_pressure.md)
 function computes a population-level metric from genomic data alone,
 requiring no case counts or epidemiological data:
 

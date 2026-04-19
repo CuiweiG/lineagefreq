@@ -3,7 +3,7 @@
 Produces distribution-free prediction intervals with finite-sample
 coverage guarantees using split conformal inference. Unlike the
 parametric intervals from
-[`forecast`](https://CuiweiG.github.io/lineagefreq/reference/forecast.md),
+[`forecast`](https://cuiweig.github.io/lineagefreq/reference/forecast.md),
 conformal intervals require no distributional assumptions on the
 residuals and are valid under exchangeability.
 
@@ -94,9 +94,9 @@ distribution shift. *Advances in Neural Information Processing Systems*,
 
 ## See also
 
-[`forecast`](https://CuiweiG.github.io/lineagefreq/reference/forecast.md)
+[`forecast`](https://cuiweig.github.io/lineagefreq/reference/forecast.md)
 for parametric prediction intervals,
-[`calibrate`](https://CuiweiG.github.io/lineagefreq/reference/calibrate.md)
+[`calibrate`](https://cuiweig.github.io/lineagefreq/reference/calibrate.md)
 for calibration diagnostics.
 
 ## Examples
@@ -112,23 +112,23 @@ fc_conf
 #> 
 #> ── Lineage frequency forecast 
 #> Engine: mlr
-#> Forecast start: 2026-08-25 | Horizon: 21 days
+#> Forecast start: 2026-08-31 | Horizon: 21 days
 #> CI level: 95%
 #> 60 fitted + 9 forecast rows
 #> 
 #> # A tibble: 69 × 6
 #>    .date      .lineage .median .lower .upper .type 
 #>    <date>     <chr>      <dbl>  <dbl>  <dbl> <chr> 
-#>  1 2026-04-13 A          0.341  0.341  0.341 fitted
-#>  2 2026-04-13 B          0.324  0.324  0.324 fitted
-#>  3 2026-04-13 ref        0.335  0.335  0.335 fitted
-#>  4 2026-04-20 A          0.408  0.408  0.408 fitted
-#>  5 2026-04-20 B          0.257  0.257  0.257 fitted
-#>  6 2026-04-20 ref        0.335  0.335  0.335 fitted
-#>  7 2026-04-27 A          0.476  0.476  0.476 fitted
-#>  8 2026-04-27 B          0.198  0.198  0.198 fitted
-#>  9 2026-04-27 ref        0.326  0.326  0.326 fitted
-#> 10 2026-05-04 A          0.541  0.541  0.541 fitted
+#>  1 2026-04-19 A          0.341  0.341  0.341 fitted
+#>  2 2026-04-19 B          0.324  0.324  0.324 fitted
+#>  3 2026-04-19 ref        0.335  0.335  0.335 fitted
+#>  4 2026-04-26 A          0.408  0.408  0.408 fitted
+#>  5 2026-04-26 B          0.257  0.257  0.257 fitted
+#>  6 2026-04-26 ref        0.335  0.335  0.335 fitted
+#>  7 2026-05-03 A          0.476  0.476  0.476 fitted
+#>  8 2026-05-03 B          0.198  0.198  0.198 fitted
+#>  9 2026-05-03 ref        0.326  0.326  0.326 fitted
+#> 10 2026-05-10 A          0.541  0.541  0.541 fitted
 #> # ℹ 59 more rows
 # }
 ```

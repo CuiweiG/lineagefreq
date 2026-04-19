@@ -21,7 +21,7 @@ collapse_lineages(
 - x:
 
   An
-  [lfq_data](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md)
+  [lfq_data](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md)
   object.
 
 - min_freq:
@@ -46,7 +46,7 @@ collapse_lineages(
 ## Value
 
 An
-[lfq_data](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md)
+[lfq_data](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md)
 object with rare lineages merged.
 
 ## Examples

@@ -22,7 +22,7 @@ surveillance_value(
 - fit:
 
   An `lfq_fit` object from
-  [`fit_model`](https://CuiweiG.github.io/lineagefreq/reference/fit_model.md).
+  [`fit_model`](https://cuiweig.github.io/lineagefreq/reference/fit_model.md).
 
 - n_current:
 
@@ -71,9 +71,9 @@ information-theoretic quantities.
 
 ## See also
 
-[`adaptive_design`](https://CuiweiG.github.io/lineagefreq/reference/adaptive_design.md)
+[`adaptive_design`](https://cuiweig.github.io/lineagefreq/reference/adaptive_design.md)
 for dynamic allocation,
-[`sequencing_power`](https://CuiweiG.github.io/lineagefreq/reference/sequencing_power.md)
+[`sequencing_power`](https://cuiweig.github.io/lineagefreq/reference/sequencing_power.md)
 for static sample size planning.
 
 ## Examples

@@ -2,7 +2,7 @@
 
 Applies post-hoc recalibration to improve the coverage properties of
 prediction intervals from
-[`forecast`](https://CuiweiG.github.io/lineagefreq/reference/forecast.md).
+[`forecast`](https://cuiweig.github.io/lineagefreq/reference/forecast.md).
 Two methods are available: isotonic regression (nonparametric,
 monotonicity- preserving) and Platt scaling (logistic, parametric).
 
@@ -62,7 +62,7 @@ Classifiers*, 61–74.
 
 ## See also
 
-[`calibrate`](https://CuiweiG.github.io/lineagefreq/reference/calibrate.md)
+[`calibrate`](https://cuiweig.github.io/lineagefreq/reference/calibrate.md)
 for calibration diagnostics.
 
 ## Examples

@@ -68,7 +68,7 @@ simulate_dynamics(
 ## Value
 
 An
-[lfq_data](https://CuiweiG.github.io/lineagefreq/reference/lfq_data.md)
+[lfq_data](https://cuiweig.github.io/lineagefreq/reference/lfq_data.md)
 object with an additional `true_freq` column containing the true
 (pre-sampling) frequencies.
 
@@ -86,21 +86,21 @@ sim
 #> 
 #> ── Lineage frequency data 
 #> 3 lineages, 15 time points
-#> Date range: 2026-04-13 to 2026-07-20
+#> Date range: 2026-04-19 to 2026-07-26
 #> Lineages: "JN.1, KP.3, ref"
 #> 
 #> # A tibble: 45 × 7
 #>    .date      .lineage .count true_freq .total .freq .reliable
 #>  * <date>     <chr>     <int>     <dbl>  <int> <dbl> <lgl>    
-#>  1 2026-04-13 JN.1        156     0.333    500 0.312 TRUE     
-#>  2 2026-04-13 KP.3        184     0.333    500 0.368 TRUE     
-#>  3 2026-04-13 ref         160     0.333    500 0.32  TRUE     
-#>  4 2026-04-20 JN.1        204     0.406    500 0.408 TRUE     
-#>  5 2026-04-20 KP.3        143     0.281    500 0.286 TRUE     
-#>  6 2026-04-20 ref         153     0.312    500 0.306 TRUE     
-#>  7 2026-04-27 JN.1        240     0.483    500 0.48  TRUE     
-#>  8 2026-04-27 KP.3        120     0.231    500 0.24  TRUE     
-#>  9 2026-04-27 ref         140     0.286    500 0.28  TRUE     
-#> 10 2026-05-04 JN.1        307     0.560    500 0.614 TRUE     
+#>  1 2026-04-19 JN.1        156     0.333    500 0.312 TRUE     
+#>  2 2026-04-19 KP.3        184     0.333    500 0.368 TRUE     
+#>  3 2026-04-19 ref         160     0.333    500 0.32  TRUE     
+#>  4 2026-04-26 JN.1        204     0.406    500 0.408 TRUE     
+#>  5 2026-04-26 KP.3        143     0.281    500 0.286 TRUE     
+#>  6 2026-04-26 ref         153     0.312    500 0.306 TRUE     
+#>  7 2026-05-03 JN.1        240     0.483    500 0.48  TRUE     
+#>  8 2026-05-03 KP.3        120     0.231    500 0.24  TRUE     
+#>  9 2026-05-03 ref         140     0.286    500 0.28  TRUE     
+#> 10 2026-05-10 JN.1        307     0.560    500 0.614 TRUE     
 #> # ℹ 35 more rows
 ```

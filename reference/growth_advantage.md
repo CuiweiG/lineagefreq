@@ -19,7 +19,7 @@ growth_advantage(
 - fit:
 
   An `lfq_fit` object returned by
-  [`fit_model()`](https://CuiweiG.github.io/lineagefreq/reference/fit_model.md).
+  [`fit_model()`](https://cuiweig.github.io/lineagefreq/reference/fit_model.md).
 
 - type:
 
