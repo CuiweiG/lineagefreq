@@ -46,7 +46,9 @@ reference:
     desc: "Assess and correct prediction interval calibration"
     contents:
       - calibrate
+      - calibrate_joint
       - conformal_forecast
+      - conformal_forecast_joint
       - recalibrate
       - plot.calibration_report
 
@@ -76,8 +78,10 @@ reference:
     desc: "Evaluate forecast accuracy"
     contents:
       - backtest
+      - evaluate_prospective
       - score_forecasts
       - compare_models
+      - plot.lfq_prospective
 
   - title: "Visualization"
     desc: "Publication-ready plots"
