@@ -11,6 +11,10 @@
 [![R >= 4.1.0](https://img.shields.io/badge/R-%E2%89%A5%204.1.0-brightgreen.svg)](https://cran.r-project.org/)
 <!-- badges: end -->
 
+<p align="center">
+<img src="man/figures/jn1_dynamics.png" width="70%" alt="Observed vs MLR-estimated trajectories of SARS-CoV-2 JN.1 lineage replacement in U.S. CDC surveillance, October 2023 to March 2024" />
+</p>
+
 lineagefreq provides a unified pipeline for modelling pathogen lineage
 frequencies from genomic surveillance counts. The package implements
 multinomial logistic regression and alternative estimation engines,
