@@ -47,7 +47,7 @@ summarize_emerging(sim)
 #> # A tibble: 2 × 10
 #>   lineage  first_seen last_seen  n_timepoints current_freq growth_rate   p_value
 #>   <chr>    <date>     <date>            <int>        <dbl>       <dbl>     <dbl>
-#> 1 emerging 2026-04-19 2026-07-05           12        0.976      0.0645 0        
-#> 2 stable   2026-04-19 2026-07-05           12        0.016     -0.0394 9.90e-101
+#> 1 emerging 2026-10-24 2027-01-09           12        0.976      0.0645 0        
+#> 2 stable   2026-10-24 2027-01-09           12        0.016     -0.0394 9.90e-101
 #> # ℹ 3 more variables: p_adjusted <dbl>, significant <lgl>, direction <chr>
 ```

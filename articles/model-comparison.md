@@ -18,6 +18,7 @@ Three engines are available in v0.1.0:
 ## Setup
 
 ``` r
+
 library(lineagefreq)
 ```
 
@@ -27,6 +28,7 @@ The default engine fits a multinomial logistic regression with one
 growth rate parameter per non-reference lineage.
 
 ``` r
+
 data(sarscov2_us_2022)
 x <- lfq_data(sarscov2_us_2022,
               lineage = variant, date = date,
@@ -50,6 +52,7 @@ The Piantham engine wraps MLR and translates growth rates to relative
 effective reproduction numbers using a specified mean generation time.
 
 ``` r
+
 fit_pian <- fit_model(x, engine = "piantham",
                       generation_time = 5)
 growth_advantage(fit_pian, type = "relative_Rt",
@@ -70,6 +73,7 @@ growth_advantage(fit_pian, type = "relative_Rt",
 wrapper around MLR, the log-likelihood and AIC are identical.
 
 ``` r
+
 dplyr::bind_rows(
   glance.lfq_fit(fit_mlr),
   glance.lfq_fit(fit_pian)
@@ -91,17 +95,18 @@ model is fit on past data and forecasts are compared to held-out future
 observations.
 
 ``` r
+
 bt <- backtest(x,
   engines = c("mlr", "piantham"),
   horizons = c(7, 14, 21),
   min_train = 56,
   generation_time = 5
 )
-#> Backtesting ■■■                                7% | ETA: 14s
+#> Backtesting ■■■                                7% | ETA: 13s
 #> Backtesting ■■■■■■■■■                         26% | ETA: 11s
 #> Backtesting ■■■■■■■■■■■■■■                    42% | ETA: 10s
 #> Backtesting ■■■■■■■■■■■■■■■■■■                55% | ETA:  8s
-#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■            70% | ETA:  6s
+#> Backtesting ■■■■■■■■■■■■■■■■■■■■■■            69% | ETA:  6s
 #> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■         81% | ETA:  4s
 #> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■     92% | ETA:  2s
 #> Backtesting ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100% | ETA:  0s
@@ -135,6 +140,7 @@ bt
 computes standardized accuracy metrics.
 
 ``` r
+
 sc <- score_forecasts(bt,
   metrics = c("mae", "coverage"))
 sc
@@ -161,6 +167,7 @@ sc
 summarizes scores per engine, sorted by MAE.
 
 ``` r
+
 compare_models(sc, by = c("engine", "horizon"))
 #> # A tibble: 6 × 4
 #>   engine   horizon     mae coverage
@@ -176,6 +183,7 @@ compare_models(sc, by = c("engine", "horizon"))
 ## Visualization
 
 ``` r
+
 plot_backtest(sc)
 ```
 

@@ -19,6 +19,7 @@ which validates and standardizes a count table. The minimum input is a
 data frame with columns for date, lineage name, and sequence count.
 
 ``` r
+
 library(lineagefreq)
 
 data(sarscov2_us_2022)
@@ -33,6 +34,7 @@ head(sarscov2_us_2022)
 ```
 
 ``` r
+
 x <- lfq_data(sarscov2_us_2022,
               lineage = variant,
               date    = date,
@@ -71,6 +73,7 @@ provides a unified interface. The default engine is multinomial logistic
 regression (MLR).
 
 ``` r
+
 fit <- fit_model(x, engine = "mlr")
 fit
 #> Lineage frequency model (mlr)
@@ -98,6 +101,7 @@ converts growth rates into interpretable metrics. Four output types are
 available.
 
 ``` r
+
 ga <- growth_advantage(fit,
                        type = "relative_Rt",
                        generation_time = 5)
@@ -122,12 +126,14 @@ information matrix.
 supports four plot types for fitted models.
 
 ``` r
+
 autoplot(fit, type = "frequency")
 ```
 
 ![](introduction_files/figure-html/plot-frequency-1.png)
 
 ``` r
+
 autoplot(fit, type = "advantage", generation_time = 5)
 ```
 
@@ -140,6 +146,7 @@ projects frequencies forward with uncertainty quantified by parametric
 simulation.
 
 ``` r
+
 fc <- forecast(fit, horizon = 28)
 autoplot(fc)
 #> Warning in ggplot2::scale_x_date(date_labels = "%Y-%m-%d"): A <numeric> value was passed to a Date scale.
@@ -154,6 +161,7 @@ autoplot(fc)
 tests each lineage for statistically significant frequency increases.
 
 ``` r
+
 summarize_emerging(x)
 #> # A tibble: 4 × 10
 #>   lineage first_seen last_seen  n_timepoints current_freq growth_rate p_value

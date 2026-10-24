@@ -22,7 +22,7 @@ lfq_version()
 #> [1] "0.6.0"
 #> 
 #> $r_version
-#> [1] "4.5.3"
+#> [1] "4.6.1"
 #> 
 #> $stan_available
 #> [1] FALSE

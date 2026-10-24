@@ -16,14 +16,7 @@
   engines](https://cuiweig.github.io/lineagefreq/articles/model-comparison.md):
 - [Surveillance
   workflow](https://cuiweig.github.io/lineagefreq/articles/surveillance-workflow.md):
-- [Prediction Calibration and Conformal
-  Inference](https://cuiweig.github.io/lineagefreq/articles/calibration-and-conformal.md):
 - [Immune-Aware Fitness
   Estimation](https://cuiweig.github.io/lineagefreq/articles/immune-aware-fitness.md):
 - [Information-Theoretic Surveillance
   Optimization](https://cuiweig.github.io/lineagefreq/articles/surveillance-optimization.md):
-
-### Validation
-
-- [Validation
-  Report](https://cuiweig.github.io/lineagefreq/articles/validation-report.md):

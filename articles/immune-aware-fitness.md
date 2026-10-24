@@ -23,6 +23,7 @@ against each circulating lineage. This may come from seroprevalence
 surveys, vaccination coverage data, or model-based reconstructions.
 
 ``` r
+
 library(lineagefreq)
 
 # Immunity data: proportion of population with neutralising
@@ -56,6 +57,7 @@ partitions each lineage’s growth advantage into intrinsic and escape
 components:
 
 ``` r
+
 data(cdc_sarscov2_jn1)
 x <- lfq_data(cdc_sarscov2_jn1, lineage = lineage,
               date = date, count = count)
@@ -84,6 +86,7 @@ implements penalised multinomial logistic regression that shrinks growth
 rate estimates toward DMS-derived priors:
 
 ``` r
+
 # DMS escape scores from Bloom Lab measurements
 dms <- c("JN.1" = 0.05, "XBB.1.5" = 0.01, "BA.5" = -0.02)
 
@@ -96,7 +99,9 @@ The `lambda` parameter controls the strength of the prior. At
 increases, estimates are pulled toward the DMS prior. The appropriate
 value depends on the relative informativeness of the DMS data and the
 quantity of observed sequences — a judgment call that should be informed
-by cross-validation or the calibration tools from the previous vignette.
+by cross-validation or the package’s calibration tools
+([`calibrate()`](https://cuiweig.github.io/lineagefreq/reference/calibrate.md),
+[`conformal_forecast()`](https://cuiweig.github.io/lineagefreq/reference/conformal_forecast.md)).
 
 ## Selective pressure as an early warning signal
 
@@ -106,6 +111,7 @@ function computes a population-level metric from genomic data alone,
 requiring no case counts or epidemiological data:
 
 ``` r
+
 sp <- selective_pressure(fit)
 sp
 

@@ -11,6 +11,7 @@ emergence wave (October 2023 to June 2024).
 ## Load data
 
 ``` r
+
 library(lineagefreq)
 
 data(cdc_sarscov2_jn1)
@@ -23,6 +24,7 @@ str(cdc_sarscov2_jn1)
 ```
 
 ``` r
+
 vd <- lfq_data(cdc_sarscov2_jn1,
                lineage = lineage, date = date, count = count)
 vd
@@ -54,6 +56,7 @@ During JN.1’s rise, several lineages circulated at low frequency. We
 collapse those below 5% peak frequency into “Other”.
 
 ``` r
+
 vd_clean <- collapse_lineages(vd, min_freq = 0.05)
 #> Collapsing 3 rare lineages into "Other".
 attr(vd_clean, "lineages")
@@ -63,6 +66,7 @@ attr(vd_clean, "lineages")
 ## Fit MLR model
 
 ``` r
+
 fit <- fit_model(vd_clean, engine = "mlr")
 fit
 #> Lineage frequency model (mlr)
@@ -83,6 +87,7 @@ fit
 ## Growth advantages
 
 ``` r
+
 ga <- growth_advantage(fit, type = "relative_Rt",
                        generation_time = 5)
 ga
@@ -98,6 +103,7 @@ ga
 ```
 
 ``` r
+
 autoplot(fit, type = "advantage", generation_time = 5)
 ```
 
@@ -109,6 +115,7 @@ XBB-derived lineages, consistent with published CDC estimates.
 ## Frequency trajectories
 
 ``` r
+
 autoplot(fit, type = "trajectory")
 ```
 
@@ -117,6 +124,7 @@ autoplot(fit, type = "trajectory")
 ## Forecast
 
 ``` r
+
 fc <- forecast(fit, horizon = 28)
 autoplot(fc)
 #> Warning in ggplot2::scale_x_date(date_labels = "%Y-%m-%d"): A <numeric> value was passed to a Date scale.
@@ -128,6 +136,7 @@ autoplot(fc)
 ## Emergence detection
 
 ``` r
+
 summarize_emerging(vd_clean)
 #> # A tibble: 4 × 10
 #>   lineage first_seen last_seen  n_timepoints current_freq growth_rate   p_value
@@ -144,6 +153,7 @@ summarize_emerging(vd_clean)
 How many sequences per week are needed to detect a variant at 1%?
 
 ``` r
+
 sequencing_power(
   target_precision = 0.05,
   current_freq = c(0.01, 0.02, 0.05)
@@ -159,10 +169,11 @@ sequencing_power(
 ## Session info
 
 ``` r
+
 sessionInfo()
-#> R version 4.5.3 (2026-03-11)
+#> R version 4.6.1 (2026-06-24)
 #> Platform: x86_64-pc-linux-gnu
-#> Running under: Ubuntu 24.04.4 LTS
+#> Running under: Ubuntu 24.04.5 LTS
 #> 
 #> Matrix products: default
 #> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
@@ -184,16 +195,16 @@ sessionInfo()
 #> [1] lineagefreq_0.6.0
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] gtable_0.3.6       jsonlite_2.0.0     dplyr_1.2.1        compiler_4.5.3    
+#>  [1] gtable_0.3.6       jsonlite_2.0.0     dplyr_1.2.1        compiler_4.6.1    
 #>  [5] tidyselect_1.2.1   tidyr_1.3.2        jquerylib_0.1.4    systemfonts_1.3.2 
 #>  [9] scales_1.4.0       textshaping_1.0.5  yaml_2.3.12        fastmap_1.2.0     
-#> [13] ggplot2_4.0.2      R6_2.6.1           labeling_0.4.3     generics_0.1.4    
-#> [17] knitr_1.51         MASS_7.3-65        tibble_3.3.1       desc_1.4.3        
-#> [21] bslib_0.10.0       pillar_1.11.1      RColorBrewer_1.1-3 rlang_1.2.0       
-#> [25] utf8_1.2.6         cachem_1.1.0       xfun_0.57          fs_2.0.1          
-#> [29] sass_0.4.10        S7_0.2.1-1         cli_3.6.6          pkgdown_2.2.0     
-#> [33] withr_3.0.2        magrittr_2.0.5     digest_0.6.39      grid_4.5.3        
-#> [37] lifecycle_1.0.5    vctrs_0.7.3        evaluate_1.0.5     glue_1.8.1        
-#> [41] farver_2.1.2       ragg_1.5.2         rmarkdown_2.31     purrr_1.2.2       
-#> [45] tools_4.5.3        pkgconfig_2.0.3    htmltools_0.5.9
+#> [13] ggplot2_4.0.3      R6_2.6.1           labeling_0.4.3     generics_0.1.4    
+#> [17] knitr_1.52         MASS_7.3-65        tibble_3.3.1       desc_1.4.3        
+#> [21] bslib_0.12.0       pillar_1.11.1      RColorBrewer_1.1-3 rlang_1.3.0       
+#> [25] utf8_1.2.6         cachem_1.1.0       xfun_0.62          fs_2.1.0          
+#> [29] sass_0.4.10        S7_0.2.2           otel_0.2.0         cli_3.6.6         
+#> [33] pkgdown_2.2.1      withr_3.0.3        magrittr_2.0.5     digest_0.6.39     
+#> [37] grid_4.6.1         lifecycle_1.0.5    vctrs_0.7.3        evaluate_1.0.5    
+#> [41] glue_1.8.1         farver_2.1.2       ragg_1.5.2         purrr_1.2.2       
+#> [45] rmarkdown_2.32     tools_4.6.1        pkgconfig_2.0.3    htmltools_0.5.9
 ```

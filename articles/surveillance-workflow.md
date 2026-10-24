@@ -9,6 +9,7 @@ public health genomics team would run weekly.
 ## Step 1: Load and prepare data
 
 ``` r
+
 library(lineagefreq)
 
 data(sarscov2_us_2022)
@@ -26,6 +27,7 @@ Real surveillance data often contains dozens of low-frequency lineages.
 merges those below a threshold into an “Other” category.
 
 ``` r
+
 x_clean <- collapse_lineages(x, min_freq = 0.02)
 #> Collapsing 1 rare lineage into "Other".
 attr(x_clean, "lineages")
@@ -35,6 +37,7 @@ attr(x_clean, "lineages")
 ## Step 3: Fit model
 
 ``` r
+
 fit <- fit_model(x_clean, engine = "mlr")
 summary(fit)
 #> Lineage Frequency Model Summary
@@ -62,6 +65,7 @@ summary(fit)
 ## Step 4: Growth advantages
 
 ``` r
+
 ga <- growth_advantage(fit,
                        type = "relative_Rt",
                        generation_time = 5)
@@ -76,6 +80,7 @@ ga
 ```
 
 ``` r
+
 autoplot(fit, type = "advantage", generation_time = 5)
 ```
 
@@ -84,6 +89,7 @@ autoplot(fit, type = "advantage", generation_time = 5)
 ## Step 5: Identify emerging lineages
 
 ``` r
+
 emerging <- summarize_emerging(x_clean)
 emerging[emerging$significant, ]
 #> # A tibble: 3 × 10
@@ -98,6 +104,7 @@ emerging[emerging$significant, ]
 ## Step 6: Forecast
 
 ``` r
+
 fc <- forecast(fit, horizon = 28)
 autoplot(fc)
 #> Warning in ggplot2::scale_x_date(date_labels = "%Y-%m-%d"): A <numeric> value was passed to a Date scale.
@@ -112,6 +119,7 @@ How many sequences are needed to reliably detect a lineage at 2%
 frequency?
 
 ``` r
+
 sequencing_power(
   target_precision = 0.05,
   current_freq = c(0.01, 0.02, 0.05, 0.10)
@@ -130,6 +138,7 @@ sequencing_power(
 All results are compatible with the broom ecosystem.
 
 ``` r
+
 tidy.lfq_fit(fit)
 #> # A tibble: 6 × 6
 #>   lineage term        estimate std.error conf.low conf.high

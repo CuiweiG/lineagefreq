@@ -97,8 +97,8 @@ alerts
 #> # A tibble: 3 × 6
 #>   lineage date       statistic alert direction    confidence
 #>   <chr>   <date>         <dbl> <lgl> <chr>             <dbl>
-#> 1 A       2026-07-26     0.222 FALSE inconclusive       0.95
-#> 2 B       2026-07-26    -0.193 FALSE inconclusive       0.95
-#> 3 ref     2026-07-26    -0.193 FALSE inconclusive       0.95
+#> 1 A       2027-01-30     0.222 FALSE inconclusive       0.95
+#> 2 B       2027-01-30    -0.193 FALSE inconclusive       0.95
+#> 3 ref     2027-01-30    -0.193 FALSE inconclusive       0.95
 # }
 ```

@@ -19,6 +19,7 @@ and information-theoretic surveillance optimisation.
 ## Installation
 
 ``` r
+
 # Stable release from CRAN
 install.packages("lineagefreq")
 
@@ -35,6 +36,7 @@ immune-aware fitness decomposition, and surveillance optimisation.
 ## Quick example
 
 ``` r
+
 library(lineagefreq)
 library(ggplot2)
 
@@ -118,22 +120,6 @@ countries via ECDC + 2 US datasets via CDC):
 *MAE in percentage points (pp). European data from ECDC (BA.2 period).
 US data from CDC (public domain). Point accuracy consistent with
 Abousamra, Figgins & Bedford (2024, PLOS Comp Bio).*
-
-Calibration diagnostics via
-[`calibrate()`](https://cuiweig.github.io/lineagefreq/reference/calibrate.md)
-reveal that standard parametric prediction intervals are systematically
-underdispersed. Conformal prediction via
-[`conformal_forecast()`](https://cuiweig.github.io/lineagefreq/reference/conformal_forecast.md)
-provides correctly calibrated intervals. See `analysis/` for
-reproducible validation scripts.
-
-### Calibration and uncertainty quantification
-
-Multi-country PIT diagnostics, reliability diagrams, and conformal
-prediction intervals demonstrate systematic miscalibration of parametric
-prediction intervals and the effectiveness of conformal correction.
-
-![](reference/figures/readme_performance_calibration.png)
 
 ### Fitness decomposition and multi-pathogen application
 
@@ -232,6 +218,7 @@ If you use lineagefreq in published work, please cite:
 > <https://CRAN.R-project.org/package=lineagefreq>
 
 ``` r
+
 citation("lineagefreq")
 ```
 

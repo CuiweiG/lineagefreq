@@ -20,6 +20,7 @@ quantifies the marginal decision value of sequencing additional samples,
 given the current posterior uncertainty of variant frequency estimates:
 
 ``` r
+
 library(lineagefreq)
 sim <- simulate_dynamics(n_lineages = 4, n_timepoints = 15,
   advantages = c("A" = 1.4, "B" = 1.1, "C" = 0.8), seed = 1)
@@ -44,6 +45,7 @@ at each surveillance round, directing effort toward strata where
 uncertainty reduction has the highest decision value:
 
 ``` r
+
 ad <- adaptive_design(sim, capacity = 200, n_rounds = 10,
   strategy = "thompson", seed = 42)
 ad
@@ -64,10 +66,11 @@ suited to multi-round surveillance campaigns.
 
 [`detection_horizon()`](https://cuiweig.github.io/lineagefreq/reference/detection_horizon.md)
 answers the prospective question: given current sequencing capacity and
-a hypothetical new variant at initial prevalence $p_{0}$ growing at rate
-$r$, how many weeks until reliable detection?
+a hypothetical new variant at initial prevalence $`p_0`$ growing at rate
+$`r`$, how many weeks until reliable detection?
 
 ``` r
+
 dh <- detection_horizon(initial_prev = 0.001, growth_rate = 1.3,
   n_per_period = 300, confidence = 0.95)
 dh
@@ -88,6 +91,7 @@ implements sequential testing for emerging variants, controlling the
 false alarm rate while minimising detection delay:
 
 ``` r
+
 alerts <- alert_threshold(sim, method = "sprt",
   alpha = 0.05, delta_1 = 0.03)
 alerts
@@ -97,8 +101,8 @@ Two methods are available:
 
 - **SPRT** (Wald, 1945): Accumulates log-likelihood ratios between the
   null (stable frequency) and alternative (growing). Stops when evidence
-  crosses either boundary. Controls both false alarm ($\alpha$) and
-  missed detection ($\beta$) rates.
+  crosses either boundary. Controls both false alarm ($`\alpha`$) and
+  missed detection ($`\beta`$) rates.
 
 - **CUSUM**: Accumulates positive deviations from expected frequency.
   Simpler to implement but does not control missed detection probability
@@ -117,6 +121,7 @@ calibration diagnostics into a single multi-panel display for weekly
 reporting:
 
 ``` r
+
 bt <- backtest(sim, engines = "mlr", horizons = c(7, 14),
   min_train = 42)
 panels <- surveillance_dashboard(fit, sim, bt = bt)
