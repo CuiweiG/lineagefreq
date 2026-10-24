@@ -114,8 +114,8 @@ The `lambda` parameter controls the strength of the prior. At
 `lambda` increases, estimates are pulled toward the DMS prior.
 The appropriate value depends on the relative informativeness of
 the DMS data and the quantity of observed sequences --- a judgment
-call that should be informed by cross-validation or the calibration
-tools from the previous vignette.
+call that should be informed by cross-validation or the package's
+calibration tools (`calibrate()`, `conformal_forecast()`).
 
 ## Selective pressure as an early warning signal
 

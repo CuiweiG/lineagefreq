@@ -123,9 +123,5 @@ articles:
     contents:
       - model-comparison
       - surveillance-workflow
-      - calibration-and-conformal
       - immune-aware-fitness
       - surveillance-optimization
-  - title: "Validation"
-    contents:
-      - validation-report

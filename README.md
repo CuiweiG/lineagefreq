@@ -127,21 +127,6 @@ Rolling-origin evaluation across 7 datasets in 6 countries
 US data from CDC (public domain). Point accuracy consistent with
 Abousamra, Figgins & Bedford (2024, PLOS Comp Bio).*
 
-Calibration diagnostics via `calibrate()` reveal that standard
-parametric prediction intervals are systematically underdispersed.
-Conformal prediction via `conformal_forecast()` provides correctly
-calibrated intervals. See `analysis/` for reproducible validation
-scripts.
-
-### Calibration and uncertainty quantification
-
-Multi-country PIT diagnostics, reliability diagrams, and conformal
-prediction intervals demonstrate systematic miscalibration of
-parametric prediction intervals and the effectiveness of conformal
-correction.
-
-![](man/figures/readme_performance_calibration.png)
-
 ### Fitness decomposition and multi-pathogen application
 
 Immune-aware fitness decomposition separates intrinsic
